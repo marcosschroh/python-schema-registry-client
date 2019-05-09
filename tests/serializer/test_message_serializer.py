@@ -7,7 +7,7 @@ import struct
 import unittest
 
 from confluent_kafka import avro
-from confluent_kafka.avro.serializer.message_serializer import MessageSerializer
+from schemaregistry.serializer.message_serializer import MessageSerializer
 
 from tests.client import data_gen
 from tests.client.mock_schema_registry_client import MockSchemaRegistryClient

@@ -1,9 +1,9 @@
 import unittest
 
-from confluent_kafka.avro.cached_schema_registry_client import CachedSchemaRegistryClient
+from schemaregistry.client import CachedSchemaRegistryClient
 from confluent_kafka import avro
 
-from tests.client import mock_registry
+from tests.server import mock_registry
 from tests.client import data_gen
 
 

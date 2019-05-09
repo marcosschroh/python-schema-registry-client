@@ -1,7 +1,3 @@
-#
-# derived from https://github.com/verisign/python-confluent-schemaregistry.git
-#
-
 from confluent_kafka.avro import ClientError
 
 
