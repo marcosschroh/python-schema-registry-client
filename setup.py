@@ -16,7 +16,7 @@ requires = [
     "fastavro",
     "faust==1.5.4",
     "robinhood-aiokafka==1.0.2",
-    "requests",
+    "requests-async==0.4.1",
     "simple-settings==0.16.0",
 ]
 

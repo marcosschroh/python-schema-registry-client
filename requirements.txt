@@ -1,6 +1,6 @@
 avro-python3
 fastavro
-requests
+requests-async==0.4.1
 confluent-kafka==1.0.0
 
 # Code quality
