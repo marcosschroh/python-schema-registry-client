@@ -1,10 +1,8 @@
 import pytest
 import struct
 
-from confluent_kafka import avro
-
 from schemaregistry.serializer.message_serializer import MessageSerializer
-from schemaregistry.client import CachedSchemaRegistryClient
+from schemaregistry.client import CachedSchemaRegistryClient, load
 
 from tests.server import mock_registry
 from tests.client import data_gen
@@ -43,8 +41,8 @@ def hash_func(self):
 
 @pytest.mark.asyncio
 async def test_encode_with_schema_id(client, message_serializer):
-    adv = avro.loads(data_gen.ADVANCED_SCHEMA)
-    basic = avro.loads(data_gen.BASIC_SCHEMA)
+    adv = load.loads(data_gen.ADVANCED_SCHEMA)
+    basic = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
     schema_id = await client.register(subject, basic)
 
@@ -67,7 +65,7 @@ async def test_encode_with_schema_id(client, message_serializer):
 @pytest.mark.asyncio
 async def test_encode_record_with_schema(client, message_serializer):
     topic = 'test'
-    basic = avro.loads(data_gen.BASIC_SCHEMA)
+    basic = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test-value'
     schema_id = await client.register(subject, basic)
     records = data_gen.BASIC_ITEMS

@@ -3,7 +3,7 @@
 
 """ setup.py for python-schemaregistry."""
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = "0.0.1"
 
@@ -12,12 +12,11 @@ with open("README.md") as readme_file:
 
 requires = [
     "avro-python3",
-    "colorlog==3.1.4",
     "fastavro",
     "faust==1.5.4",
-    "robinhood-aiokafka==1.0.2",
     "requests-async==0.4.1",
-    "simple-settings==0.16.0",
+    "aiofiles==0.4.0",
+    "confluent-kafka==1.0.0",
 ]
 
 setup(
@@ -30,7 +29,7 @@ setup(
     install_requires=requires,
     url="https://github.com/marcosschroh/python-schemaregistry-client",
     download_url="",
-    packages=[],
+    packages=find_packages(),
     include_package_data=True,
     license="GPLv3",
     classifiers=[

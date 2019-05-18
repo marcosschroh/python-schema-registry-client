@@ -9,7 +9,7 @@ def loads(schema_str):
     try:
         return schema.Parse(schema_str)
     except schema.SchemaParseException as e:
-        raise ClientError("Schema parse failed: %s" % (str(e)))
+        raise ClientError(f"Schema parse failed: {e}")
 
 
 async def load(fp):

@@ -85,7 +85,7 @@ class MessageSerializer(object):
             schema_id = await self.schemaregistry_client.register(subject, schema)
 
             if not schema_id:
-                message = "Unable to retrieve schema id for subject %s" % (subject)
+                message = f"Unable to retrieve schema id for subject {subject}"
                 raise serialize_err(message)
 
             # cache writer
@@ -140,10 +140,10 @@ class MessageSerializer(object):
         try:
             writer_schema_obj = await self.schemaregistry_client.get_by_id(schema_id)
         except ClientError as e:
-            raise SerializerError("unable to fetch schema with id %d: %s" % (schema_id, str(e)))
+            raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}")
 
         if writer_schema_obj is None:
-            raise SerializerError("unable to fetch schema with id %d" % (schema_id))
+            raise SerializerError(f"unable to fetch schema with id {schema_id}")
 
         curr_pos = payload.tell()
 

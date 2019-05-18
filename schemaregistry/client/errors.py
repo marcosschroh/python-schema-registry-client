@@ -7,7 +7,7 @@ class ClientError(Exception):
         super(ClientError, self).__init__(self.__str__())
 
     def __repr__(self):
-        return "ClientError(error={error})".format(error=self.message)
+        return f"ClientError(error={self.message})"
 
     def __str__(self):
         return self.message

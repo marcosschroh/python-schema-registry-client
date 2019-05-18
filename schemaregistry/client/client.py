@@ -79,7 +79,7 @@ class CachedSchemaRegistryClient:
         self.url = conf.pop('url')
 
         if len(conf) > 0:
-            raise ValueError("Unrecognized configuration properties: {}".format(conf.keys()))
+            raise ValueError("fUnrecognized configuration properties:{conf}")
 
     async def __aenter__(self):
         return self
@@ -94,9 +94,9 @@ class CachedSchemaRegistryClient:
     def _configure_basic_auth(conf):
         url = conf['url']
         auth_provider = conf.pop('basic.auth.credentials.source', 'URL').upper()
+
         if auth_provider not in VALID_AUTH_PROVIDERS:
-            raise ValueError("schema.registry.basic.auth.credentials.source must be one of {}"
-                             .format(VALID_AUTH_PROVIDERS))
+            raise ValueError(f"schema.registry.basic.auth.credentials.source must be one of {VALID_AUTH_PROVIDERS}")
         if auth_provider == 'SASL_INHERIT':
             if conf.pop('sasl.mechanism', '').upper() is ['GSSAPI']:
                 raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
@@ -121,7 +121,7 @@ class CachedSchemaRegistryClient:
 
     async def send(self, url, method='GET', body=None, headers={}):
         if method not in VALID_METHODS:
-            raise ClientError("Method {} is invalid; valid methods include {}".format(method, VALID_METHODS))
+            raise ClientError(f"Method {method} is invalid; valid methods include {VALID_METHODS}")
 
         _headers = {'Accept': ACCEPT_HDR}
         if body:
@@ -183,13 +183,13 @@ class CachedSchemaRegistryClient:
         result, code = await self.send(url, method='POST', body=body)
 
         if (code == 401 or code == 403):
-            raise ClientError("Unauthorized access. Error code:" + str(code))
+            raise ClientError(f"Unauthorized access. Error code: {code}")
         elif code == 409:
-            raise ClientError("Incompatible Avro schema:" + str(code))
+            raise ClientError(f"Incompatible Avro schema: {code}")
         elif code == 422:
-            raise ClientError("Invalid Avro schema:" + str(code))
+            raise ClientError("Invalid Avro schema: {code}")
         elif not (code >= 200 and code <= 299):
-            raise ClientError("Unable to register schema. Error code:" + str(code) + url)
+            raise ClientError("Unable to register schema. Error code: {code}")
         # result is a dict
         schema_id = result['id']
         self._cache_schema(avro_schema, schema_id, subject)
@@ -210,7 +210,7 @@ class CachedSchemaRegistryClient:
 
         result, code = await self.send(url, method="DELETE")
         if not (code >= 200 and code <= 299):
-            raise ClientError('Unable to delete subject: {}'.format(result))
+            raise ClientError(f"Unable to delete subject: {result}")
         return result
 
     async def get_by_id(self, schema_id):
@@ -228,9 +228,9 @@ class CachedSchemaRegistryClient:
 
         result, code = await self.send(url)
         if code == 404:
-            log.error("Schema not found:" + str(code))
+            log.error(f"Schema not found: {code}")
         elif not (code >= 200 and code <= 299):
-            log.error("Unable to get schema for the specific ID:" + str(code))
+            log.error(f"Unable to get schema for the specific ID: {code}")
         else:
             # need to parse the schema
             schema_str = result.get("schema")
@@ -242,7 +242,7 @@ class CachedSchemaRegistryClient:
                 return result
             except ClientError as e:
                 # bad schema - should not happen
-                raise ClientError("Received bad schema (id %s) from registry: %s" % (schema_id, e))
+                raise ClientError(f"Received bad schema (id {schema_id}) from registry: {e}")
 
     async def get_latest_schema(self, subject):
         """
@@ -302,10 +302,10 @@ class CachedSchemaRegistryClient:
 
         result, code = await self.send(url, method='POST', body=body)
         if code == 404:
-            log.error("Not found:" + str(code))
+            log.error(f"Not found: {code}")
             return None
         elif not (code >= 200 and code <= 299):
-            log.error("Unable to get version of a schema:" + str(code))
+            log.error(f"Unable to get version of a schema: {code}")
             return None
         schema_id = result['id']
         version = result['version']
@@ -328,15 +328,15 @@ class CachedSchemaRegistryClient:
         try:
             result, code = await self.send(url, method='POST', body=body)
             if code == 404:
-                log.error(("Subject or version not found:" + str(code)))
+                log.error(f"Subject or version not found: {code}")
                 return False
             elif code == 422:
-                log.error(("Invalid subject or schema:" + str(code)))
+                log.error("Invalid subject or schema: {code}")
                 return False
             elif code >= 200 and code <= 299:
                 return result.get('is_compatible')
             else:
-                log.error("Unable to check the compatibility: " + str(code))
+                log.error(f"Unable to check the compatibility: {code}")
                 return False
         except Exception as e:
             log.error("send() failed: %s", e)
@@ -360,7 +360,7 @@ class CachedSchemaRegistryClient:
         if code >= 200 and code <= 299:
             return result['compatibility']
         else:
-            raise ClientError("Unable to update level: %s. Error code: %d" % (str(level)), code)
+            raise ClientError(f"Unable to update level: {level}. Error code: {code}")
 
     async def get_compatibility(self, subject=None):
         """
@@ -378,14 +378,14 @@ class CachedSchemaRegistryClient:
         result, code = await self.send(url)
         is_successful_request = code >= 200 and code <= 299
         if not is_successful_request:
-            raise ClientError('Unable to fetch compatibility level. Error code: %d' % code)
+            raise ClientError(f"Unable to fetch compatibility level. Error code: {code}")
 
         compatibility = result.get('compatibilityLevel', None)
         if compatibility not in VALID_LEVELS:
             if compatibility is None:
-                error_msg_suffix = 'No compatibility was returned'
+                error_msg_suffix = "No compatibility was returned"
             else:
                 error_msg_suffix = str(compatibility)
-            raise ClientError('Invalid compatibility level received: %s' % error_msg_suffix)
+            raise ClientError(f"Invalid compatibility level received: {error_msg_suffix}")
 
         return compatibility

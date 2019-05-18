@@ -27,7 +27,7 @@ class AvroSerializer(MessageSerializer, Codec):
         self.is_key = is_key
 
         # Initialize parents
-        MessageSerializer.__init__(self, registry_client=self.schema_registry_client)
+        MessageSerializer.__init__(self, schema_registry_client)
         Codec.__init__(self)
 
     async def _loads(self, s: bytes) -> Dict:

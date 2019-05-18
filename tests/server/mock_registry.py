@@ -1,7 +1,3 @@
-#
-# derived from https://github.com/verisign/python-confluent-schemaregistry.git
-#
-
 import sys
 import json
 import re
