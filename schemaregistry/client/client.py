@@ -6,8 +6,6 @@ from collections import defaultdict
 import requests_async as requests
 from requests import utils
 
-# from requests import Session, utils
-
 from .errors import ClientError
 from .load import loads
 
@@ -38,7 +36,7 @@ class CachedSchemaRegistryClient:
 
     def __init__(self, url, max_schemas_per_subject=1000, ca_location=None,
                  cert_location=None, key_location=None):
-        # In order to maintain compatibility the url(conf in future versions) param has been preserved for now.
+
         conf = url
         if not isinstance(url, dict):
             conf = {
@@ -191,7 +189,7 @@ class CachedSchemaRegistryClient:
         elif code == 422:
             raise ClientError("Invalid Avro schema:" + str(code))
         elif not (code >= 200 and code <= 299):
-            raise ClientError("Unable to register schema. Error code:" + str(code))
+            raise ClientError("Unable to register schema. Error code:" + str(code) + url)
         # result is a dict
         schema_id = result['id']
         self._cache_schema(avro_schema, schema_id, subject)
@@ -238,6 +236,7 @@ class CachedSchemaRegistryClient:
             schema_str = result.get("schema")
             try:
                 result = loads(schema_str)
+                print(result, "the result")
                 # cache it
                 self._cache_schema(result, schema_id)
                 return result

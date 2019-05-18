@@ -1,22 +1,25 @@
-import unittest
 import pytest
 
-from avro import schema
-from confluent_kafka import avro
+import avro
+
+from schemaregistry.client import load, errors
 
 from tests.client import data_gen
 
 
-class TestUtil(unittest.TestCase):
-    def test_schema_from_string(self):
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
-        self.assertTrue(isinstance(parsed, schema.Schema))
+def test_schema_from_string():
+    parsed = load.loads(data_gen.BASIC_SCHEMA)
+    assert isinstance(parsed, avro.schema.Schema)
 
-    def test_schema_from_file(self):
-        parsed = avro.load(data_gen.get_schema_path('adv_schema.avsc'))
-        self.assertTrue(isinstance(parsed, schema.Schema))
 
-    def test_schema_load_parse_error(self):
-        with pytest.raises(avro.ClientError) as excinfo:
-            avro.load(data_gen.get_schema_path("invalid_scema.avsc"))
-        assert 'Schema parse failed:' in str(excinfo.value)
+@pytest.mark.asyncio
+async def test_schema_from_file():
+    parsed = await load.load(data_gen.get_schema_path('adv_schema.avsc'))
+    assert isinstance(parsed, avro.schema.Schema)
+
+
+@pytest.mark.asyncio
+async def test_schema_load_parse_error():
+    with pytest.raises(errors.ClientError) as excinfo:
+        await load.load(data_gen.get_schema_path("invalid_scema.avsc"))
+    assert 'Schema parse failed:' in str(excinfo.value)

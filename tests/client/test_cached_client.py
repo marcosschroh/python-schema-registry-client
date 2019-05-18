@@ -1,7 +1,6 @@
 import pytest
 
-from schemaregistry.client import CachedSchemaRegistryClient
-from confluent_kafka import avro
+from schemaregistry.client import CachedSchemaRegistryClient, load
 
 from tests.server import mock_registry
 from tests.client import data_gen
@@ -26,16 +25,16 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 
 @pytest.mark.asyncio
 async def test_register(client):
-    parsed = avro.loads(data_gen.BASIC_SCHEMA)
+    parsed = load.loads(data_gen.BASIC_SCHEMA)
     schema_id = await client.register('test', parsed)
-    print(schema_id, "The schema")
+
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
 
 
 @pytest.mark.asyncio
 async def test_multi_subject_register(client):
-    parsed = avro.loads(data_gen.BASIC_SCHEMA)
+    parsed = load.loads(data_gen.BASIC_SCHEMA)
     schema_id = await client.register('test', parsed)
     assert schema_id > 0
 
@@ -47,7 +46,7 @@ async def test_multi_subject_register(client):
 
 @pytest.mark.asyncio
 async def test_dupe_register(client):
-    parsed = avro.loads(data_gen.BASIC_SCHEMA)
+    parsed = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
     schema_id = await client.register(subject, parsed)
 
@@ -63,7 +62,7 @@ async def test_dupe_register(client):
 
 @pytest.mark.asyncio
 async def test_getters(client):
-    parsed = avro.loads(data_gen.BASIC_SCHEMA)
+    parsed = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
     version = await client.get_version(subject, parsed)
     assert version is None
@@ -81,13 +80,14 @@ async def test_getters(client):
     # self.assertLatest(latest, schema_id, parsed, version)
 
     fetched = await client.get_by_id(schema_id)
+
     assert fetched == parsed
 
 
 @pytest.mark.asyncio
 async def test_multi_register(client):
-    basic = avro.loads(data_gen.BASIC_SCHEMA)
-    adv = avro.loads(data_gen.ADVANCED_SCHEMA)
+    basic = load.loads(data_gen.BASIC_SCHEMA)
+    adv = load.loads(data_gen.ADVANCED_SCHEMA)
     subject = 'test'
 
     id1 = await client.register(subject, basic)
@@ -112,7 +112,7 @@ async def test_multi_register(client):
 @pytest.mark.asyncio
 async def test_context(client):
     async with client as c:
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
+        parsed = load.loads(data_gen.BASIC_SCHEMA)
         schema_id = await c.register('test', parsed)
         assert schema_id > 0
         assert len(c.id_to_schema) == 1

@@ -42,11 +42,11 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         self.all_routes = {
             'GET': [
                 (r"/schemas/ids/(\d+)", 'get_schema_by_id'),
-                (r"/subjects/(\w+)/versions/latest", 'get_latest')
+                (r"/subjects/([-\w]+)/versions/latest", 'get_latest')
             ],
             'POST': [
-                (r"/subjects/(\w+)/versions", 'register'),
-                (r"/subjects/(\w+)", 'get_version')
+                (r"/subjects/([-\w]+)/versions", 'register'),
+                (r"/subjects/([-\w]+)", 'get_version')
             ]
         }
 
@@ -101,12 +101,12 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         data = json.loads(data.decode("utf-8"))
         schema = data.get("schema", None)
         if not schema:
-            return None
+            return
         try:
             avro_schema = avro.loads(schema)
             return self._get_identity_schema(avro_schema)
         except ClientError:
-            return None
+            return
 
     def register(self, req, groups):
         avro_schema = self._get_schema_from_body(req)
