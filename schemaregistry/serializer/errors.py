@@ -1,4 +1,3 @@
-
 class SerializerError(Exception):
     """Generic error from serializer package"""
 

@@ -8,8 +8,11 @@ import avro
 import avro.io
 
 from schemaregistry.client.errors import ClientError
-from schemaregistry.serializer.errors import SerializerError, KeySerializerError, \
-    ValueSerializerError
+from schemaregistry.serializer.errors import (
+    SerializerError,
+    KeySerializerError,
+    ValueSerializerError,
+)
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +40,7 @@ class ContextStringIO(io.BytesIO):
         return False
 
 
-class MessageSerializer(object):
+class MessageSerializer:
     """
     A helper class that can serialize and deserialize messages
     that need to be encoded or decoded using the schema registry.
@@ -45,7 +48,9 @@ class MessageSerializer(object):
     All decode_* methods expect a buffer received from kafka.
     """
 
-    def __init__(self, schemaregistry_client, reader_key_schema=None, reader_value_schema=None):
+    def __init__(
+        self, schemaregistry_client, reader_key_schema=None, reader_value_schema=None
+    ):
         self.schemaregistry_client = schemaregistry_client
         self.id_to_decoder_func = {}
         self.id_to_writers = {}
@@ -78,7 +83,7 @@ class MessageSerializer(object):
         if not schema_id:
             serialize_err = KeySerializerError if is_key else ValueSerializerError
 
-            subject_suffix = ('-key' if is_key else '-value')
+            subject_suffix = "-key" if is_key else "-value"
             # get the latest schema for the subject
             subject = topic + subject_suffix
             # register it
@@ -120,13 +125,15 @@ class MessageSerializer(object):
                 self.id_to_writers[schema_id] = self._get_encoder_func(schema)
             except ClientError:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                raise serialize_err(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                raise serialize_err(
+                    repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                )
 
         # get the writer
         writer = self.id_to_writers[schema_id]
         with ContextStringIO() as outf:
             # Write the magic byte and schema ID in network byte order (big endian)
-            outf.write(struct.pack('>bI', MAGIC_BYTE, schema_id))
+            outf.write(struct.pack(">bI", MAGIC_BYTE, schema_id))
 
             # write the record to the rest of the buffer
             writer(record, outf)
@@ -147,7 +154,9 @@ class MessageSerializer(object):
 
         curr_pos = payload.tell()
 
-        reader_schema_obj = self.reader_key_schema if is_key else self.reader_value_schema
+        reader_schema_obj = (
+            self.reader_key_schema if is_key else self.reader_value_schema
+        )
 
         if HAS_FAST:
             # try to use fast avro
@@ -163,7 +172,8 @@ class MessageSerializer(object):
                 payload.seek(curr_pos)
 
                 self.id_to_decoder_func[schema_id] = lambda p: schemaless_reader(
-                    p, writer_schema, reader_schema)
+                    p, writer_schema, reader_schema
+                )
                 return self.id_to_decoder_func[schema_id]
             except Exception:
                 # Fast avro failed, fall thru to standard avro below.
@@ -203,7 +213,7 @@ class MessageSerializer(object):
             raise SerializerError("message is too small to decode")
 
         with ContextStringIO(message) as payload:
-            magic, schema_id = struct.unpack('>bI', payload.read(5))
+            magic, schema_id = struct.unpack(">bI", payload.read(5))
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")
             decoder_func = self._get_decoder_func(schema_id, payload, is_key)

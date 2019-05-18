@@ -13,11 +13,11 @@ def test_schema_from_string():
 
 
 def test_schema_from_file():
-    parsed = load.load(data_gen.get_schema_path('adv_schema.avsc'))
+    parsed = load.load(data_gen.get_schema_path("adv_schema.avsc"))
     assert isinstance(parsed, avro.schema.Schema)
 
 
 def test_schema_load_parse_error():
     with pytest.raises(errors.ClientError) as excinfo:
         load.load(data_gen.get_schema_path("invalid_scema.avsc"))
-    assert 'Schema parse failed:' in str(excinfo.value)
+    assert "Schema parse failed:" in str(excinfo.value)

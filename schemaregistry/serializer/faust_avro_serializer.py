@@ -19,8 +19,7 @@ class AvroSerializer(MessageSerializer, Codec):
     is_key: bool
     """
 
-    def __init__(self, schema_registry_client, destination_topic,
-                 schema, is_key=False):
+    def __init__(self, schema_registry_client, destination_topic, schema, is_key=False):
         self.schema_registry_client = schema_registry_client
         self.destination_topic = destination_topic
         self.schema = schema
@@ -45,5 +44,5 @@ class AvroSerializer(MessageSerializer, Codec):
             topic=self.destination_topic,
             schema=self.schema,
             record=obj,
-            is_key=self.is_key
+            is_key=self.is_key,
         )

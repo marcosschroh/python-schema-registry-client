@@ -25,7 +25,7 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 
 def test_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = client.register('test', parsed)
+    schema_id = client.register("test", parsed)
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
@@ -33,18 +33,18 @@ def test_register(client):
 
 def test_multi_subject_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = client.register('test', parsed)
+    schema_id = client.register("test", parsed)
     assert schema_id > 0
 
     # register again under different subject
-    dupe_id = client.register('other', parsed)
+    dupe_id = client.register("other", parsed)
     assert schema_id == dupe_id
     assert len(client.id_to_schema) == 1
 
 
 def test_dupe_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    subject = 'test'
+    subject = "test"
     schema_id = client.register(subject, parsed)
 
     assert schema_id > 0
@@ -59,7 +59,7 @@ def test_dupe_register(client):
 
 def test_getters(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    subject = 'test'
+    subject = "test"
     version = client.get_version(subject, parsed)
     assert version is None
 
@@ -81,7 +81,7 @@ def test_getters(client):
 def test_multi_register(client):
     basic = load.loads(data_gen.BASIC_SCHEMA)
     adv = load.loads(data_gen.ADVANCED_SCHEMA)
-    subject = 'test'
+    subject = "test"
 
     id1 = client.register(subject, basic)
     latest1 = client.get_latest_schema(subject)
@@ -105,7 +105,7 @@ def test_multi_register(client):
 def test_context(client):
     with client as c:
         parsed = load.loads(data_gen.BASIC_SCHEMA)
-        schema_id = c.register('test', parsed)
+        schema_id = c.register("test", parsed)
         assert schema_id > 0
         assert len(c.id_to_schema) == 1
 
@@ -113,41 +113,42 @@ def test_context(client):
 def test_cert_no_key():
     with pytest.raises(ValueError):
         CachedSchemaRegistryClient(
-            url='https://127.0.0.1:65534',
-            cert_location='/path/to/cert')
+            url="https://127.0.0.1:65534", cert_location="/path/to/cert"
+        )
 
 
 def test_cert_with_key():
     client = CachedSchemaRegistryClient(
-        url='https://127.0.0.1:65534',
-        cert_location='/path/to/cert',
-        key_location='/path/to/key')
+        url="https://127.0.0.1:65534",
+        cert_location="/path/to/cert",
+        key_location="/path/to/key",
+    )
 
-    assert ('/path/to/cert', '/path/to/key') == client._session.cert
+    assert ("/path/to/cert", "/path/to/key") == client._session.cert
 
 
 def test_cert_path():
     client = CachedSchemaRegistryClient(
-        url='https://127.0.0.1:65534',
-        ca_location='/path/to/ca')
+        url="https://127.0.0.1:65534", ca_location="/path/to/ca"
+    )
 
-    assert '/path/to/ca' == client._session.verify
+    assert "/path/to/ca" == client._session.verify
 
 
 def test_init_with_dict():
-    client = CachedSchemaRegistryClient({
-        'url': 'https://127.0.0.1:65534',
-        'ssl.certificate.location': '/path/to/cert',
-        'ssl.key.location': '/path/to/key'
-    })
-    assert 'https://127.0.0.1:65534' == client.url
+    client = CachedSchemaRegistryClient(
+        {
+            "url": "https://127.0.0.1:65534",
+            "ssl.certificate.location": "/path/to/cert",
+            "ssl.key.location": "/path/to/key",
+        }
+    )
+    assert "https://127.0.0.1:65534" == client.url
 
 
 def test_empty_url():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({
-            'url': ''
-        })
+        CachedSchemaRegistryClient({"url": ""})
 
 
 def test_invalid_type_url():
@@ -162,54 +163,60 @@ def test_invalid_type_url_dict():
 
 def test_invalid_url():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({
-            'url': 'example.com:65534'
-        })
+        CachedSchemaRegistryClient({"url": "example.com:65534"})
 
 
 def test_basic_auth_url():
-    client = CachedSchemaRegistryClient({
-        'url': 'https://user_url:secret_url@127.0.0.1:65534',
-    })
+    client = CachedSchemaRegistryClient(
+        {"url": "https://user_url:secret_url@127.0.0.1:65534"}
+    )
 
-    assert ('user_url', 'secret_url') == client._session.auth
+    assert ("user_url", "secret_url") == client._session.auth
 
 
 def test_basic_auth_userinfo():
-    client = CachedSchemaRegistryClient({
-        'url': 'https://user_url:secret_url@127.0.0.1:65534',
-        'basic.auth.credentials.source': 'user_info',
-        'basic.auth.user.info': 'user_userinfo:secret_userinfo'
-    })
-    assert ('user_userinfo', 'secret_userinfo') == client._session.auth
+    client = CachedSchemaRegistryClient(
+        {
+            "url": "https://user_url:secret_url@127.0.0.1:65534",
+            "basic.auth.credentials.source": "user_info",
+            "basic.auth.user.info": "user_userinfo:secret_userinfo",
+        }
+    )
+    assert ("user_userinfo", "secret_userinfo") == client._session.auth
 
 
 def test_basic_auth_sasl_inherit():
-    client = CachedSchemaRegistryClient({
-        'url': 'https://user_url:secret_url@127.0.0.1:65534',
-        'basic.auth.credentials.source': 'SASL_INHERIT',
-        'sasl.mechanism': 'PLAIN',
-        'sasl.username': 'user_sasl',
-        'sasl.password': 'secret_sasl'
-    })
-    assert ('user_sasl', 'secret_sasl') == client._session.auth
+    client = CachedSchemaRegistryClient(
+        {
+            "url": "https://user_url:secret_url@127.0.0.1:65534",
+            "basic.auth.credentials.source": "SASL_INHERIT",
+            "sasl.mechanism": "PLAIN",
+            "sasl.username": "user_sasl",
+            "sasl.password": "secret_sasl",
+        }
+    )
+    assert ("user_sasl", "secret_sasl") == client._session.auth
 
 
 def test_basic_auth_invalid():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({
-            'url': 'https://user_url:secret_url@127.0.0.1:65534',
-            'basic.auth.credentials.source': 'VAULT',
-        })
+        CachedSchemaRegistryClient(
+            {
+                "url": "https://user_url:secret_url@127.0.0.1:65534",
+                "basic.auth.credentials.source": "VAULT",
+            }
+        )
 
 
 def test_invalid_conf():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({
-            'url': 'https://user_url:secret_url@127.0.0.1:65534',
-            'basic.auth.credentials.source': 'SASL_INHERIT',
-            'sasl.username': 'user_sasl',
-            'sasl.password': 'secret_sasl',
-            'invalid.conf': 1,
-            'invalid.conf2': 2
-        })
+        CachedSchemaRegistryClient(
+            {
+                "url": "https://user_url:secret_url@127.0.0.1:65534",
+                "basic.auth.credentials.source": "SASL_INHERIT",
+                "sasl.username": "user_sasl",
+                "sasl.password": "secret_sasl",
+                "invalid.conf": 1,
+                "invalid.conf2": 2,
+            }
+        )

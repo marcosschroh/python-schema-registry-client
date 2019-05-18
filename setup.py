@@ -10,12 +10,7 @@ __version__ = "0.0.1"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = [
-    "avro-python3",
-    "fastavro",
-    "faust==1.5.4",
-    "requests==2.21.0",
-]
+requires = ["avro-python3", "fastavro", "faust==1.5.4", "requests==2.21.0"]
 
 setup(
     name="python-schemaregistry-client",

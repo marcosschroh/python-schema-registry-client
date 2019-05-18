@@ -26,7 +26,7 @@ def assertMessageIsSame(message, expected, schema_id, message_serializer):
     assert message
     assert len(message) > 5
 
-    magic, sid = struct.unpack('>bI', message[0:5])
+    magic, sid = struct.unpack(">bI", message[0:5])
     assert magic == 0
     assert sid == schema_id
 
@@ -42,7 +42,7 @@ def hash_func(self):
 def test_encode_with_schema_id(client, message_serializer):
     adv = load.loads(data_gen.ADVANCED_SCHEMA)
     basic = load.loads(data_gen.BASIC_SCHEMA)
-    subject = 'test'
+    subject = "test"
     schema_id = client.register(subject, basic)
 
     records = data_gen.BASIC_ITEMS
@@ -50,7 +50,7 @@ def test_encode_with_schema_id(client, message_serializer):
         message = message_serializer.encode_record_with_schema_id(schema_id, record)
         assertMessageIsSame(message, record, schema_id, message_serializer)
 
-    subject = 'test_adv'
+    subject = "test_adv"
     adv_schema_id = client.register(subject, adv)
 
     assert adv_schema_id != schema_id
@@ -62,9 +62,9 @@ def test_encode_with_schema_id(client, message_serializer):
 
 
 def test_encode_record_with_schema(client, message_serializer):
-    topic = 'test'
+    topic = "test"
     basic = load.loads(data_gen.BASIC_SCHEMA)
-    subject = 'test-value'
+    subject = "test-value"
     schema_id = client.register(subject, basic)
     records = data_gen.BASIC_ITEMS
 

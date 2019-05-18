@@ -30,14 +30,14 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         self.registry = MockSchemaRegistryClient()
         self.schema_cache = {}
         self.all_routes = {
-            'GET': [
-                (r"/schemas/ids/(\d+)", 'get_schema_by_id'),
-                (r"/subjects/([-\w]+)/versions/latest", 'get_latest')
+            "GET": [
+                (r"/schemas/ids/(\d+)", "get_schema_by_id"),
+                (r"/subjects/([-\w]+)/versions/latest", "get_latest"),
             ],
-            'POST': [
-                (r"/subjects/([-\w]+)/versions", 'register'),
-                (r"/subjects/([-\w]+)", 'get_version')
-            ]
+            "POST": [
+                (r"/subjects/([-\w]+)/versions", "register"),
+                (r"/subjects/([-\w]+)", "get_version"),
+            ],
         }
 
     def _send_response(self, resp, status, body):
@@ -48,10 +48,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         resp.finish()
 
     def _create_error(self, msg, status=status_codes.HTTP_400_BAD_REQUEST, err_code=1):
-        return (status, {
-            "error_code": err_code,
-            "message": msg
-        })
+        return (status, {"error_code": err_code, "message": msg})
 
     def _run_routes(self, req):
         self.add_count((req.command, req.path))
@@ -71,10 +68,10 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         schema_id = int(groups[0])
         schema = self.registry.get_by_id(schema_id)
         if not schema:
-            return self._create_error("schema not found", status_codes.HTTP_404_NOT_FOUND)
-        result = {
-            "schema": json.dumps(schema.to_json())
-        }
+            return self._create_error(
+                "schema not found", status_codes.HTTP_404_NOT_FOUND
+            )
+        result = {"schema": json.dumps(schema.to_json())}
         return (200, result)
 
     def _get_identity_schema(self, avro_schema):
@@ -86,7 +83,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         return avro_schema
 
     def _get_schema_from_body(self, req):
-        length = int(req.headers['content-length'])
+        length = int(req.headers["content-length"])
         data = req.rfile.read(length)
         data = json.loads(data.decode("utf-8"))
         schema = data.get("schema", None)
@@ -102,16 +99,18 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         avro_schema = self._get_schema_from_body(req)
         if not avro_schema:
             return self._create_error(
-                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201)
+                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201
+            )
         subject = groups[0]
         schema_id = self.registry.register(subject, avro_schema)
-        return (200, {'id': schema_id})
+        return (200, {"id": schema_id})
 
     def get_version(self, req, groups):
         avro_schema = self._get_schema_from_body(req)
         if not avro_schema:
             return self._create_error(
-                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201)
+                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201
+            )
         subject = groups[0]
         version = self.registry.get_version(subject, avro_schema)
         if version == -1:
@@ -122,7 +121,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
             "schema": json.dumps(avro_schema.to_json()),
             "subject": subject,
             "id": schema_id,
-            "version": version
+            "version": version,
         }
         return (200, result)
 
@@ -135,7 +134,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
             "schema": json.dumps(avro_schema.to_json()),
             "subject": subject,
             "id": schema_id,
-            "version": version
+            "version": version,
         }
         return (200, result)
 
@@ -154,7 +153,7 @@ class ServerThread(Thread):
         self.started = Event()
 
     def run(self):
-        self.server = MockServer(('127.0.0.1', self.port), ReqHandler)
+        self.server = MockServer(("127.0.0.1", self.port), ReqHandler)
         self.started.set()
         self.server.serve_forever()
 
@@ -169,6 +168,6 @@ class ServerThread(Thread):
             self.server.socket.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     s = ServerThread(0)
     s.start()

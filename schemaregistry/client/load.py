@@ -13,6 +13,6 @@ def loads(schema_str):
 
 def load(fp):
     """ Parse a schema from a file path """
-    with open(fp, mode='r') as f:
+    with open(fp, mode="r") as f:
         content = f.read()
         return loads(content)
