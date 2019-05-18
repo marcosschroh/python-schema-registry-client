@@ -1,10 +1,6 @@
-#
-# derived from https://github.com/verisign/python-confluent-schemaregistry.git
-#
-
 import unittest
 
-from confluent_kafka import avro
+from schemaregistry.client import load
 
 from tests.client import data_gen
 from tests.client.mock_schema_registry_client import MockSchemaRegistryClient
@@ -15,14 +11,14 @@ class TestMockSchemaRegistryClient(unittest.TestCase):
         self.client = MockSchemaRegistryClient()
 
     def test_register(self):
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
+        parsed = load.loads(data_gen.BASIC_SCHEMA)
         client = self.client
         schema_id = client.register('test', parsed)
         self.assertTrue(schema_id > 0)
         self.assertEqual(len(client.id_to_schema), 1)
 
     def test_multi_subject_register(self):
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
+        parsed = load.loads(data_gen.BASIC_SCHEMA)
         client = self.client
         schema_id = client.register('test', parsed)
         self.assertTrue(schema_id > 0)
@@ -33,7 +29,7 @@ class TestMockSchemaRegistryClient(unittest.TestCase):
         self.assertEqual(len(client.id_to_schema), 1)
 
     def test_dupe_register(self):
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
+        parsed = load.loads(data_gen.BASIC_SCHEMA)
         subject = 'test'
         client = self.client
         schema_id = client.register(subject, parsed)
@@ -54,7 +50,7 @@ class TestMockSchemaRegistryClient(unittest.TestCase):
         self.assertEqual(meta_tuple[2], version)
 
     def test_getters(self):
-        parsed = avro.loads(data_gen.BASIC_SCHEMA)
+        parsed = load.loads(data_gen.BASIC_SCHEMA)
         client = self.client
         subject = 'test'
         version = client.get_version(subject, parsed)
@@ -74,8 +70,8 @@ class TestMockSchemaRegistryClient(unittest.TestCase):
         self.assertEqual(fetched, parsed)
 
     def test_multi_register(self):
-        basic = avro.loads(data_gen.BASIC_SCHEMA)
-        adv = avro.loads(data_gen.ADVANCED_SCHEMA)
+        basic = load.loads(data_gen.BASIC_SCHEMA)
+        adv = load.loads(data_gen.ADVANCED_SCHEMA)
         subject = 'test'
         client = self.client
 
@@ -99,5 +95,5 @@ class TestMockSchemaRegistryClient(unittest.TestCase):
         # latest should not change with a re-reg
         self.assertEqual(latest2, latest3)
 
-    def hash_func(self):
-        return hash(str(self))
+    # def hash_func(self):
+    #     return hash(str(self))

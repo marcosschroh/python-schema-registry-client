@@ -1,19 +1,13 @@
-import sys
 import json
 import re
+import http.server as HTTPSERVER
 
 from threading import Thread, Event
 
-from confluent_kafka import avro
-from confluent_kafka.avro.error import ClientError
+from schemaregistry.client import load, errors
+from schemaregistry.client import status as status_codes
 
 from tests.client.mock_schema_registry_client import MockSchemaRegistryClient
-
-
-if sys.version_info[0] < 3:
-    import BaseHTTPServer as HTTPSERVER
-else:
-    import http.server as HTTPSERVER
 
 
 class ReqHandler(HTTPSERVER.BaseHTTPRequestHandler):
@@ -53,7 +47,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         resp.wfile.write(json.dumps(body).encode())
         resp.finish()
 
-    def _create_error(self, msg, status=400, err_code=1):
+    def _create_error(self, msg, status=status_codes.HTTP_400_BAD_REQUEST, err_code=1):
         return (status, {
             "error_code": err_code,
             "message": msg
@@ -77,7 +71,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         schema_id = int(groups[0])
         schema = self.registry.get_by_id(schema_id)
         if not schema:
-            return self._create_error("schema not found", 404)
+            return self._create_error("schema not found", status_codes.HTTP_404_NOT_FOUND)
         result = {
             "schema": json.dumps(schema.to_json())
         }
@@ -99,15 +93,16 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         if not schema:
             return
         try:
-            avro_schema = avro.loads(schema)
+            avro_schema = load.loads(schema)
             return self._get_identity_schema(avro_schema)
-        except ClientError:
+        except errors.ClientError:
             return
 
     def register(self, req, groups):
         avro_schema = self._get_schema_from_body(req)
         if not avro_schema:
-            return self._create_error("Invalid avro schema", 422, 42201)
+            return self._create_error(
+                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201)
         subject = groups[0]
         schema_id = self.registry.register(subject, avro_schema)
         return (200, {'id': schema_id})
@@ -115,11 +110,12 @@ class MockServer(HTTPSERVER.HTTPServer, object):
     def get_version(self, req, groups):
         avro_schema = self._get_schema_from_body(req)
         if not avro_schema:
-            return self._create_error("Invalid avro schema", 422, 42201)
+            return self._create_error(
+                "Invalid avro schema", status_codes.HTTP_422_UNPROCESSABLE_ENTITY, 42201)
         subject = groups[0]
         version = self.registry.get_version(subject, avro_schema)
         if version == -1:
-            return self._create_error("Not found", 404)
+            return self._create_error("Not found", status_codes.HTTP_404_NOT_FOUND)
         schema_id = self.registry.get_id_for_schema(subject, avro_schema)
 
         result = {
@@ -134,7 +130,7 @@ class MockServer(HTTPSERVER.HTTPServer, object):
         subject = groups[0]
         schema_id, avro_schema, version = self.registry.get_latest_schema(subject)
         if schema_id is None:
-            return self._create_error("Not found", 404)
+            return self._create_error("Not found", status_codes.HTTP_404_NOT_FOUND)
         result = {
             "schema": json.dumps(avro_schema.to_json()),
             "subject": subject,

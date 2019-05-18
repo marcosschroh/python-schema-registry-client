@@ -1,4 +1,3 @@
-import aiofiles
 from avro import schema
 
 from .errors import ClientError
@@ -12,23 +11,8 @@ def loads(schema_str):
         raise ClientError(f"Schema parse failed: {e}")
 
 
-async def load(fp):
+def load(fp):
     """ Parse a schema from a file path """
-    async with aiofiles.open(fp, mode='r') as f:
-        content = await f.read()
+    with open(fp, mode='r') as f:
+        content = f.read()
         return loads(content)
-
-
-# def _hash_func(self):
-#     return hash(str(self))
-
-
-# try:
-#     from avro import schema
-
-#     schema.RecordSchema.__hash__ = _hash_func
-#     schema.PrimitiveSchema.__hash__ = _hash_func
-#     schema.UnionSchema.__hash__ = _hash_func
-
-# except ImportError:
-#     schema = None

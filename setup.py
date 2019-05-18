@@ -14,9 +14,7 @@ requires = [
     "avro-python3",
     "fastavro",
     "faust==1.5.4",
-    "requests-async==0.4.1",
-    "aiofiles==0.4.0",
-    "confluent-kafka==1.0.0",
+    "requests==2.21.0",
 ]
 
 setup(

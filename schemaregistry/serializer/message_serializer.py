@@ -61,7 +61,7 @@ class MessageSerializer(object):
         writer = avro.io.DatumWriter(writer_schema)
         return lambda record, fp: writer.write(record, avro.io.BinaryEncoder(fp))
 
-    async def encode_record_with_schema(self, topic, schema, record, is_key=False):
+    def encode_record_with_schema(self, topic, schema, record, is_key=False):
         """
         Given a parsed avro schema, encode a record for the given topic.  The
         record is expected to be a dictionary.
@@ -82,7 +82,7 @@ class MessageSerializer(object):
             # get the latest schema for the subject
             subject = topic + subject_suffix
             # register it
-            schema_id = await self.schemaregistry_client.register(subject, schema)
+            schema_id = self.schemaregistry_client.register(subject, schema)
 
             if not schema_id:
                 message = f"Unable to retrieve schema id for subject {subject}"
@@ -95,9 +95,9 @@ class MessageSerializer(object):
             logging.info(f"Caching Schema {schema.name} with ID: {schema_id}")
             self.schema_name_to_id[schema.name] = schema_id
 
-        return await self.encode_record_with_schema_id(schema_id, record, is_key=is_key)
+        return self.encode_record_with_schema_id(schema_id, record, is_key=is_key)
 
-    async def encode_record_with_schema_id(self, schema_id, record, is_key=False):
+    def encode_record_with_schema_id(self, schema_id, record, is_key=False):
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
@@ -114,7 +114,7 @@ class MessageSerializer(object):
             # get the writer + schema
 
             try:
-                schema = await self.schemaregistry_client.get_by_id(schema_id)
+                schema = self.schemaregistry_client.get_by_id(schema_id)
                 if not schema:
                     raise serialize_err("Schema does not exist")
                 self.id_to_writers[schema_id] = self._get_encoder_func(schema)
@@ -133,12 +133,12 @@ class MessageSerializer(object):
 
             return outf.getvalue()
 
-    async def _get_decoder_func(self, schema_id, payload, is_key=False):
+    def _get_decoder_func(self, schema_id, payload, is_key=False):
         if schema_id in self.id_to_decoder_func:
             return self.id_to_decoder_func[schema_id]
 
         try:
-            writer_schema_obj = await self.schemaregistry_client.get_by_id(schema_id)
+            writer_schema_obj = self.schemaregistry_client.get_by_id(schema_id)
         except ClientError as e:
             raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}")
 
@@ -187,7 +187,7 @@ class MessageSerializer(object):
         self.id_to_decoder_func[schema_id] = decoder
         return self.id_to_decoder_func[schema_id]
 
-    async def decode_message(self, message, is_key=False):
+    def decode_message(self, message, is_key=False):
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
@@ -206,5 +206,5 @@ class MessageSerializer(object):
             magic, schema_id = struct.unpack('>bI', payload.read(5))
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")
-            decoder_func = await self._get_decoder_func(schema_id, payload, is_key)
+            decoder_func = self._get_decoder_func(schema_id, payload, is_key)
             return decoder_func(payload)

@@ -22,7 +22,7 @@ def message_serializer(client):
     return MessageSerializer(client)
 
 
-async def assertMessageIsSame(message, expected, schema_id, message_serializer):
+def assertMessageIsSame(message, expected, schema_id, message_serializer):
     assert message
     assert len(message) > 5
 
@@ -30,7 +30,7 @@ async def assertMessageIsSame(message, expected, schema_id, message_serializer):
     assert magic == 0
     assert sid == schema_id
 
-    decoded = await message_serializer.decode_message(message)
+    decoded = message_serializer.decode_message(message)
     assert decoded
     assert decoded == expected
 
@@ -39,44 +39,41 @@ def hash_func(self):
     return hash(str(self))
 
 
-@pytest.mark.asyncio
-async def test_encode_with_schema_id(client, message_serializer):
+def test_encode_with_schema_id(client, message_serializer):
     adv = load.loads(data_gen.ADVANCED_SCHEMA)
     basic = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
-    schema_id = await client.register(subject, basic)
+    schema_id = client.register(subject, basic)
 
     records = data_gen.BASIC_ITEMS
     for record in records:
-        message = await message_serializer.encode_record_with_schema_id(schema_id, record)
-        await assertMessageIsSame(message, record, schema_id, message_serializer)
+        message = message_serializer.encode_record_with_schema_id(schema_id, record)
+        assertMessageIsSame(message, record, schema_id, message_serializer)
 
     subject = 'test_adv'
-    adv_schema_id = await client.register(subject, adv)
+    adv_schema_id = client.register(subject, adv)
 
     assert adv_schema_id != schema_id
 
     records = data_gen.ADVANCED_ITEMS
     for record in records:
-        message = await message_serializer.encode_record_with_schema_id(adv_schema_id, record)
-        await assertMessageIsSame(message, record, adv_schema_id, message_serializer)
+        message = message_serializer.encode_record_with_schema_id(adv_schema_id, record)
+        assertMessageIsSame(message, record, adv_schema_id, message_serializer)
 
 
-@pytest.mark.asyncio
-async def test_encode_record_with_schema(client, message_serializer):
+def test_encode_record_with_schema(client, message_serializer):
     topic = 'test'
     basic = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test-value'
-    schema_id = await client.register(subject, basic)
+    schema_id = client.register(subject, basic)
     records = data_gen.BASIC_ITEMS
 
     for record in records:
-        message = await message_serializer.encode_record_with_schema(topic, basic, record)
-        await assertMessageIsSame(message, record, schema_id, message_serializer)
+        message = message_serializer.encode_record_with_schema(topic, basic, record)
+        assertMessageIsSame(message, record, schema_id, message_serializer)
 
 
-@pytest.mark.asyncio
-async def test_decode_none(message_serializer):
+def test_decode_none(message_serializer):
     """"null/None messages should decode to None"""
 
-    assert await message_serializer.decode_message(None) is None
+    assert message_serializer.decode_message(None) is None

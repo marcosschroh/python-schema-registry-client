@@ -23,97 +23,89 @@ def assertLatest(self, meta_tuple, sid, schema, version):
     self.assertEqual(meta_tuple[2], version)
 
 
-@pytest.mark.asyncio
-async def test_register(client):
+def test_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = await client.register('test', parsed)
+    schema_id = client.register('test', parsed)
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
 
 
-@pytest.mark.asyncio
-async def test_multi_subject_register(client):
+def test_multi_subject_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = await client.register('test', parsed)
+    schema_id = client.register('test', parsed)
     assert schema_id > 0
 
     # register again under different subject
-    dupe_id = await client.register('other', parsed)
+    dupe_id = client.register('other', parsed)
     assert schema_id == dupe_id
     assert len(client.id_to_schema) == 1
 
 
-@pytest.mark.asyncio
-async def test_dupe_register(client):
+def test_dupe_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
-    schema_id = await client.register(subject, parsed)
+    schema_id = client.register(subject, parsed)
 
     assert schema_id > 0
-    latest = await client.get_latest_schema(subject)
+    latest = client.get_latest_schema(subject)
 
     # register again under same subject
-    dupe_id = await client.register(subject, parsed)
+    dupe_id = client.register(subject, parsed)
     assert schema_id == dupe_id
-    dupe_latest = await client.get_latest_schema(subject)
+    dupe_latest = client.get_latest_schema(subject)
     assert latest == dupe_latest
 
 
-@pytest.mark.asyncio
-async def test_getters(client):
+def test_getters(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
     subject = 'test'
-    version = await client.get_version(subject, parsed)
+    version = client.get_version(subject, parsed)
     assert version is None
 
-    schema = await client.get_by_id(1)
+    schema = client.get_by_id(1)
     assert schema is None
 
-    latest = await client.get_latest_schema(subject)
+    latest = client.get_latest_schema(subject)
     assert latest == (None, None, None)
 
     # register
-    schema_id = await client.register(subject, parsed)
-    latest = await client.get_latest_schema(subject)
-    version = await client.get_version(subject, parsed)
-    # self.assertLatest(latest, schema_id, parsed, version)
-
-    fetched = await client.get_by_id(schema_id)
+    schema_id = client.register(subject, parsed)
+    latest = client.get_latest_schema(subject)
+    version = client.get_version(subject, parsed)
+    fetched = client.get_by_id(schema_id)
 
     assert fetched == parsed
 
 
-@pytest.mark.asyncio
-async def test_multi_register(client):
+def test_multi_register(client):
     basic = load.loads(data_gen.BASIC_SCHEMA)
     adv = load.loads(data_gen.ADVANCED_SCHEMA)
     subject = 'test'
 
-    id1 = await client.register(subject, basic)
-    latest1 = await client.get_latest_schema(subject)
-    await client.get_version(subject, basic)
+    id1 = client.register(subject, basic)
+    latest1 = client.get_latest_schema(subject)
+    client.get_version(subject, basic)
 
-    id2 = await client.register(subject, adv)
-    latest2 = await client.get_latest_schema(subject)
-    await client.get_version(subject, adv)
+    id2 = client.register(subject, adv)
+    latest2 = client.get_latest_schema(subject)
+    client.get_version(subject, adv)
 
     assert id1 != id2
     assert latest1 != latest2
     # ensure version is higher
     assert latest1[2] < latest2[2]
 
-    await client.register(subject, basic)
-    latest3 = await client.get_latest_schema(subject)
+    client.register(subject, basic)
+    latest3 = client.get_latest_schema(subject)
     # latest should not change with a re-reg
     assert latest2 == latest3
 
 
-@pytest.mark.asyncio
-async def test_context(client):
-    async with client as c:
+def test_context(client):
+    with client as c:
         parsed = load.loads(data_gen.BASIC_SCHEMA)
-        schema_id = await c.register('test', parsed)
+        schema_id = c.register('test', parsed)
         assert schema_id > 0
         assert len(c.id_to_schema) == 1
 

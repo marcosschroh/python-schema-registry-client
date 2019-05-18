@@ -3,11 +3,12 @@ import logging
 import warnings
 from collections import defaultdict
 
-import requests_async as requests
-from requests import utils
+# import requests_async as requests
+from requests import utils, Session
 
-from .errors import ClientError
-from .load import loads
+from schemaregistry.client.errors import ClientError
+from schemaregistry.client.load import loads
+from schemaregistry.client import status
 
 
 VALID_LEVELS = ['NONE', 'FULL', 'FORWARD', 'BACKWARD']
@@ -70,25 +71,24 @@ class CachedSchemaRegistryClient:
         # subj => { schema => version }
         self.subject_to_schema_versions = defaultdict(dict)
 
-        session = requests.Session()
+        session = Session()
         session.verify = conf.pop('ssl.ca.location', None)
         session.cert = self._configure_client_tls(conf)
         session.auth = self._configure_basic_auth(conf)
         self._session = session
-
         self.url = conf.pop('url')
 
         if len(conf) > 0:
             raise ValueError("fUnrecognized configuration properties:{conf}")
 
-    async def __aenter__(self):
+    def __enter__(self):
         return self
 
-    async def __aexit__(self, *args):
-        await self.close()
+    def __exit__(self, *args):
+        self.close()
 
-    async def close(self):
-        await self._session.close()
+    def close(self):
+        self._session.close()
 
     @staticmethod
     def _configure_basic_auth(conf):
@@ -119,7 +119,7 @@ class CachedSchemaRegistryClient:
 
         return cert
 
-    async def send(self, url, method='GET', body=None, headers={}):
+    def send(self, url, method='GET', body=None, headers={}):
         if method not in VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {VALID_METHODS}")
 
@@ -129,7 +129,7 @@ class CachedSchemaRegistryClient:
             _headers["Content-Type"] = "application/vnd.schemaregistry.v1+json"
         _headers.update(headers)
 
-        response = await self._session.request(
+        response = self._session.request(
             method, url, headers=_headers, json=body)
 
         try:
@@ -156,7 +156,7 @@ class CachedSchemaRegistryClient:
                 self._add_to_cache(self.subject_to_schema_versions,
                                    subject, schema, version)
 
-    async def register(self, subject, avro_schema):
+    def register(self, subject, avro_schema):
         """
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
@@ -180,15 +180,15 @@ class CachedSchemaRegistryClient:
 
         body = {'schema': json.dumps(avro_schema.to_json())}
 
-        result, code = await self.send(url, method='POST', body=body)
+        result, code = self.send(url, method='POST', body=body)
 
-        if (code == 401 or code == 403):
+        if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             raise ClientError(f"Unauthorized access. Error code: {code}")
-        elif code == 409:
+        elif code == status.HTTP_409_CONFLICT:
             raise ClientError(f"Incompatible Avro schema: {code}")
-        elif code == 422:
+        elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             raise ClientError("Invalid Avro schema: {code}")
-        elif not (code >= 200 and code <= 299):
+        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             raise ClientError("Unable to register schema. Error code: {code}")
         # result is a dict
         schema_id = result['id']
@@ -196,7 +196,7 @@ class CachedSchemaRegistryClient:
 
         return schema_id
 
-    async def delete_subject(self, subject):
+    def delete_subject(self, subject):
         """
         DELETE /subjects/(string: subject)
         Deletes the specified subject and its associated compatibility level if registered.
@@ -208,12 +208,12 @@ class CachedSchemaRegistryClient:
 
         url = '/'.join([self.url, 'subjects', subject])
 
-        result, code = await self.send(url, method="DELETE")
-        if not (code >= 200 and code <= 299):
+        result, code = self.send(url, method="DELETE")
+        if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             raise ClientError(f"Unable to delete subject: {result}")
         return result
 
-    async def get_by_id(self, schema_id):
+    def get_by_id(self, schema_id):
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -226,10 +226,10 @@ class CachedSchemaRegistryClient:
         # fetch from the registry
         url = '/'.join([self.url, 'schemas', 'ids', str(schema_id)])
 
-        result, code = await self.send(url)
-        if code == 404:
+        result, code = self.send(url)
+        if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
-        elif not (code >= 200 and code <= 299):
+        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             log.error(f"Unable to get schema for the specific ID: {code}")
         else:
             # need to parse the schema
@@ -244,7 +244,7 @@ class CachedSchemaRegistryClient:
                 # bad schema - should not happen
                 raise ClientError(f"Received bad schema (id {schema_id}) from registry: {e}")
 
-    async def get_latest_schema(self, subject):
+    def get_latest_schema(self, subject):
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
         Return the latest 3-tuple of:
@@ -258,14 +258,14 @@ class CachedSchemaRegistryClient:
         """
         url = '/'.join([self.url, 'subjects', subject, 'versions', 'latest'])
 
-        result, code = await self.send(url)
-        if code == 404:
+        result, code = self.send(url)
+        if code == status.HTTP_404_NOT_FOUND:
             log.error("Schema not found:" + str(code))
             return (None, None, None)
-        elif code == 422:
+        elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             log.error("Invalid version:" + str(code))
             return (None, None, None)
-        elif not (code >= 200 and code <= 299):
+        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             return (None, None, None)
         schema_id = result['id']
         version = result['version']
@@ -281,7 +281,7 @@ class CachedSchemaRegistryClient:
         self._cache_schema(schema, schema_id, subject, version)
         return (schema_id, schema, version)
 
-    async def get_version(self, subject, avro_schema):
+    def get_version(self, subject, avro_schema):
         """
         POST /subjects/(string: subject)
         Get the version of a schema for a given subject.
@@ -300,11 +300,11 @@ class CachedSchemaRegistryClient:
         url = '/'.join([self.url, 'subjects', subject])
         body = {'schema': json.dumps(avro_schema.to_json())}
 
-        result, code = await self.send(url, method='POST', body=body)
-        if code == 404:
+        result, code = self.send(url, method='POST', body=body)
+        if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Not found: {code}")
             return None
-        elif not (code >= 200 and code <= 299):
+        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             log.error(f"Unable to get version of a schema: {code}")
             return None
         schema_id = result['id']
@@ -312,7 +312,7 @@ class CachedSchemaRegistryClient:
         self._cache_schema(avro_schema, schema_id, subject, version)
         return version
 
-    async def test_compatibility(self, subject, avro_schema, version='latest'):
+    def test_compatibility(self, subject, avro_schema, version='latest'):
         """
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
         Test the compatibility of a candidate parsed schema for a given subject.
@@ -326,14 +326,14 @@ class CachedSchemaRegistryClient:
                         'versions', str(version)])
         body = {'schema': json.dumps(avro_schema.to_json())}
         try:
-            result, code = await self.send(url, method='POST', body=body)
-            if code == 404:
+            result, code = self.send(url, method='POST', body=body)
+            if code == status.HTTP_404_NOT_FOUND:
                 log.error(f"Subject or version not found: {code}")
                 return False
-            elif code == 422:
+            elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
                 log.error("Invalid subject or schema: {code}")
                 return False
-            elif code >= 200 and code <= 299:
+            elif status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
                 return result.get('is_compatible')
             else:
                 log.error(f"Unable to check the compatibility: {code}")
@@ -342,7 +342,7 @@ class CachedSchemaRegistryClient:
             log.error("send() failed: %s", e)
             return False
 
-    async def update_compatibility(self, level, subject=None):
+    def update_compatibility(self, level, subject=None):
         """
         PUT /config/(string: subject)
         Update the compatibility level for a subject.  Level must be one of:
@@ -356,13 +356,13 @@ class CachedSchemaRegistryClient:
             url += '/' + subject
 
         body = {"compatibility": level}
-        result, code = await self.send(url, method='PUT', body=body)
-        if code >= 200 and code <= 299:
+        result, code = self.send(url, method='PUT', body=body)
+        if status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
             return result['compatibility']
         else:
             raise ClientError(f"Unable to update level: {level}. Error code: {code}")
 
-    async def get_compatibility(self, subject=None):
+    def get_compatibility(self, subject=None):
         """
         GET /config
         Get the current compatibility level for a subject.  Result will be one of:
@@ -375,8 +375,8 @@ class CachedSchemaRegistryClient:
         if subject:
             url = '/'.join([url, subject])
 
-        result, code = await self.send(url)
-        is_successful_request = code >= 200 and code <= 299
+        result, code = self.send(url)
+        is_successful_request = status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
         if not is_successful_request:
             raise ClientError(f"Unable to fetch compatibility level. Error code: {code}")
 

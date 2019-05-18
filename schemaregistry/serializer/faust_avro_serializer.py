@@ -30,18 +30,18 @@ class AvroSerializer(MessageSerializer, Codec):
         MessageSerializer.__init__(self, schema_registry_client)
         Codec.__init__(self)
 
-    async def _loads(self, s: bytes) -> Dict:
+    def _loads(self, s: bytes) -> Dict:
         # method available on MessageSerializer
-        return await self.decode_message(s)
+        return self.decode_message(s)
 
-    async def _dumps(self, obj: Dict) -> bytes:
+    def _dumps(self, obj: Dict) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given topic.  The
         record is expected to be a dictionary.
 
         The schema is registered with the subject of 'topic-value'
         """
-        return await self.encode_record_with_schema(
+        return self.encode_record_with_schema(
             topic=self.destination_topic,
             schema=self.schema,
             record=obj,

@@ -1,4 +1,4 @@
-from confluent_kafka.avro import ClientError
+from schemaregistry.client import errors
 
 
 class MockSchemaRegistryClient(object):
@@ -75,6 +75,9 @@ class MockSchemaRegistryClient(object):
         Multiple instances of the same schema will result in inconsistencies.
         """
         schemas_to_id = self.subject_to_schema_ids.get(subject, {})
+
+        print(avro_schema, schemas_to_id)
+
         schema_id = schemas_to_id.get(avro_schema, -1)
         if schema_id != -1:
             return schema_id
@@ -85,6 +88,7 @@ class MockSchemaRegistryClient(object):
 
         # cache it
         self._cache_schema(avro_schema, schema_id, subject, version)
+
         return schema_id
 
     def get_by_id(self, schema_id):
@@ -118,10 +122,10 @@ class MockSchemaRegistryClient(object):
         return schemas_to_id.get(avro_schema, -1)
 
     def test_compatibility(self, subject, avro_schema, version='latest'):
-        raise ClientError("not implemented")
+        raise errors.ClientError("not implemented")
 
     def update_compatibility(self, level, subject=None):
-        raise ClientError("not implemented")
+        raise errors.ClientError("not implemented")
 
     def get_compatibility(self, subject=None):
-        raise ClientError("not implemented")
+        raise errors.ClientError("not implemented")
