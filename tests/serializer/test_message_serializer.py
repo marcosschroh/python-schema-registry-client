@@ -1,8 +1,8 @@
 import pytest
 import struct
 
-from schemaregistry.serializer.message_serializer import MessageSerializer
-from schemaregistry.client import CachedSchemaRegistryClient, load
+from schema_registry.serializer.message_serializer import MessageSerializer
+from schema_registry.client import SchemaRegistryClient, load
 
 from tests.server import mock_registry
 from tests.client import data_gen
@@ -12,7 +12,7 @@ from tests.client import data_gen
 def client():
     server = mock_registry.ServerThread(0)
     server.start()
-    yield CachedSchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
+    yield SchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
     server.shutdown()
     server.join()
 

@@ -1,4 +1,4 @@
-from schemaregistry.serializer.message_serializer import MessageSerializer
+from schema_registry.serializer.message_serializer import MessageSerializer
 
 from faust.serializers.codecs import Codec
 
@@ -8,7 +8,7 @@ from typing import Dict
 class AvroSerializer(MessageSerializer, Codec):
     """
     Subclass of faust.serializers.codecs.Codec and
-    datamountaineer.schemaregistry.serializers.MessageSerializer
+    datamountaineer.schema_registry.serializers.MessageSerializer
 
     schama_registry_client: SchemaRegistryClient
         Client used to call the schema-registry service

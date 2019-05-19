@@ -1,4 +1,4 @@
-from schemaregistry.client import errors
+from schema_registry.client import errors
 
 
 class MockSchemaRegistryClient(object):
@@ -73,8 +73,6 @@ class MockSchemaRegistryClient(object):
         Multiple instances of the same schema will result in inconsistencies.
         """
         schemas_to_id = self.subject_to_schema_ids.get(subject, {})
-
-        print(avro_schema, schemas_to_id)
 
         schema_id = schemas_to_id.get(avro_schema, -1)
         if schema_id != -1:

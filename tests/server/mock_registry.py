@@ -4,8 +4,8 @@ import http.server as HTTPSERVER
 
 from threading import Thread, Event
 
-from schemaregistry.client import load, errors
-from schemaregistry.client import status as status_codes
+from schema_registry.client import load, errors
+from schema_registry.client import status as status_codes
 
 from tests.client.mock_schema_registry_client import MockSchemaRegistryClient
 

@@ -2,7 +2,7 @@ import pytest
 
 import avro
 
-from schemaregistry.client import load, errors
+from schema_registry.client import load, errors
 
 from tests.client import data_gen
 

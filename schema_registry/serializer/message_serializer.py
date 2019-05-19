@@ -7,8 +7,8 @@ import traceback
 import avro
 import avro.io
 
-from schemaregistry.client.errors import ClientError
-from schemaregistry.serializer.errors import (
+from schema_registry.client.errors import ClientError
+from schema_registry.serializer.errors import (
     SerializerError,
     KeySerializerError,
     ValueSerializerError,
@@ -58,7 +58,6 @@ class MessageSerializer:
         self.reader_value_schema = reader_value_schema
         self.schema_name_to_id = {}
 
-    # Encoder support
     def _get_encoder_func(self, writer_schema):
         if HAS_FAST:
             schema = writer_schema.to_json()
@@ -71,12 +70,15 @@ class MessageSerializer:
         Given a parsed avro schema, encode a record for the given topic.  The
         record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
-        :param str topic: Topic name
-        :param schema schema: Avro Schema
-        :param dict record: An object to serialize
-        :param bool is_key: If the record is a key
-        :returns: Encoded record with schema ID as bytes
-        :rtype: bytes
+
+        Args:
+            topic (str): Topic name
+            schema (avro.schema.RecordSchema): Avro Schema
+            record (dict): An object to serialize
+            is_key (bool): If the record is a key
+
+        Returns:
+            bytes: Encoded record with schema ID as bytes
         """
         schema_id = self.schema_name_to_id.get(schema.name)
 
@@ -85,7 +87,7 @@ class MessageSerializer:
 
             subject_suffix = "-key" if is_key else "-value"
             # get the latest schema for the subject
-            subject = topic + subject_suffix
+            subject = f"{topic}{subject_suffix}"
             # register it
             schema_id = self.schemaregistry_client.register(subject, schema)
 
@@ -106,11 +108,14 @@ class MessageSerializer:
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
-        :param int schema_id: integer ID
-        :param dict record: An object to serialize
-        :param bool is_key: If the record is a key
-        :returns: decoder function
-        :rtype: func
+
+        Args:
+            schema_id (int): integer ID
+            record (dict): An object to serialize
+            is_key (bool): If the record is a key
+
+        Returns:
+            func: decoder function
         """
         serialize_err = KeySerializerError if is_key else ValueSerializerError
 
@@ -159,7 +164,6 @@ class MessageSerializer:
         )
 
         if HAS_FAST:
-            # try to use fast avro
             try:
                 writer_schema = writer_schema_obj.to_json()
                 reader_schema = reader_schema_obj.to_json()
@@ -201,9 +205,12 @@ class MessageSerializer:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
-        :param str|bytes or None message: message key or value to be decoded
-        :returns: Decoded message contents.
-        :rtype dict:
+
+        Args:
+            message (str|bytes or None): message key or value to be decoded
+
+        Returns:
+            dict: Decoded message contents.
         """
 
         if message is None:

@@ -1,6 +1,6 @@
 import pytest
 
-from schemaregistry.client import CachedSchemaRegistryClient, load
+from schema_registry.client import SchemaRegistryClient, load
 
 from tests.server import mock_registry
 from tests.client import data_gen
@@ -10,7 +10,7 @@ from tests.client import data_gen
 def client():
     server = mock_registry.ServerThread(0)
     server.start()
-    yield CachedSchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
+    yield SchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
     server.shutdown()
     server.join()
 
@@ -48,31 +48,35 @@ def test_dupe_register(client):
     schema_id = client.register(subject, parsed)
 
     assert schema_id > 0
-    latest = client.get_latest_schema(subject)
+    latest = client.get_schema(subject)
 
     # register again under same subject
     dupe_id = client.register(subject, parsed)
     assert schema_id == dupe_id
-    dupe_latest = client.get_latest_schema(subject)
+
+    dupe_latest = client.get_schema(subject)
     assert latest == dupe_latest
 
 
 def test_getters(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
     subject = "test"
-    version = client.get_version(subject, parsed)
+    version = client.check_version(subject, parsed)
     assert version is None
 
     schema = client.get_by_id(1)
     assert schema is None
 
-    latest = client.get_latest_schema(subject)
-    assert latest == (None, None, None)
+    latest = client.get_schema(subject)
+    assert latest == (None, None, None, None)
 
     # register
     schema_id = client.register(subject, parsed)
-    latest = client.get_latest_schema(subject)
-    version = client.get_version(subject, parsed)
+    schema = client.get_schema(subject, schema_id)
+    assert schema is not None
+
+    latest = client.get_schema(subject)
+    version = client.check_version(subject, parsed)
     fetched = client.get_by_id(schema_id)
 
     assert fetched == parsed
@@ -84,22 +88,22 @@ def test_multi_register(client):
     subject = "test"
 
     id1 = client.register(subject, basic)
-    latest1 = client.get_latest_schema(subject)
-    client.get_version(subject, basic)
+    latest_schema_1 = client.get_schema(subject)
+    client.check_version(subject, basic)
 
     id2 = client.register(subject, adv)
-    latest2 = client.get_latest_schema(subject)
-    client.get_version(subject, adv)
+    latest_schema_2 = client.get_schema(subject)
+    client.check_version(subject, adv)
 
     assert id1 != id2
-    assert latest1 != latest2
+    assert latest_schema_1 != latest_schema_2
     # ensure version is higher
-    assert latest1[2] < latest2[2]
+    assert latest_schema_1.version < latest_schema_2.version
 
     client.register(subject, basic)
-    latest3 = client.get_latest_schema(subject)
+    latest_schema_3 = client.get_schema(subject)
     # latest should not change with a re-reg
-    assert latest2 == latest3
+    assert latest_schema_2 == latest_schema_3
 
 
 def test_context(client):
@@ -112,13 +116,13 @@ def test_context(client):
 
 def test_cert_no_key():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient(
+        SchemaRegistryClient(
             url="https://127.0.0.1:65534", cert_location="/path/to/cert"
         )
 
 
 def test_cert_with_key():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         url="https://127.0.0.1:65534",
         cert_location="/path/to/cert",
         key_location="/path/to/key",
@@ -128,7 +132,7 @@ def test_cert_with_key():
 
 
 def test_cert_path():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         url="https://127.0.0.1:65534", ca_location="/path/to/ca"
     )
 
@@ -136,7 +140,7 @@ def test_cert_path():
 
 
 def test_init_with_dict():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         {
             "url": "https://127.0.0.1:65534",
             "ssl.certificate.location": "/path/to/cert",
@@ -148,26 +152,26 @@ def test_init_with_dict():
 
 def test_empty_url():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({"url": ""})
+        SchemaRegistryClient({"url": ""})
 
 
 def test_invalid_type_url():
     with pytest.raises(TypeError):
-        CachedSchemaRegistryClient(url=1)
+        SchemaRegistryClient(url=1)
 
 
 def test_invalid_type_url_dict():
     with pytest.raises(TypeError):
-        CachedSchemaRegistryClient({"url": 1})
+        SchemaRegistryClient({"url": 1})
 
 
 def test_invalid_url():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient({"url": "example.com:65534"})
+        SchemaRegistryClient({"url": "example.com:65534"})
 
 
 def test_basic_auth_url():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         {"url": "https://user_url:secret_url@127.0.0.1:65534"}
     )
 
@@ -175,7 +179,7 @@ def test_basic_auth_url():
 
 
 def test_basic_auth_userinfo():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         {
             "url": "https://user_url:secret_url@127.0.0.1:65534",
             "basic.auth.credentials.source": "user_info",
@@ -186,7 +190,7 @@ def test_basic_auth_userinfo():
 
 
 def test_basic_auth_sasl_inherit():
-    client = CachedSchemaRegistryClient(
+    client = SchemaRegistryClient(
         {
             "url": "https://user_url:secret_url@127.0.0.1:65534",
             "basic.auth.credentials.source": "SASL_INHERIT",
@@ -200,7 +204,7 @@ def test_basic_auth_sasl_inherit():
 
 def test_basic_auth_invalid():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient(
+        SchemaRegistryClient(
             {
                 "url": "https://user_url:secret_url@127.0.0.1:65534",
                 "basic.auth.credentials.source": "VAULT",
@@ -210,7 +214,7 @@ def test_basic_auth_invalid():
 
 def test_invalid_conf():
     with pytest.raises(ValueError):
-        CachedSchemaRegistryClient(
+        SchemaRegistryClient(
             {
                 "url": "https://user_url:secret_url@127.0.0.1:65534",
                 "basic.auth.credentials.source": "SASL_INHERIT",

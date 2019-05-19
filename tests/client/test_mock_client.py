@@ -1,6 +1,6 @@
 import pytest
 
-from schemaregistry.client import load
+from schema_registry.client import load
 
 from tests.client import data_gen
 from tests.client.mock_schema_registry_client import MockSchemaRegistryClient
