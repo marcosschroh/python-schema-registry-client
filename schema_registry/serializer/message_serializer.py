@@ -43,9 +43,9 @@ class ContextStringIO(io.BytesIO):
 class MessageSerializer:
     """
     A helper class that can serialize and deserialize messages
-    that need to be encoded or decoded using the schema registry.
-    All encode_* methods return a buffer that can be sent to kafka.
-    All decode_* methods expect a buffer received from kafka.
+
+    Args:
+        schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
     """
 
     def __init__(

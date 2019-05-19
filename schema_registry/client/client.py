@@ -1,21 +1,13 @@
 import json
 import logging
 import warnings
+import requests
 from collections import defaultdict
-
-from requests import utils, Session
 
 from schema_registry.client.errors import ClientError
 from schema_registry.client.load import loads
-from schema_registry.client import status
-from schema_registry.client.utils import SchemaVersion
+from schema_registry.client import status, utils
 
-
-VALID_LEVELS = ["NONE", "FULL", "FORWARD", "BACKWARD"]
-VALID_METHODS = ["GET", "POST", "PUT", "DELETE"]
-VALID_AUTH_PROVIDERS = ["URL", "USER_INFO", "SASL_INHERIT"]
-
-ACCEPT_HDR = "application/vnd.schema_registry.v1+json, application/vnd.schema_registry+json, application/json"
 
 log = logging.getLogger(__name__)
 
@@ -36,14 +28,7 @@ class SchemaRegistryClient:
         key_location (str): Path to client's private key used for authentication.
     """
 
-    def __init__(
-        self,
-        url,
-        max_schemas_per_subject=1000,
-        ca_location=None,
-        cert_location=None,
-        key_location=None,
-    ):
+    def __init__(self, url, ca_location=None, cert_location=None, key_location=None):
 
         conf = url
         if not isinstance(url, dict):
@@ -80,7 +65,7 @@ class SchemaRegistryClient:
         # subj => { schema => version }
         self.subject_to_schema_versions = defaultdict(dict)
 
-        session = Session()
+        session = requests.Session()
         session.verify = conf.pop("ssl.ca.location", None)
         session.cert = self._configure_client_tls(conf)
         session.auth = self._configure_basic_auth(conf)
@@ -104,9 +89,9 @@ class SchemaRegistryClient:
         url = conf["url"]
         auth_provider = conf.pop("basic.auth.credentials.source", "URL").upper()
 
-        if auth_provider not in VALID_AUTH_PROVIDERS:
+        if auth_provider not in utils.VALID_AUTH_PROVIDERS:
             raise ValueError(
-                f"schema.registry.basic.auth.credentials.source must be one of {VALID_AUTH_PROVIDERS}"
+                f"schema.registry.basic.auth.credentials.source must be one of {utils.VALID_AUTH_PROVIDERS}"
             )
         if auth_provider == "SASL_INHERIT":
             if conf.pop("sasl.mechanism", "").upper() is ["GSSAPI"]:
@@ -115,8 +100,8 @@ class SchemaRegistryClient:
         elif auth_provider == "USER_INFO":
             auth = tuple(conf.pop("basic.auth.user.info", "").split(":"))
         else:
-            auth = utils.get_auth_from_url(url)
-        conf["url"] = utils.urldefragauth(url)
+            auth = requests.utils.get_auth_from_url(url)
+        conf["url"] = requests.utils.urldefragauth(url)
 
         return auth
 
@@ -135,12 +120,12 @@ class SchemaRegistryClient:
         return cert
 
     def send(self, url, method="GET", body=None, headers={}):
-        if method not in VALID_METHODS:
+        if method not in utils.VALID_METHODS:
             raise ClientError(
-                f"Method {method} is invalid; valid methods include {VALID_METHODS}"
+                f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
             )
 
-        _headers = {"Accept": ACCEPT_HDR}
+        _headers = {"Accept": utils.ACCEPT_HDR}
         if body:
             _headers["Content-Length"] = str(len(body))
             _headers["Content-Type"] = "application/vnd.schema_registry.v1+json"
@@ -286,12 +271,12 @@ class SchemaRegistryClient:
         result, code = self.send(url)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
-            return SchemaVersion(None, None, None, None)
+            return utils.SchemaVersion(None, None, None, None)
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             log.error(f"Invalid version: {code}")
-            return SchemaVersion(None, None, None, None)
+            return utils.SchemaVersion(None, None, None, None)
         elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
-            return SchemaVersion(None, None, None, None)
+            return utils.SchemaVersion(None, None, None, None)
         schema_id = result["id"]
         version = result["version"]
         if schema_id in self.id_to_schema:
@@ -305,7 +290,7 @@ class SchemaRegistryClient:
 
         self._cache_schema(schema, schema_id, subject, version)
 
-        return SchemaVersion(subject, schema_id, schema, version)
+        return utils.SchemaVersion(subject, schema_id, schema, version)
 
     def check_version(self, subject, avro_schema):
         """
@@ -390,7 +375,7 @@ class SchemaRegistryClient:
         Returns:
             None
         """
-        if level not in VALID_LEVELS:
+        if level not in utils.VALID_LEVELS:
             raise ClientError("Invalid level specified: %s" % (str(level)))
 
         url = "/".join([self.url, "config"])
@@ -404,9 +389,9 @@ class SchemaRegistryClient:
         else:
             raise ClientError(f"Unable to update level: {level}. Error code: {code}")
 
-    def get_compatibility(self, subject=None):
+    def get_compatibility(self, subject):
         """
-        Get the current compatibility level for a subject.  Result will be one of:
+        Get the current compatibility level for a subject.
 
         Args:
             subject (str): subject name
@@ -432,7 +417,7 @@ class SchemaRegistryClient:
             )
 
         compatibility = result.get("compatibilityLevel")
-        if compatibility not in VALID_LEVELS:
+        if compatibility not in utils.VALID_LEVELS:
             if compatibility is None:
                 error_msg_suffix = "No compatibility was returned"
             else:
