@@ -9,7 +9,7 @@ python 3.6+, avro-python3, fastavro, requests
 ## Installation
 
 ```
-pip install 
+pip install python-schema-registry-client
 ```
 
 ### [Client API](../blob/master/docs/client.md)
