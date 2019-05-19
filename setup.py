@@ -13,14 +13,14 @@ with open("README.md") as readme_file:
 requires = ["avro-python3", "fastavro", "faust==1.5.4", "requests==2.21.0"]
 
 setup(
-    name="python-schema_registry-client",
+    name="python-schema-registry-client",
     version=__version__,
-    description="A python client for schema registry.",
+    description="Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas",
     long_description=long_description,
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
-    url="https://github.com/marcosschroh/python-schema_registry-client",
+    url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="",
     packages=find_packages(),
     include_package_data=True,

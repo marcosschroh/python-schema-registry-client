@@ -1,6 +1,37 @@
 # How to use it with Faust?
 
+Avro Schemas, Custom Codecs and Serializers
+-------------------------------------------
+
+Because we want to be sure that the message that we encode are valid we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html).
+Avro is used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.
+
+For our demostration in the `Users` application we are using the following schema:
+
+```json
+{
+    "type": "record",
+    "namespace": "com.example",
+    "name": "AvroUsers",
+    "fields": [
+        {"name": "first_name", "type": "string"},
+        {"name": "last_name", "type": "string"}
+    ]
+}
 ```
+
+In order to use `avro schemas` with `Faust` we need to define a custom codec, a custom serializer and be able to talk with the `schema-registry`.
+You can find the custom codec called `avro_users` registered using the [codec registation](https://faust.readthedocs.io/en/latest/userguide/models.html#codec-registry) approach described by faust.
+The [AvroSerializer](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/helpers/avro/serializer/faust_avro_serializer.py#L8) is in charge to `encode` and `decode` messages using the [schema registry client](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-
+
+
+Let's create a custom `codec`
+
+```
+codecs.py
+
+from avro.schema import SchemaFromJSONData
+from schema_registry.client import SchemaRegistryClient
 from schema_registry.serializer import MessageSerializer
 
 from faust.serializers.codecs import Codec
@@ -36,4 +67,40 @@ class AvroSerializer(MessageSerializer, Codec):
             record=obj,
             is_key=self.is_key,
         )
+
+
+# create an instance of the `SchemaRegistryClient`
+client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
+
+avro_user_schema = SchemaFromJSONData({
+     "type": "record",
+     "namespace": "com.example",
+     "name": "AvroUsers",
+     "fields": [
+       {"name": "first_name", "type": "string"},
+       {"name": "last_name", "type": "string"}
+     ]
+})
+
+avro_user_serializer = AvroSerializer(
+        schema_registry_client=client,
+        destination_topic="users",
+        schema=avro_user_schema)
+
+
+# function used to register the codec
+def avro_user_codec():
+    return avro_user_serializer
 ```
+
+Now the final step is to integrate the faust model with the AvroSerializer.
+
+```
+# users.models
+
+class UserModel(faust.Record, serializer='avro_users'):
+    first_name: str
+    last_name: str
+```
+
+Now our application is able to send and receive message using arvo schemas!!!! :-)

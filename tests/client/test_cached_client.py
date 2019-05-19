@@ -1,4 +1,5 @@
 import pytest
+from avro.schema import SchemaFromJSONData
 
 from schema_registry.client import SchemaRegistryClient, load
 
@@ -29,6 +30,23 @@ def test_register(client):
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
+
+
+def test_register_json_data(client):
+    avro_user_schema = SchemaFromJSONData(
+        {
+            "type": "record",
+            "namespace": "com.example",
+            "name": "AvroUsers",
+            "fields": [
+                {"name": "first_name", "type": "string"},
+                {"name": "last_name", "type": "string"},
+            ],
+        }
+    )
+
+    schema_id = client.register("test", avro_user_schema)
+    assert schema_id > 0
 
 
 def test_multi_subject_register(client):

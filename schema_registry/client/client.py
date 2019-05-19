@@ -119,16 +119,19 @@ class SchemaRegistryClient:
 
         return cert
 
-    def send(self, url, method="GET", body=None, headers={}):
+    def send(self, url, method="GET", body=None, headers=None):
         if method not in utils.VALID_METHODS:
             raise ClientError(
                 f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
             )
 
-        _headers = {"Accept": utils.ACCEPT_HDR}
+        if headers is None:
+            headers = {}
+
+        _headers = {"Accept": utils.ACCEPT_HEADERS}
         if body:
             _headers["Content-Length"] = str(len(body))
-            _headers["Content-Type"] = "application/vnd.schema_registry.v1+json"
+            _headers["Content-Type"] = utils.HEADERS
         _headers.update(headers)
 
         response = self._session.request(method, url, headers=_headers, json=body)
@@ -172,7 +175,7 @@ class SchemaRegistryClient:
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
-        schema_id = schemas_to_id.get(avro_schema.name, None)
+        schema_id = schemas_to_id.get(avro_schema.name)
 
         if schema_id is not None:
             return schema_id
@@ -188,9 +191,9 @@ class SchemaRegistryClient:
         elif code == status.HTTP_409_CONFLICT:
             raise ClientError(f"Incompatible Avro schema: {code}")
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            raise ClientError("Invalid Avro schema: {code}")
+            raise ClientError(f"Invalid Avro schema: {code}")
         elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
-            raise ClientError("Unable to register schema. Error code: {code}")
+            raise ClientError(f"Unable to register schema. Error code: {code}")
 
         schema_id = result["id"]
         self._cache_schema(avro_schema, schema_id, subject)
