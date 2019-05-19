@@ -27,7 +27,7 @@ The [AvroSerializer](https://github.com/marcosschroh/faust-docker-compose-exampl
 
 Let's create a custom `codec`
 
-```
+```python
 codecs.py
 
 from avro.schema import SchemaFromJSONData
@@ -95,7 +95,7 @@ def avro_user_codec():
 
 Now the final step is to integrate the faust model with the AvroSerializer.
 
-```
+```python
 # users.models
 
 class UserModel(faust.Record, serializer='avro_users'):

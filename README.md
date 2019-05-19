@@ -16,7 +16,7 @@ python 3.6+, avro-python3, fastavro, requests
 pip install python-schema-registry-client
 ```
 
-## Client API, Serializer, Faust Integration and Schema Server descriptiom
+## Client API, Serializer, Faust Integration and Schema Server description
 
 [Client API](../master/docs/client.md)
 
@@ -24,5 +24,5 @@ pip install python-schema-registry-client
 
 [Schema Registry Server Description](../master/docs/schemaregistry_server.md)
 
-[How to use if with Faust?](../master/docs/faust.md)
+[How to use it with Faust?](../master/docs/faust.md)
 
