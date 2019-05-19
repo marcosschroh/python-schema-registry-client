@@ -24,18 +24,13 @@ In order to use `avro schemas` with `Faust` we need to define a custom codec, a 
 You can find the custom codec called `avro_users` registered using the [codec registation](https://faust.readthedocs.io/en/latest/userguide/models.html#codec-registry) approach described by faust.
 The [AvroSerializer](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/helpers/avro/serializer/faust_avro_serializer.py#L8) is in charge to `encode` and `decode` messages using the [schema registry client](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-
 
-
-Let's create a custom `codec`
+Create the serializer codec:
 
 ```python
-codecs.py
-
-from avro.schema import SchemaFromJSONData
-from schema_registry.client import SchemaRegistryClient
-from schema_registry.serializer import MessageSerializer
-
+# codecs.avro.py
 from faust.serializers.codecs import Codec
 
+from schema_registry.serializer import MessageSerializer
 
 class AvroSerializer(MessageSerializer, Codec):
 
@@ -67,11 +62,23 @@ class AvroSerializer(MessageSerializer, Codec):
             record=obj,
             is_key=self.is_key,
         )
+```
 
+Let's register the custom `codec serializer`
+
+```python
+# codecs.codec.py
+
+from avro.schema import SchemaFromJSONData
+from schema_registry.client import SchemaRegistryClient
+
+from codecs.avro import AvroSerializer
 
 # create an instance of the `SchemaRegistryClient`
 client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
 
+# schema that we want to use. For this example we 
+# are using a dict, but this schema could be located in a file called avro_user_schema.avsc
 avro_user_schema = SchemaFromJSONData({
      "type": "record",
      "namespace": "com.example",
@@ -91,6 +98,24 @@ avro_user_serializer = AvroSerializer(
 # function used to register the codec
 def avro_user_codec():
     return avro_user_serializer
+```
+
+Add in `setup.py` `faust.codecs`
+
+```python
+# setup.py
+ 
+setup(
+    ...
+    entry_points={
+        'console_scripts': [
+            'example = example.app:main',
+        ],
+        'faust.codecs': [
+            'avro_users = example.codecs.avro:avro_user_codec',
+        ],
+    },
+)
 ```
 
 Now the final step is to integrate the faust model with the AvroSerializer.
