@@ -1,6 +1,6 @@
 # Message Serializer
 
-```
+```python
 MessageSerializer
 
 A helper class that can serialize and deserialize messages
@@ -11,7 +11,7 @@ A helper class that can serialize and deserialize messages
 
 Encode record with a `Schema`:
 
-```
+```python
 encode_record_with_schema(topic, schema, record, is_key=False)
     Args:
         topic (str): Topic name
@@ -25,7 +25,7 @@ encode_record_with_schema(topic, schema, record, is_key=False)
 
 Encode a record with a `schema id`:
 
-```
+```python
 encode_record_with_schema_id(schema_id, record, is_key=False):
     Args:
         schema_id (int): integer ID
@@ -38,7 +38,7 @@ encode_record_with_schema_id(schema_id, record, is_key=False):
 
 Decode a message encoded previously:
 
-```
+```python
 decode_message(message, is_key=False)
     Args:
         message (str|bytes or None): message key or value to be decoded

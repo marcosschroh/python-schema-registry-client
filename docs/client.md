@@ -2,7 +2,7 @@
 
 The `Schema Registry Client` consumes the API exposed by the `schema-registry` to operate resources that are `avro` schemas.
 
-```
+```python
 SchemaRegistryClient
     A client that talks to a Schema Registry over HTTP
 
@@ -15,7 +15,7 @@ SchemaRegistryClient
 
 Get Schema
 
-```
+```python
 get_schema(subject, version="latest")
     If the subject is not found a Nametupled (None,None,None) is returned.
 
@@ -29,7 +29,7 @@ get_schema(subject, version="latest")
 
 Get schema by `id`:
 
-```
+```python
 get_by_id(schema_id)
     Args:
         schema_id (int): Schema Id
@@ -40,7 +40,7 @@ get_by_id(schema_id)
 
 Register a Schema:
 
-```
+```python
 register(subject, avro_schema)
     Args:
         subject (str): subject name
@@ -52,7 +52,7 @@ register(subject, avro_schema)
 
 Delete Schema
 
-```
+```python
 delete_subject(subject)
     Args:
         subject (str): subject name
@@ -63,7 +63,7 @@ delete_subject(subject)
 
 Check if a schema has already been registered under the specified subject:
 
-```
+```python
 check_version(subject, avro_schema)
     Args:
         subject (str): subject name
@@ -76,7 +76,7 @@ check_version(subject, avro_schema)
 
 Test Compatibility:
 
-```
+```python
 test_compatibility(subject, avro_schema, version="latest")
     By default the latest version is checked against.
 
@@ -90,7 +90,7 @@ test_compatibility(subject, avro_schema, version="latest")
 
 Get Compatibility:
 
-```
+```python
 get_compatibility(subject=None)
     Get the current compatibility level for a subject.  Result will be one of:
 
@@ -107,7 +107,7 @@ get_compatibility(subject=None)
 
 Update Compatibility:
 
-```
+```python
 update_compatibility(level, subjec)
     Update the compatibility level for a subject.
 
