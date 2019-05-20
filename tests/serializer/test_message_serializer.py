@@ -1,6 +1,8 @@
 import pytest
 import struct
 
+from avro.schema import SchemaFromJSONData
+
 from schema_registry.serializer.message_serializer import MessageSerializer
 from schema_registry.client import SchemaRegistryClient, load
 
@@ -20,6 +22,22 @@ def client():
 @pytest.fixture
 def message_serializer(client):
     return MessageSerializer(client)
+
+
+@pytest.fixture
+def user_schema():
+    return SchemaFromJSONData(
+        {
+            "type": "record",
+            "namespace": "com.example",
+            "name": "AvroUsers",
+            "fields": [
+                {"name": "first_name", "type": "string"},
+                {"name": "last_name", "type": "string"},
+                {"name": "age", "type": "int"},
+            ],
+        }
+    )
 
 
 def assertMessageIsSame(message, expected, schema_id, message_serializer):
@@ -59,6 +77,37 @@ def test_encode_with_schema_id(client, message_serializer):
     for record in records:
         message = message_serializer.encode_record_with_schema_id(adv_schema_id, record)
         assertMessageIsSame(message, record, adv_schema_id, message_serializer)
+
+
+def test_encode_decode_with_schema_from_json(message_serializer, user_schema):
+    user_record = {
+        "first_name": "my_first_name",
+        "last_name": "my_last_name",
+        "age": 20,
+    }
+
+    message_encoded = message_serializer.encode_record_with_schema(
+        "user", user_schema, user_record
+    )
+
+    assert message_encoded
+    assert len(message_encoded) > 5
+    assert isinstance(message_encoded, bytes)
+
+    # now decode the message
+    message_decoded = message_serializer.decode_message(message_encoded)
+    assert message_decoded == user_record
+
+
+def test_fail_encode_with_schema(message_serializer, user_schema):
+    bad_record = {
+        "first_name": "my_first_name",
+        "last_name": "my_last_name",
+        "age": "my_age",
+    }
+
+    with pytest.raises(TypeError):
+        message_serializer.encode_record_with_schema("user", user_schema, bad_record)
 
 
 def test_encode_record_with_schema(client, message_serializer):

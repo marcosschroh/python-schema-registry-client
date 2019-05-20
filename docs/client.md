@@ -2,6 +2,12 @@
 
 The `Schema Registry Client` consumes the API exposed by the `schema-registry` to operate resources that are `avro` schemas.
 
+You probably won't use this but is good to know that exists. The `MessageSerialzer` is whom interact with the `SchemaRegistryClient`
+
+
+SchemaRegistryClient:
+---------------------
+
 ```python
 SchemaRegistryClient
     A client that talks to a Schema Registry over HTTP
@@ -13,10 +19,13 @@ SchemaRegistryClient
         key_location (str): Path to client's private key used for authentication.
 ```
 
-Get Schema
+Methods:
+--------
+
+#### Get Schema
 
 ```python
-get_schema(subject, version="latest")
+get_schema(subject, version="latest"):
     If the subject is not found a Nametupled (None,None,None) is returned.
 
     Args:
@@ -27,7 +36,7 @@ get_schema(subject, version="latest")
         SchemaVersion (nametupled): (subject, schema_id, schema, version)
 ```
 
-Get schema by `id`:
+#### Get schema by `id`:
 
 ```python
 get_by_id(schema_id)
@@ -50,7 +59,7 @@ register(subject, avro_schema)
         int: schema_id
 ```
 
-Delete Schema
+#### Delete Schema
 
 ```python
 delete_subject(subject)
@@ -74,7 +83,7 @@ check_version(subject, avro_schema)
         None: If schema not found.
 ```
 
-Test Compatibility:
+#### Test Compatibility:
 
 ```python
 test_compatibility(subject, avro_schema, version="latest")
@@ -88,7 +97,7 @@ test_compatibility(subject, avro_schema, version="latest")
         bool: True if compatible, False if not compatible
 ```
 
-Get Compatibility:
+#### Get Compatibility:
 
 ```python
 get_compatibility(subject=None)
@@ -105,7 +114,7 @@ get_compatibility(subject=None)
         compatibility level was returned
 ```
 
-Update Compatibility:
+#### Update Compatibility:
 
 ```python
 update_compatibility(level, subjec)

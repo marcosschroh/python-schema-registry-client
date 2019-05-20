@@ -65,14 +65,14 @@ class MessageSerializer:
         writer = avro.io.DatumWriter(writer_schema)
         return lambda record, fp: writer.write(record, avro.io.BinaryEncoder(fp))
 
-    def encode_record_with_schema(self, topic, schema, record, is_key=False):
+    def encode_record_with_schema(self, subject, schema, record, is_key=False):
         """
         Given a parsed avro schema, encode a record for the given topic.  The
         record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
 
         Args:
-            topic (str): Topic name
+            subject (str): Subject name
             schema (avro.schema.RecordSchema): Avro Schema
             record (dict): An object to serialize
             is_key (bool): If the record is a key
@@ -87,7 +87,7 @@ class MessageSerializer:
 
             subject_suffix = "-key" if is_key else "-value"
             # get the latest schema for the subject
-            subject = f"{topic}{subject_suffix}"
+            subject = f"{subject}{subject_suffix}"
             # register it
             schema_id = self.schemaregistry_client.register(subject, schema)
 

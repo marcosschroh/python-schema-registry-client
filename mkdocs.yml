@@ -9,10 +9,10 @@ repo_url: https://github.com/marcosschroh/python-schema-registry-client
 
 nav:
     - Introduction: 'index.md'
-    - Using the client: 'client.md'
-    - Faust integration: 'faust.md'
-    - Schema Registry: 'schemaregistry_server.md'
     - Message Serializer: 'serializer.md'
+    - Faust integration: 'faust.md'
+    - Using the client: 'client.md'
+    - Schema Registry: 'schemaregistry_server.md'
 
 markdown_extensions:
   - markdown.extensions.codehilite:

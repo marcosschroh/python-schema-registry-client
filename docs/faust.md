@@ -1,12 +1,17 @@
 # How to use it with Faust?
 
+This section describe how integrate this library with [Faust](https://faust.readthedocs.io/en/latest/)
+
+
 Avro Schemas, Custom Codecs and Serializers
 -------------------------------------------
 
-Because we want to be sure that the message that we encode are valid we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html).
+Because we want to be sure that the message that we encode are valid, we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html).
 Avro is used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.
 
-For our demostration in the `Users` application we are using the following schema:
+In order to use `avro schemas` with `Faust`, we need to define a custom codec and a custom serializer able to talk with the `schema-registry`, and to do that, we will use the `MessageSerializer`.
+
+For our demostration, let's imagine that we have the folling `schema`:
 
 ```json
 {
@@ -20,17 +25,15 @@ For our demostration in the `Users` application we are using the following schem
 }
 ```
 
-In order to use `avro schemas` with `Faust` we need to define a custom codec, a custom serializer and be able to talk with the `schema-registry`.
-You can find the custom codec called `avro_users` registered using the [codec registation](https://faust.readthedocs.io/en/latest/userguide/models.html#codec-registry) approach described by faust.
-The [AvroSerializer](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/helpers/avro/serializer/faust_avro_serializer.py#L8) is in charge to `encode` and `decode` messages using the [schema registry client](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-
-
-Create the serializer codec:
+Let's create the serializer codec:
 
 ```python
 # codecs.avro.py
 from faust.serializers.codecs import Codec
 
+# get from the library
 from schema_registry.serializer import MessageSerializer
+
 
 class AvroSerializer(MessageSerializer, Codec):
 
@@ -100,7 +103,7 @@ def avro_user_codec():
     return avro_user_serializer
 ```
 
-Add in `setup.py` `faust.codecs`
+and ddd in `setup.py` the folloing code in order to tell faust where to find the custom codecs.
 
 ```python
 # setup.py
@@ -129,3 +132,29 @@ class UserModel(faust.Record, serializer='avro_users'):
 ```
 
 Now our application is able to send and receive message using arvo schemas!!!! :-)
+
+```python
+import logging
+
+from your_project.app import app
+from .codecs.codec import avro_user_serializer
+from .models import UserModel
+
+users_topic = app.topic('avro_users', partitions=1, value_type=UserModel)
+
+logger = logging.getLogger(__name__)
+
+
+@app.agent(users_topic)
+async def users(users):
+    async for user in users:
+        logger.info("Event received in topic avro_users")
+        logger.info(f"First Name: {user.first_name}, last name {user.last_name}")
+
+
+@app.timer(5.0, on_leader=True)
+async def publish_users():
+    logger.info('PUBLISHING ON LEADER FOR USERS APP!')
+    user = {"first_name": "foo", "last_name": "bar"}
+    await users.send(value=user, value_serializer=avro_user_serializer)
+```

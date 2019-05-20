@@ -1,15 +1,74 @@
 # Message Serializer
 
+Class that serialize and deserialize messages. It interacts with the `SchemaRegistryClient` to get `Avro Schemas` in order to process messages. In your application you will intereact with it.
+
+
+Usage:
+------
+
+```python
+from schema_registry.client import SchemaRegistryClient
+from schema_registry.serializer import MessageSerializer
+
+client = SchemaRegistryClient("http://127.0.0.1:8080")
+
+message_serielizer = MessageSerializer(client)
+
+# Let's imagine that we have the foillowing schema.
+avro_user_schema = SchemaFromJSONData({
+    "type": "record",
+    "namespace": "com.example",
+    "name": "AvroUsers",
+    "fields": [
+        {"name": "first_name", "type": "string"},
+        {"name": "last_name", "type": "string"},
+        {"name": "age", "type": "int"},
+
+    ],
+})
+
+# We want to encode the user_record with avro_user_schema
+user_record = {
+    "first_name": "my_first_name",
+    "last_name": "my_last_name",
+    "age": 20,
+}
+
+message_encoded = message_serializer.encode_record_with_schema(
+    "user", avro_user_schema, user_record)
+
+# this is because the message encoded reserved 5 bytes for the schema_id
+assert len(message_encoded) > 5
+assert isinstance(message_encoded, bytes)
+
+# now decode the message
+message_decoded = message_serializer.decode_message(message_encoded)
+assert message_decoded == user_record
+
+# Now if we send a bad record
+bad_record = {
+    "first_name": "my_first_name",
+    "last_name": "my_last_name",
+    "age": "my_age"
+}
+
+message_serializer.encode_record_with_schema(
+    "user", user_schema, bad_record)
+
+# Exception!!
+TypeError: unsupported operand type(s) for <<: 'str' and 'int'
+```
+
+Class and Methods:
+-----------------
+
 ```python
 MessageSerializer
-
-A helper class that can serialize and deserialize messages
-
     Args:
         schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
 ```
 
-Encode record with a `Schema`:
+#### Encode record with a `Schema`:
 
 ```python
 encode_record_with_schema(topic, schema, record, is_key=False)
@@ -23,7 +82,7 @@ encode_record_with_schema(topic, schema, record, is_key=False)
         bytes: Encoded record with schema ID as bytes
 ```
 
-Encode a record with a `schema id`:
+#### Encode a record with a `schema id`:
 
 ```python
 encode_record_with_schema_id(schema_id, record, is_key=False):
@@ -36,7 +95,7 @@ encode_record_with_schema_id(schema_id, record, is_key=False):
         func: decoder function
 ```
 
-Decode a message encoded previously:
+#### Decode a message encoded previously:
 
 ```python
 decode_message(message, is_key=False)
