@@ -18,11 +18,6 @@ pip install python-schema-registry-client
 
 ## Client API, Serializer, Faust Integration and Schema Server description
 
-[Client API](../master/docs/client.md)
 
-[Message Serializer](../master/docs/serializer.md)
-
-[Schema Registry Server Description](../master/docs/schemaregistry_server.md)
-
-[How to use it with Faust?](../master/docs/faust.md)
+**Documentation**: [https://marcosschroh.github.io/python-schema-registry-client.io](https://marcosschroh.github.io/python-schema-registry-client)
 

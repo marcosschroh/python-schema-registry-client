@@ -15,3 +15,4 @@ python 3.6+, avro-python3, fastavro, requests
 ```bash
 pip install python-schema-registry-client
 ```
+
