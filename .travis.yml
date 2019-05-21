@@ -8,6 +8,12 @@ language: python
 # Would be easier to run travis with tox but is not trivial. 
 install: pip install -r requirements.txt
 
+before_script:
+- tox -e clean
+
+after_success:
+- tox -e report
+
 matrix:
   include:	
     - name: Test Python 3.6
