@@ -1,19 +1,11 @@
 import pytest
+import requests
+
 from avro.schema import SchemaFromJSONData
 
 from schema_registry.client import SchemaRegistryClient, load
 
-from tests.server import mock_registry
 from tests.client import data_gen
-
-
-@pytest.fixture
-def client():
-    server = mock_registry.ServerThread(0)
-    server.start()
-    yield SchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
-    server.shutdown()
-    server.join()
 
 
 def assertLatest(self, meta_tuple, sid, schema, version):
@@ -32,20 +24,14 @@ def test_register(client):
     assert len(client.id_to_schema) == 1
 
 
-def test_register_json_data(client):
-    avro_user_schema = SchemaFromJSONData(
-        {
-            "type": "record",
-            "namespace": "com.example",
-            "name": "AvroUsers",
-            "fields": [
-                {"name": "first_name", "type": "string"},
-                {"name": "last_name", "type": "string"},
-            ],
-        }
-    )
+def test_register_json_data(client, user_schema):
+    schema_id = client.register("test", user_schema)
+    assert schema_id > 0
 
-    schema_id = client.register("test", avro_user_schema)
+
+def test_register_with_custom_headers(client, country_schema):
+    headers = {"custom-serialization": "application/x-avro-json"}
+    schema_id = client.register("test", country_schema, headers=headers)
     assert schema_id > 0
 
 
@@ -147,6 +133,56 @@ def test_cert_with_key():
     )
 
     assert ("/path/to/cert", "/path/to/key") == client._session.cert
+
+
+def test_custom_headers():
+    extra_headers = {"custom-serialization": "application/x-avro-json"}
+
+    client = SchemaRegistryClient(
+        url="https://127.0.0.1:65534", extra_headers=extra_headers
+    )
+    assert extra_headers == client.extra_headers
+
+
+def test_override_headers(client, user_schema, mocker):
+    extra_headers = {"custom-serialization": "application/x-avro-json"}
+    client = SchemaRegistryClient(
+        "https://127.0.0.1:65534", extra_headers=extra_headers
+    )
+
+    assert (
+        client.prepare_headers().get("custom-serialization")
+        == "application/x-avro-json"
+    )
+
+    class Response:
+        def __init__(self, status_code, content=None):
+            self.status_code = status_code
+
+            if content is None:
+                content = {}
+
+            self.content = content
+
+        def json(self):
+            return self.content
+
+    subject = "test"
+    override_header = {"custom-serialization": "application/avro"}
+
+    request_patch = mocker.patch.object(
+        requests.sessions.Session,
+        "request",
+        return_value=Response(200, content={"id": 1}),
+    )
+    client.register(subject, user_schema, headers=override_header)
+
+    prepare_headers = client.prepare_headers(body="1")
+    prepare_headers["custom-serialization"] = "application/avro"
+
+    request_patch.assert_called_once_with(
+        "POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY
+    )
 
 
 def test_cert_path():

@@ -1,6 +1,5 @@
 import json
 import logging
-import warnings
 import requests
 from collections import defaultdict
 
@@ -24,11 +23,19 @@ class SchemaRegistryClient:
     Args:
         url (str|dict) url: Url to schema registry or dictionary containing client configuration.
         ca_location (str): File or directory path to CA certificate(s) for verifying the Schema Registry key.
-        cert_location (str): Path to client's public key used for authentication.
-        key_location (str): Path to client's private key used for authentication.
+        cert_location (str): Path to public key used for authentication.
+        key_location (str): Path to private key used for authentication.
+        extra_headers (dict): Extra headers to add on every requests.
     """
 
-    def __init__(self, url, ca_location=None, cert_location=None, key_location=None):
+    def __init__(
+        self,
+        url,
+        ca_location=None,
+        cert_location=None,
+        key_location=None,
+        extra_headers=None,
+    ):
 
         conf = url
         if not isinstance(url, dict):
@@ -38,15 +45,6 @@ class SchemaRegistryClient:
                 "ssl.certificate.location": cert_location,
                 "ssl.key.location": key_location,
             }
-            warnings.warn(
-                "CachedSchemaRegistry constructor is being deprecated. "
-                "Use SchemaRegistryClient(dict: config) instead. "
-                "Existing params ca_location, cert_location and key_location will be replaced with their "
-                "librdkafka equivalents as keys in the conf dict: `ssl.ca.location`, `ssl.certificate.location` and "
-                "`ssl.key.location` respectively",
-                category=DeprecationWarning,
-                stacklevel=2,
-            )
 
         # Ensure URL valid scheme is included; http[s]
         url = conf.get("url", "")
@@ -57,6 +55,7 @@ class SchemaRegistryClient:
             raise ValueError("Invalid URL provided for Schema Registry")
 
         self.url = url.rstrip("/")
+        self.extra_headers = extra_headers
 
         # subj => { schema => id }
         self.subject_to_schema_ids = defaultdict(dict)
@@ -119,21 +118,28 @@ class SchemaRegistryClient:
 
         return cert
 
+    def prepare_headers(self, body=None, headers=None):
+        _headers = {"Accept": utils.ACCEPT_HEADERS}
+
+        if self.extra_headers:
+            _headers.update(self.extra_headers)
+
+        if body:
+            _headers["Content-Length"] = str(len(body))
+            _headers["Content-Type"] = utils.HEADERS
+
+        if headers:
+            _headers.update(headers)
+
+        return _headers
+
     def send(self, url, method="GET", body=None, headers=None):
         if method not in utils.VALID_METHODS:
             raise ClientError(
                 f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
             )
 
-        if headers is None:
-            headers = {}
-
-        _headers = {"Accept": utils.ACCEPT_HEADERS}
-        if body:
-            _headers["Content-Length"] = str(len(body))
-            _headers["Content-Type"] = utils.HEADERS
-        _headers.update(headers)
-
+        _headers = self.prepare_headers(body=body, headers=headers)
         response = self._session.request(method, url, headers=_headers, json=body)
 
         try:
@@ -159,7 +165,7 @@ class SchemaRegistryClient:
                     self.subject_to_schema_versions, subject, schema, version
                 )
 
-    def register(self, subject, avro_schema):
+    def register(self, subject, avro_schema, headers=None):
         """
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
@@ -170,6 +176,7 @@ class SchemaRegistryClient:
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema to be registered
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             int: schema_id
@@ -184,7 +191,7 @@ class SchemaRegistryClient:
 
         body = {"schema": json.dumps(avro_schema.to_json())}
 
-        result, code = self.send(url, method="POST", body=body)
+        result, code = self.send(url, method="POST", body=body, headers=headers)
 
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             raise ClientError(f"Unauthorized access. Error code: {code}")
@@ -200,32 +207,35 @@ class SchemaRegistryClient:
 
         return schema_id
 
-    def delete_subject(self, subject):
+    def delete_subject(self, subject, headers=None):
         """
         DELETE /subjects/(string: subject)
         Deletes the specified subject and its associated compatibility level if registered.
-        It is recommended to use this API only when a topic needs to be recycled or in development environments.
+        It is recommended to use this API only when a topic needs to be
+        recycled or in development environments.
 
         Args:
             subject (str): subject name
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             int: version of the schema deleted under this subject
         """
         url = "/".join([self.url, "subjects", subject])
 
-        result, code = self.send(url, method="DELETE")
+        result, code = self.send(url, method="DELETE", headers=headers)
         if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             raise ClientError(f"Unable to delete subject: {result}")
         return result
 
-    def get_by_id(self, schema_id):
+    def get_by_id(self, schema_id, headers=None):
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
 
         Args:
             schema_id (int): Schema Id
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             avro.schema.RecordSchema: Avro Record schema
@@ -235,7 +245,7 @@ class SchemaRegistryClient:
         # fetch from the registry
         url = "/".join([self.url, "schemas", "ids", str(schema_id)])
 
-        result, code = self.send(url)
+        result, code = self.send(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
         elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
@@ -255,7 +265,7 @@ class SchemaRegistryClient:
                     f"Received bad schema (id {schema_id}) from registry: {e}"
                 )
 
-    def get_schema(self, subject, version="latest"):
+    def get_schema(self, subject, version="latest", headers=None):
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
         Get a specific version of the schema registered under this subject
@@ -265,13 +275,14 @@ class SchemaRegistryClient:
         Args:
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
         """
         url = "/".join([self.url, "subjects", subject, "versions", str(version)])
 
-        result, code = self.send(url)
+        result, code = self.send(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
             return utils.SchemaVersion(None, None, None, None)
@@ -295,7 +306,7 @@ class SchemaRegistryClient:
 
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
-    def check_version(self, subject, avro_schema):
+    def check_version(self, subject, avro_schema, headers=None):
         """
         POST /subjects/(string: subject)
         Check if a schema has already been registered under the specified subject.
@@ -305,6 +316,7 @@ class SchemaRegistryClient:
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             int: Schema version
@@ -319,7 +331,7 @@ class SchemaRegistryClient:
         url = "/".join([self.url, "subjects", subject])
         body = {"schema": json.dumps(avro_schema.to_json())}
 
-        result, code = self.send(url, method="POST", body=body)
+        result, code = self.send(url, method="POST", body=body, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Not found: {code}")
             return
@@ -333,7 +345,7 @@ class SchemaRegistryClient:
 
         return version
 
-    def test_compatibility(self, subject, avro_schema, version="latest"):
+    def test_compatibility(self, subject, avro_schema, version="latest", headers=None):
         """
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
         Test the compatibility of a candidate parsed schema for a given subject.
@@ -342,6 +354,7 @@ class SchemaRegistryClient:
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             bool: True if compatible, False if not compatible
@@ -351,7 +364,7 @@ class SchemaRegistryClient:
         )
         body = {"schema": json.dumps(avro_schema.to_json())}
         try:
-            result, code = self.send(url, method="POST", body=body)
+            result, code = self.send(url, method="POST", body=body, headers=headers)
             if code == status.HTTP_404_NOT_FOUND:
                 log.error(f"Subject or version not found: {code}")
                 return False
@@ -367,13 +380,14 @@ class SchemaRegistryClient:
             log.error("send() failed: %s", e)
             return False
 
-    def update_compatibility(self, level, subject=None):
+    def update_compatibility(self, level, subject=None, headers=None):
         """
         PUT /config/(string: subject)
         Update the compatibility level for a subject. Level must be one of:
 
         Args:
             level (str): ex: 'NONE','FULL','FORWARD', or 'BACKWARD'
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             None
@@ -386,18 +400,19 @@ class SchemaRegistryClient:
             url += "/" + subject
 
         body = {"compatibility": level}
-        result, code = self.send(url, method="PUT", body=body)
+        result, code = self.send(url, method="PUT", body=body, headers=headers)
         if status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
             return result["compatibility"]
         else:
             raise ClientError(f"Unable to update level: {level}. Error code: {code}")
 
-    def get_compatibility(self, subject):
+    def get_compatibility(self, subject, headers=None):
         """
         Get the current compatibility level for a subject.
 
         Args:
             subject (str): subject name
+            headers (dict): Extra headers to add on the requests
 
         Returns:
             str: one of 'NONE','FULL','FORWARD', or 'BACKWARD'
@@ -410,7 +425,7 @@ class SchemaRegistryClient:
         if subject:
             url = "/".join([url, subject])
 
-        result, code = self.send(url)
+        result, code = self.send(url, headers=headers)
         is_successful_request = (
             status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
         )

@@ -12,6 +12,7 @@ flake8==3.7.6
 tox==3.9.0
 mypy==0.701
 pytest==4.4.1
+pytest-mock==1.10.4
 pytest_cases==1.6.2
 
 # Docs
