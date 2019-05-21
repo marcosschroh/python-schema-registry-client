@@ -1,43 +1,9 @@
 import pytest
 import struct
 
-from avro.schema import SchemaFromJSONData
+from schema_registry.client import load
 
-from schema_registry.serializer.message_serializer import MessageSerializer
-from schema_registry.client import SchemaRegistryClient, load
-
-from tests.server import mock_registry
 from tests.client import data_gen
-
-
-@pytest.fixture
-def client():
-    server = mock_registry.ServerThread(0)
-    server.start()
-    yield SchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
-    server.shutdown()
-    server.join()
-
-
-@pytest.fixture
-def message_serializer(client):
-    return MessageSerializer(client)
-
-
-@pytest.fixture
-def user_schema():
-    return SchemaFromJSONData(
-        {
-            "type": "record",
-            "namespace": "com.example",
-            "name": "AvroUsers",
-            "fields": [
-                {"name": "first_name", "type": "string"},
-                {"name": "last_name", "type": "string"},
-                {"name": "age", "type": "int"},
-            ],
-        }
-    )
 
 
 def assertMessageIsSame(message, expected, schema_id, message_serializer):
