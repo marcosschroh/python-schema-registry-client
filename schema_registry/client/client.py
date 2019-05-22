@@ -11,14 +11,9 @@ from schema_registry.client import status, utils
 log = logging.getLogger(__name__)
 
 
-class SchemaRegistryClient:
+class SchemaRegistryClient(requests.Session):
     """
     A client that talks to a Schema Registry over HTTP
-
-    Use SchemaRegistryClient(dict: config) instead.
-    Existing params ca_location, cert_location and key_location will be replaced with their librdkafka equivalents:
-    `ssl.ca.location`, `ssl.certificate.location` and `ssl.key.location` respectively.
-    Errors communicating to the server will result in a ClientError being raised.
 
     Args:
         url (str|dict) url: Url to schema registry or dictionary containing client configuration.
@@ -36,6 +31,7 @@ class SchemaRegistryClient:
         key_location=None,
         extra_headers=None,
     ):
+        super().__init__()
 
         conf = url
         if not isinstance(url, dict):
@@ -64,24 +60,13 @@ class SchemaRegistryClient:
         # subj => { schema => version }
         self.subject_to_schema_versions = defaultdict(dict)
 
-        session = requests.Session()
-        session.verify = conf.pop("ssl.ca.location", None)
-        session.cert = self._configure_client_tls(conf)
-        session.auth = self._configure_basic_auth(conf)
-        self._session = session
+        self.verify = conf.pop("ssl.ca.location", None)
+        self.cert = self._configure_client_tls(conf)
+        self.auth = self._configure_basic_auth(conf)
         self.url = conf.pop("url")
 
         if len(conf) > 0:
             raise ValueError("fUnrecognized configuration properties:{conf}")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        self.close()
-
-    def close(self):
-        self._session.close()
 
     @staticmethod
     def _configure_basic_auth(conf):
@@ -133,14 +118,14 @@ class SchemaRegistryClient:
 
         return _headers
 
-    def send(self, url, method="GET", body=None, headers=None):
+    def request(self, url, method="GET", body=None, headers=None):
         if method not in utils.VALID_METHODS:
             raise ClientError(
                 f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
             )
 
         _headers = self.prepare_headers(body=body, headers=headers)
-        response = self._session.request(method, url, headers=_headers, json=body)
+        response = super().request(method, url, headers=_headers, json=body)
 
         try:
             return response.json(), response.status_code
@@ -191,7 +176,7 @@ class SchemaRegistryClient:
 
         body = {"schema": json.dumps(avro_schema.to_json())}
 
-        result, code = self.send(url, method="POST", body=body, headers=headers)
+        result, code = self.request(url, method="POST", body=body, headers=headers)
 
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             raise ClientError(f"Unauthorized access. Error code: {code}")
@@ -223,7 +208,7 @@ class SchemaRegistryClient:
         """
         url = "/".join([self.url, "subjects", subject])
 
-        result, code = self.send(url, method="DELETE", headers=headers)
+        result, code = self.request(url, method="DELETE", headers=headers)
         if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
             raise ClientError(f"Unable to delete subject: {result}")
         return result
@@ -245,7 +230,7 @@ class SchemaRegistryClient:
         # fetch from the registry
         url = "/".join([self.url, "schemas", "ids", str(schema_id)])
 
-        result, code = self.send(url, headers=headers)
+        result, code = self.request(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
         elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
@@ -282,7 +267,7 @@ class SchemaRegistryClient:
         """
         url = "/".join([self.url, "subjects", subject, "versions", str(version)])
 
-        result, code = self.send(url, headers=headers)
+        result, code = self.request(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
             return utils.SchemaVersion(None, None, None, None)
@@ -331,7 +316,7 @@ class SchemaRegistryClient:
         url = "/".join([self.url, "subjects", subject])
         body = {"schema": json.dumps(avro_schema.to_json())}
 
-        result, code = self.send(url, method="POST", body=body, headers=headers)
+        result, code = self.request(url, method="POST", body=body, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Not found: {code}")
             return
@@ -364,12 +349,12 @@ class SchemaRegistryClient:
         )
         body = {"schema": json.dumps(avro_schema.to_json())}
         try:
-            result, code = self.send(url, method="POST", body=body, headers=headers)
+            result, code = self.request(url, method="POST", body=body, headers=headers)
             if code == status.HTTP_404_NOT_FOUND:
                 log.error(f"Subject or version not found: {code}")
                 return False
             elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-                log.error("Invalid subject or schema: {code}")
+                log.error(f"Invalid subject or schema: {code}")
                 return False
             elif status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
                 return result.get("is_compatible")
@@ -377,7 +362,7 @@ class SchemaRegistryClient:
                 log.error(f"Unable to check the compatibility: {code}")
                 return False
         except Exception as e:
-            log.error("send() failed: %s", e)
+            log.error(f"request() failed: {e}")
             return False
 
     def update_compatibility(self, level, subject=None, headers=None):
@@ -393,14 +378,14 @@ class SchemaRegistryClient:
             None
         """
         if level not in utils.VALID_LEVELS:
-            raise ClientError("Invalid level specified: %s" % (str(level)))
+            raise ClientError(f"Invalid level specified: {level}")
 
         url = "/".join([self.url, "config"])
         if subject:
             url += "/" + subject
 
         body = {"compatibility": level}
-        result, code = self.send(url, method="PUT", body=body, headers=headers)
+        result, code = self.request(url, method="PUT", body=body, headers=headers)
         if status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
             return result["compatibility"]
         else:
@@ -425,7 +410,7 @@ class SchemaRegistryClient:
         if subject:
             url = "/".join([url, subject])
 
-        result, code = self.send(url, headers=headers)
+        result, code = self.request(url, headers=headers)
         is_successful_request = (
             status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
         )
