@@ -132,7 +132,7 @@ def test_cert_with_key():
         key_location="/path/to/key",
     )
 
-    assert ("/path/to/cert", "/path/to/key") == client._session.cert
+    assert ("/path/to/cert", "/path/to/key") == client.cert
 
 
 def test_custom_headers():
@@ -190,7 +190,7 @@ def test_cert_path():
         url="https://127.0.0.1:65534", ca_location="/path/to/ca"
     )
 
-    assert "/path/to/ca" == client._session.verify
+    assert "/path/to/ca" == client.verify
 
 
 def test_init_with_dict():
@@ -229,7 +229,7 @@ def test_basic_auth_url():
         {"url": "https://user_url:secret_url@127.0.0.1:65534"}
     )
 
-    assert ("user_url", "secret_url") == client._session.auth
+    assert ("user_url", "secret_url") == client.auth
 
 
 def test_basic_auth_userinfo():
@@ -240,7 +240,7 @@ def test_basic_auth_userinfo():
             "basic.auth.user.info": "user_userinfo:secret_userinfo",
         }
     )
-    assert ("user_userinfo", "secret_userinfo") == client._session.auth
+    assert ("user_userinfo", "secret_userinfo") == client.auth
 
 
 def test_basic_auth_sasl_inherit():
@@ -253,7 +253,7 @@ def test_basic_auth_sasl_inherit():
             "sasl.password": "secret_sasl",
         }
     )
-    assert ("user_sasl", "secret_sasl") == client._session.auth
+    assert ("user_sasl", "secret_sasl") == client.auth
 
 
 def test_basic_auth_invalid():
