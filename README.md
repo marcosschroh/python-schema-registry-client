@@ -25,6 +25,9 @@ pip install python-schema-registry-client
 
 ## Run Tests
 
+The tests are run against the `Schema Server` using `docker compose`, so you will need
+`Docker` and `Docker Compose` installed.
+
 ```bash
-tox
+./scripts/test.sh
 ```

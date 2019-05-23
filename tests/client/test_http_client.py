@@ -1,8 +1,6 @@
 import pytest
 import requests
 
-from avro.schema import SchemaFromJSONData
-
 from schema_registry.client import SchemaRegistryClient, load
 
 from tests.client import data_gen
@@ -18,37 +16,37 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 
 def test_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = client.register("test", parsed)
+    schema_id = client.register("test-basic-schema", parsed)
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
 
 
-def test_register_json_data(client, user_schema):
-    schema_id = client.register("test", user_schema)
+def test_register_json_data(client, deployment_schema):
+    schema_id = client.register("test-deployment", deployment_schema)
     assert schema_id > 0
 
 
 def test_register_with_custom_headers(client, country_schema):
     headers = {"custom-serialization": "application/x-avro-json"}
-    schema_id = client.register("test", country_schema, headers=headers)
+    schema_id = client.register("test-country", country_schema, headers=headers)
     assert schema_id > 0
 
 
 def test_multi_subject_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    schema_id = client.register("test", parsed)
+    schema_id = client.register("test-basic-schema", parsed)
     assert schema_id > 0
 
     # register again under different subject
-    dupe_id = client.register("other", parsed)
+    dupe_id = client.register("test-basic-schema-backup", parsed)
     assert schema_id == dupe_id
     assert len(client.id_to_schema) == 1
 
 
 def test_dupe_register(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    subject = "test"
+    subject = "test-basic-schema"
     schema_id = client.register(subject, parsed)
 
     assert schema_id > 0
@@ -64,12 +62,13 @@ def test_dupe_register(client):
 
 def test_getters(client):
     parsed = load.loads(data_gen.BASIC_SCHEMA)
-    subject = "test"
+    subject = "subject-does-not-exist"
     version = client.check_version(subject, parsed)
     assert version is None
 
+    # There is already a registered schema with id 1
     schema = client.get_by_id(1)
-    assert schema is None
+    assert schema is not None
 
     latest = client.get_schema(subject)
     assert latest == (None, None, None, None)
@@ -86,25 +85,33 @@ def test_getters(client):
     assert fetched == parsed
 
 
+# def test_schema_compatibility(client):
+#     adv = load.loads(data_gen.ADVANCED_SCHEMA)
+
+
 def test_multi_register(client):
-    basic = load.loads(data_gen.BASIC_SCHEMA)
-    adv = load.loads(data_gen.ADVANCED_SCHEMA)
-    subject = "test"
+    """
+    Register two different schemas under the same subject
+    with backwards compatibility
+    """
+    version_1 = load.loads(data_gen.USER_V1)
+    version_2 = load.loads(data_gen.USER_V2)
+    subject = "test-user-schema"
 
-    id1 = client.register(subject, basic)
+    id1 = client.register(subject, version_1)
     latest_schema_1 = client.get_schema(subject)
-    client.check_version(subject, basic)
+    client.check_version(subject, version_1)
 
-    id2 = client.register(subject, adv)
+    id2 = client.register(subject, version_2)
     latest_schema_2 = client.get_schema(subject)
-    client.check_version(subject, adv)
+    client.check_version(subject, version_2)
 
     assert id1 != id2
     assert latest_schema_1 != latest_schema_2
     # ensure version is higher
     assert latest_schema_1.version < latest_schema_2.version
 
-    client.register(subject, basic)
+    client.register(subject, version_1)
     latest_schema_3 = client.get_schema(subject)
     # latest should not change with a re-reg
     assert latest_schema_2 == latest_schema_3
@@ -113,7 +120,7 @@ def test_multi_register(client):
 def test_context(client):
     with client as c:
         parsed = load.loads(data_gen.BASIC_SCHEMA)
-        schema_id = c.register("test", parsed)
+        schema_id = c.register("test-basic-schema", parsed)
         assert schema_id > 0
         assert len(c.id_to_schema) == 1
 
@@ -144,7 +151,7 @@ def test_custom_headers():
     assert extra_headers == client.extra_headers
 
 
-def test_override_headers(client, user_schema, mocker):
+def test_override_headers(client, deployment_schema, mocker):
     extra_headers = {"custom-serialization": "application/x-avro-json"}
     client = SchemaRegistryClient(
         "https://127.0.0.1:65534", extra_headers=extra_headers
@@ -175,7 +182,7 @@ def test_override_headers(client, user_schema, mocker):
         "request",
         return_value=Response(200, content={"id": 1}),
     )
-    client.register(subject, user_schema, headers=override_header)
+    client.register(subject, deployment_schema, headers=override_header)
 
     prepare_headers = client.prepare_headers(body="1")
     prepare_headers["custom-serialization"] = "application/avro"

@@ -1,6 +1,5 @@
+import os
 import pytest
-
-from tests.server import mock_registry
 
 from avro.schema import SchemaFromJSONData
 
@@ -10,24 +9,21 @@ from schema_registry.serializer.message_serializer import MessageSerializer
 
 @pytest.fixture
 def client():
-    server = mock_registry.ServerThread(0)
-    server.start()
-    yield SchemaRegistryClient(f"http://127.0.0.1:{server.server.server_port}")
-    server.shutdown()
-    server.join()
+    url = os.getenv("SCHEMA_REGISTRY_URL")
+    yield SchemaRegistryClient(url)
 
 
 @pytest.fixture
-def user_schema():
+def deployment_schema():
     return SchemaFromJSONData(
         {
             "type": "record",
-            "namespace": "com.example",
-            "name": "AvroUsers",
+            "namespace": "com.kubertenes",
+            "name": "AvroDeployment",
             "fields": [
-                {"name": "first_name", "type": "string"},
-                {"name": "last_name", "type": "string"},
-                {"name": "age", "type": "int"},
+                {"name": "image", "type": "string"},
+                {"name": "replicas", "type": "int"},
+                {"name": "port", "type": "int"},
             ],
         }
     )

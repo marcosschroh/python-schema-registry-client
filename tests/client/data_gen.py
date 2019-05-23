@@ -25,16 +25,15 @@ def load_schema_file(fname):
         return f.read()
 
 
-BASIC_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "basic_schema.avsc"))
-
-
 def create_basic_item(i):
     return {"name": random.choice(NAMES) + "-" + str(i), "number": random.choice(AGES)}
 
 
-BASIC_ITEMS = map(create_basic_item, range(1, 20))
-
+BASIC_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "basic_schema.avsc"))
 ADVANCED_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "adv_schema.avsc"))
+BASIC_ITEMS = map(create_basic_item, range(1, 20))
+USER_V1 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v1.avsc"))
+USER_V2 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc"))
 
 
 def create_adv_item(i):
