@@ -1,0 +1,57 @@
+version: '3'
+services:
+  schema-registry-client:
+    tty: true
+    build: .
+    container_name: schema-registry-client
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry-server
+    environment:
+      - KAFKA_BOOSTRAP_SERVER_NAME=kafka
+      - KAFKA_BOOSTRAP_SERVER_PORT=9092
+      - SCHEMA_REGISTRY_URL=http://schema-registry-server:8081
+      - SCHEMA_REGISTRY_SERVER=schema-registry-server
+      - SCHEMA_REGISTRY_SERVER_PORT=8081
+    ports:
+      - "8084:80"
+      - "8000:8000"
+    volumes: 
+      - ./schema_registry:/schema_registry/schema_registry
+      - ./tests:/schema_registry/tests
+  zookeeper:
+    image: "confluentinc/cp-zookeeper"
+    hostname: zookeeper
+    ports:
+      - 32181:32181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+  kafka:
+    image: confluentinc/cp-kafka
+    hostname: kafka
+    container_name: kafka
+    ports:
+    - 9092:9092
+    - 29092:29092
+    depends_on:
+    - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://localhost:29092,PLAINTEXT://kafka:9092
+      - KAFKA_BROKER_ID=1
+  schema-registry-server:
+    image: confluentinc/cp-schema-registry
+    hostname: schema-registry-server
+    container_name: schema-registry-server
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8081:8081"
+    environment:
+      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:32181
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_DEBUG=true

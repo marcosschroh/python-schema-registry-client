@@ -178,14 +178,18 @@ class SchemaRegistryClient(requests.Session):
 
         result, code = self.request(url, method="POST", body=body, headers=headers)
 
+        msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
-            raise ClientError(f"Unauthorized access. Error code: {code}")
+            msg = "Unauthorized access"
         elif code == status.HTTP_409_CONFLICT:
-            raise ClientError(f"Incompatible Avro schema: {code}")
+            msg = "Incompatible Avro schema"
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            raise ClientError(f"Invalid Avro schema: {code}")
+            msg = "Invalid Avro schema"
         elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
-            raise ClientError(f"Unable to register schema. Error code: {code}")
+            msg = "Unable to register schema"
+
+        if msg is not None:
+            raise ClientError(message=msg, code=code, server_traceback=result)
 
         schema_id = result["id"]
         self._cache_schema(avro_schema, schema_id, subject)
@@ -210,7 +214,7 @@ class SchemaRegistryClient(requests.Session):
 
         result, code = self.request(url, method="DELETE", headers=headers)
         if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
-            raise ClientError(f"Unable to delete subject: {result}")
+            raise ClientError("Unable to delete subject", code, server_traceback=result)
         return result
 
     def get_by_id(self, schema_id, headers=None):
@@ -244,10 +248,12 @@ class SchemaRegistryClient(requests.Session):
                 # cache the result
                 self._cache_schema(result, schema_id)
                 return result
-            except ClientError as e:
+            except ClientError:
                 # bad schema - should not happen
                 raise ClientError(
-                    f"Received bad schema (id {schema_id}) from registry: {e}"
+                    f"Received bad schema (id {schema_id})",
+                    code,
+                    server_traceback=result,
                 )
 
     def get_schema(self, subject, version="latest", headers=None):
@@ -426,7 +432,9 @@ class SchemaRegistryClient(requests.Session):
             else:
                 error_msg_suffix = str(compatibility)
             raise ClientError(
-                f"Invalid compatibility level received: {error_msg_suffix}"
+                f"Invalid compatibility level received: {error_msg_suffix}",
+                code,
+                server_traceback=result,
             )
 
         return compatibility
