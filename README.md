@@ -23,6 +23,17 @@ pip install python-schema-registry-client
 
 **Documentation**: [https://marcosschroh.github.io/python-schema-registry-client.io](https://marcosschroh.github.io/python-schema-registry-client)
 
+## When use this library?
+
+Usually, we have a situacion like this:
+
+![Confluent Architecture](docs/img/confluent_architecture.png)
+
+So, our producers/consumers have to serialize/deserialize messages every time that they send/receive from Kafka topics. In this picture, we can imagine a `Faust` application receiving messages (encoded with an Avro schema) and we want to deserialize them, so we can ask the `schema server` to do that for us. In this scenario, the `MessageSerializer` is perfect.
+
+Also, could be a use case that we would like to have an Application only to administrate `Avro Schemas` (register, update compatibilities, delete old schemas, etc.), so the `SchemaRegistryClient` is perfect.
+
+
 ## Run Tests
 
 The tests are run against the `Schema Server` using `docker compose`, so you will need

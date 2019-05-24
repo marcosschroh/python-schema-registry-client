@@ -6,7 +6,7 @@ This section describe how integrate this library with [Faust](https://faust.read
 Avro Schemas, Custom Codecs and Serializers
 -------------------------------------------
 
-Because we want to be sure that the message that we encode are valid, we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html).
+Because we want to be sure that the message that we encode are valid, we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html). Also, [Introduction to Schemas in Apache Kafka with the Confluent Schema Registry](https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321) is a good post to start with `schemas`.
 Avro is used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.
 
 In order to use `avro schemas` with `Faust`, we need to define a custom codec and a custom serializer able to talk with the `schema-registry`, and to do that, we will use the `MessageSerializer`.
