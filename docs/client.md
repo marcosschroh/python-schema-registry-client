@@ -27,35 +27,40 @@ Methods:
 
 #### Get Schema
 
-```python
-get_schema(subject, version="latest", headers=None):
-    If the subject is not found a Nametupled (None,None,None) is returned.
+Get Schema for a given version. If version is `None`, try to resolve the latest schema
 
+```python
+def get_schema(subject, version="latest", headers=None):
+    """
     Args:
         subject (str): subject name
         version (int, optional): version id. If is None, the latest schema is returned
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        SchemaVersion (nametupled): (subject, schema_id, schema, version)
+            SchemaVersion (nametupled): (subject, schema_id, schema, version)
+    """
 ```
 
 #### Get schema by `id`:
 
 ```python
-get_by_id(schema_id, headers=None)
+def get_by_id(schema_id, headers=None):
+    """
     Args:
         schema_id (int): Schema Id
         headers (dict): Extra headers to add on the requests
 
     Returns:
         avro.schema.RecordSchema: Avro Record schema
+    """
 ```
 
 Register a Schema:
 
 ```python
-register(subject, avro_schema, headers=None)
+def register(subject, avro_schema, headers=None):
+    """
     Args:
         subject (str): subject name
         avro_schema (avro.schema.RecordSchema): Avro schema to be registered
@@ -63,24 +68,28 @@ register(subject, avro_schema, headers=None)
 
     Returns:
         int: schema_id
+    """
 ```
 
 #### Delete Schema
 
 ```python
-delete_subject(subject, headers=None)
+def delete_subject(subject, headers=None):
+    """
     Args:
         subject (str): subject name
         headers (dict): Extra headers to add on the requests
 
     Returns:
         int: version of the schema deleted under this subject
+    """
 ```
 
 Check if a schema has already been registered under the specified subject:
 
 ```python
-check_version(subject, avro_schema, headers=None)
+def check_version(subject, avro_schema, headers=None):
+    """
     Args:
         subject (str): subject name
         avro_schema (avro.schema.RecordSchema): Avro schema
@@ -89,12 +98,14 @@ check_version(subject, avro_schema, headers=None)
     Returns:
         int: Schema version
         None: If schema not found.
+    """
 ```
 
 #### Test Compatibility:
 
 ```python
-test_compatibility(subject, avro_schema, version="latest", headers=None)
+def test_compatibility(subject, avro_schema, version="latest", headers=None):
+    """
     By default the latest version is checked against.
 
     Args:
@@ -104,12 +115,14 @@ test_compatibility(subject, avro_schema, version="latest", headers=None)
 
     Returns:
         bool: True if compatible, False if not compatible
+    """
 ```
 
 #### Get Compatibility:
 
 ```python
-get_compatibility(subject, headers=None)
+def get_compatibility(subject, headers=None):
+    """
     Get the current compatibility level for a subject.  Result will be one of:
 
     Args:
@@ -122,12 +135,14 @@ get_compatibility(subject, headers=None)
     Raises:
         ClientError: if the request was unsuccessful or an invalid
         compatibility level was returned
+    """
 ```
 
 #### Update Compatibility:
 
 ```python
-update_compatibility(level, subject, headers=None)
+def update_compatibility(level, subject, headers=None):
+    """
     Update the compatibility level for a subject.
 
     Args:
@@ -136,4 +151,5 @@ update_compatibility(level, subject, headers=None)
 
     Returns:
         None
+    """
 ```
