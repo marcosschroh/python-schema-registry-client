@@ -7,6 +7,8 @@ Usage:
 ------
 
 ```python
+from avro.schema import SchemaFromJSONData
+
 from schema_registry.client import SchemaRegistryClient
 from schema_registry.serializer import MessageSerializer
 
@@ -71,7 +73,8 @@ MessageSerializer
 #### Encode record with a `Schema`:
 
 ```python
-encode_record_with_schema(topic, schema, record, is_key=False)
+def encode_record_with_schema(topic, schema, record, is_key=False):
+    """
     Args:
         topic (str): Topic name
         schema (avro.schema.RecordSchema): Avro Schema
@@ -80,12 +83,14 @@ encode_record_with_schema(topic, schema, record, is_key=False)
 
     Returns:
         bytes: Encoded record with schema ID as bytes
+    """
 ```
 
 #### Encode a record with a `schema id`:
 
 ```python
-encode_record_with_schema_id(schema_id, record, is_key=False):
+def encode_record_with_schema_id(schema_id, record, is_key=False):
+    """
     Args:
         schema_id (int): integer ID
         record (dict): An object to serialize
@@ -93,15 +98,18 @@ encode_record_with_schema_id(schema_id, record, is_key=False):
 
     Returns:
         func: decoder function
+    """
 ```
 
 #### Decode a message encoded previously:
 
 ```python
-decode_message(message, is_key=False)
+def decode_message(message, is_key=False):
+    """
     Args:
         message (str|bytes or None): message key or value to be decoded
 
     Returns:
         dict: Decoded message contents.
+    """
 ```

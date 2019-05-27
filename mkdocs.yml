@@ -11,8 +11,8 @@ nav:
     - Introduction: 'index.md'
     - Message Serializer: 'serializer.md'
     - Faust integration: 'faust.md'
-    - Using the client: 'client.md'
-    - Schema Registry: 'schemaregistry_server.md'
+    - SchemaRegistryClient Api: 'client.md'
+    - Schema Registry Server: 'schemaregistry_server.md'
 
 markdown_extensions:
   - markdown.extensions.codehilite:
