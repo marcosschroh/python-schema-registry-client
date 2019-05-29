@@ -189,7 +189,7 @@ class SchemaRegistryClient(requests.Session):
             msg = "Unable to register schema"
 
         if msg is not None:
-            raise ClientError(message=msg, code=code, server_traceback=result)
+            raise ClientError(message=msg, http_code=code, server_traceback=result)
 
         schema_id = result["id"]
         self._cache_schema(avro_schema, schema_id, subject)
@@ -214,7 +214,9 @@ class SchemaRegistryClient(requests.Session):
 
         result, code = self.request(url, method="DELETE", headers=headers)
         if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
-            raise ClientError("Unable to delete subject", code, server_traceback=result)
+            raise ClientError(
+                "Unable to delete subject", http_code=code, server_traceback=result
+            )
         return result
 
     def get_by_id(self, schema_id, headers=None):
@@ -252,7 +254,7 @@ class SchemaRegistryClient(requests.Session):
                 # bad schema - should not happen
                 raise ClientError(
                     f"Received bad schema (id {schema_id})",
-                    code,
+                    http_code=code,
                     server_traceback=result,
                 )
 
@@ -365,7 +367,9 @@ class SchemaRegistryClient(requests.Session):
             elif status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
                 return result.get("is_compatible")
             else:
-                log.error(f"Unable to check the compatibility: {code}")
+                log.error(
+                    f"Unable to check the compatibility: {code}. Traceback: {result}"
+                )
                 return False
         except Exception as e:
             log.error(f"request() failed: {e}")
@@ -374,10 +378,13 @@ class SchemaRegistryClient(requests.Session):
     def update_compatibility(self, level, subject=None, headers=None):
         """
         PUT /config/(string: subject)
-        Update the compatibility level for a subject. Level must be one of:
+        Update the compatibility level.
+        If subject is None, the compatibility level is global.
 
         Args:
-            level (str): ex: 'NONE','FULL','FORWARD', or 'BACKWARD'
+            level (str): one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+                FULL, FULL_TRANSITIVE, NONE
+            subject (str): Option subject
             headers (dict): Extra headers to add on the requests
 
         Returns:
@@ -394,8 +401,10 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method="PUT", body=body, headers=headers)
         if status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
             return result["compatibility"]
-        else:
-            raise ClientError(f"Unable to update level: {level}. Error code: {code}")
+
+        raise ClientError(
+            f"Unable to update level: {level}.", http_code=code, server_traceback=result
+        )
 
     def get_compatibility(self, subject, headers=None):
         """
@@ -406,8 +415,8 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            str: one of 'NONE','FULL','FORWARD', or 'BACKWARD'
-
+            str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+                FULL, FULL_TRANSITIVE, NONE
         Raises:
             ClientError: if the request was unsuccessful or an invalid
             compatibility level was returned
@@ -421,9 +430,7 @@ class SchemaRegistryClient(requests.Session):
             status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
         )
         if not is_successful_request:
-            raise ClientError(
-                f"Unable to fetch compatibility level. Error code: {code}"
-            )
+            raise ClientError(f"Unable to fetch compatibility level")
 
         compatibility = result.get("compatibilityLevel")
         if compatibility not in utils.VALID_LEVELS:
@@ -433,7 +440,7 @@ class SchemaRegistryClient(requests.Session):
                 error_msg_suffix = str(compatibility)
             raise ClientError(
                 f"Invalid compatibility level received: {error_msg_suffix}",
-                code,
+                http_code=code,
                 server_traceback=result,
             )
 
