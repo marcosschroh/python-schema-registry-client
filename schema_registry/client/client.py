@@ -422,7 +422,8 @@ class SchemaRegistryClient(requests.Session):
         )
         if not is_successful_request:
             raise ClientError(
-                f"Unable to fetch compatibility level. Error code: {code}"
+                f"Unable to fetch compatibility level. Error code: {code}",
+                code
             )
 
         compatibility = result.get("compatibilityLevel")
