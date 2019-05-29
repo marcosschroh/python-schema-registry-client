@@ -42,5 +42,39 @@ def country_schema():
 
 
 @pytest.fixture
+def user_schema_v3():
+    """
+    The user V2 is:
+    {
+        "type": "record",
+        "name": "User",
+        "aliases": ["UserKey"],
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "favorite_number",  "type": ["int", "null"], "default": 42},
+            {"name": "favorite_color", "type": ["string", "null"], "default": "purple"}
+        ]
+    }
+    """
+    return SchemaFromJSONData(
+        {
+            "type": "record",
+            "name": "User",
+            "aliases": ["UserKey"],
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "favorite_number", "type": ["int", "null"], "default": 42},
+                {
+                    "name": "favorite_color",
+                    "type": ["string", "null"],
+                    "default": "purple",
+                },
+                {"name": "country", "type": ["null", "string"], "default": None},
+            ],
+        }
+    )
+
+
+@pytest.fixture
 def message_serializer(client):
     return MessageSerializer(client)

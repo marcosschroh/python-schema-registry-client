@@ -85,10 +85,6 @@ def test_getters(client):
     assert fetched == parsed
 
 
-# def test_schema_compatibility(client):
-#     adv = load.loads(data_gen.ADVANCED_SCHEMA)
-
-
 def test_multi_register(client):
     """
     Register two different schemas under the same subject
@@ -115,6 +111,40 @@ def test_multi_register(client):
     latest_schema_3 = client.get_schema(subject)
     # latest should not change with a re-reg
     assert latest_schema_2 == latest_schema_3
+
+
+def test_compatibility(client, user_schema_v3):
+    """
+    Test the compatibility of a new User Schema against the latest one.
+    The last user schema is the V2.
+    """
+    compatibility = client.test_compatibility("test-user-schema", user_schema_v3)
+    assert compatibility
+
+
+def test_update_compatibility(client):
+    """
+    The latest User V2 schema is  BACKWARD and FORWARDFULL compatibility (FULL).
+    So, we can ipdate compatibility level for the specified subject.
+    """
+    assert client.update_compatibility("FULL", "test-user-schema") == "FULL"
+
+
+def test_get_compatibility(client):
+    """
+    Test latest compatibility for test-user-schema subject
+    """
+    assert client.get_compatibility("test-user-schema") == "FULL"
+
+
+def test_delete_subject(client, user_schema_v3):
+    subject = "subject-to-delete"
+    versions = [load.loads(data_gen.USER_V1), load.loads(data_gen.USER_V2)]
+
+    for version in versions:
+        client.register(subject, version)
+
+    assert client.delete_subject(subject) == [1, 2]
 
 
 def test_context(client):
