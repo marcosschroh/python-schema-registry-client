@@ -430,7 +430,11 @@ class SchemaRegistryClient(requests.Session):
             status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
         )
         if not is_successful_request:
-            raise ClientError(f"Unable to fetch compatibility level")
+            raise ClientError(
+                f"Unable to fetch compatibility level. Error code: {code}",
+                http_code=code,
+                server_traceback=result,
+            )
 
         compatibility = result.get("compatibilityLevel")
         if compatibility not in utils.VALID_LEVELS:
