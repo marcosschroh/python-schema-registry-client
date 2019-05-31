@@ -130,7 +130,8 @@ def get_compatibility(subject, headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        str: one of 'NONE','FULL','FORWARD', or 'BACKWARD'
+        str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+            FULL, FULL_TRANSITIVE, NONE
 
     Raises:
         ClientError: if the request was unsuccessful or an invalid
@@ -144,9 +145,11 @@ def get_compatibility(subject, headers=None):
 def update_compatibility(level, subject, headers=None):
     """
     Update the compatibility level for a subject.
+    If subject is None, the compatibility level is global.
 
     Args:
-        level (str): ex: 'NONE','FULL','FORWARD', or 'BACKWARD'
+        level (str): one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+            FULL, FULL_TRANSITIVE, NONE
         headers (dict): Extra headers to add on the requests
 
     Returns:
