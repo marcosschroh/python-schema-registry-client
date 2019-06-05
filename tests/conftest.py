@@ -1,16 +1,36 @@
 import os
 import pytest
+import logging
 
 from avro.schema import SchemaFromJSONData
 
-from schema_registry.client import SchemaRegistryClient
+from schema_registry.client import SchemaRegistryClient, errors
 from schema_registry.serializer.message_serializer import MessageSerializer
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
 def client():
     url = os.getenv("SCHEMA_REGISTRY_URL")
-    yield SchemaRegistryClient(url)
+    client = SchemaRegistryClient(url)
+    yield client
+
+    subjects = {
+        "test-basic-schema",
+        "test-deployment",
+        "test-country",
+        "test-basic-schema-backup",
+        "test-user-schema",
+        "subject-does-not-exist",
+    }
+
+    # Executing the clean up. Delete all the subjects between tests.
+    for subject in subjects:
+        try:
+            client.delete_subject(subject)
+        except errors.ClientError as exc:
+            logger.info(exc.message)
 
 
 @pytest.fixture

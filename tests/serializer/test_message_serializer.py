@@ -3,7 +3,7 @@ import struct
 
 from schema_registry.client import load
 
-from tests.client import data_gen
+from tests import data_gen
 
 
 def assertMessageIsSame(message, expected, schema_id, message_serializer):

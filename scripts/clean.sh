@@ -15,3 +15,6 @@ fi
 # delete python cache
 find . -iname '*.pyc' -delete
 find . -iname '__pycache__' -delete
+
+docker-compose stop
+yes | docker-compose rm

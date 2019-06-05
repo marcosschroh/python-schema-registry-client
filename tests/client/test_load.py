@@ -1,10 +1,9 @@
 import pytest
-
 import avro
 
 from schema_registry.client import load, errors
 
-from tests.client import data_gen
+from tests import data_gen
 
 
 def test_schema_from_string():

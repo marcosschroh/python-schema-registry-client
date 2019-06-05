@@ -11,7 +11,7 @@ AGES = list(range(1, 10)) + [None]
 
 
 AVRO_SCHEMAS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "avro_schemas"
+    os.path.dirname(os.path.realpath(__file__)), "avro_schemas"
 )
 
 

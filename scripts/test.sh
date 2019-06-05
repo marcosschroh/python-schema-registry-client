@@ -1,10 +1,7 @@
 #!/bin/sh
-# sh tests/test_docker.sh
 
 set -o errexit
 
-docker-compose stop
-yes | docker-compose rm
 docker-compose build
 
 # run tests against schema registry server
