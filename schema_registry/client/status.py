@@ -55,3 +55,23 @@ HTTP_504_GATEWAY_TIMEOUT = 504
 HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505
 HTTP_507_INSUFFICIENT_STORAGE = 507
 HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511
+
+
+def is_informational(code):
+    return HTTP_100_CONTINUE <= code < HTTP_200_OK
+
+
+def is_success(code):
+    return HTTP_200_OK <= code < HTTP_300_MULTIPLE_CHOICES
+
+
+def is_redirect(code):
+    return HTTP_300_MULTIPLE_CHOICES <= code < HTTP_400_BAD_REQUEST
+
+
+def is_client_error(code):
+    return HTTP_400_BAD_REQUEST <= code < HTTP_500_INTERNAL_SERVER_ERROR
+
+
+def is_server_error(code):
+    return HTTP_500_INTERNAL_SERVER_ERROR <= code <= 599
