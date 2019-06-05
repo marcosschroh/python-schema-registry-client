@@ -185,7 +185,7 @@ class SchemaRegistryClient(requests.Session):
             msg = "Incompatible Avro schema"
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             msg = "Invalid Avro schema"
-        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
+        elif not status.is_success(code):
             msg = "Unable to register schema"
 
         if msg is not None:
@@ -213,7 +213,7 @@ class SchemaRegistryClient(requests.Session):
         url = "/".join([self.url, "subjects", subject])
 
         result, code = self.request(url, method="DELETE", headers=headers)
-        if not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
+        if not status.is_success(code):
             raise ClientError(
                 "Unable to delete subject", http_code=code, server_traceback=result
             )
@@ -239,7 +239,7 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
-        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
+        elif not status.is_success(code):
             log.error(f"Unable to get schema for the specific ID: {code}")
         else:
             # need to parse the schema
@@ -282,7 +282,7 @@ class SchemaRegistryClient(requests.Session):
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             log.error(f"Invalid version: {code}")
             return utils.SchemaVersion(None, None, None, None)
-        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
+        elif not status.is_success(code):
             return utils.SchemaVersion(None, None, None, None)
         schema_id = result["id"]
         version = result["version"]
@@ -328,7 +328,7 @@ class SchemaRegistryClient(requests.Session):
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Not found: {code}")
             return
-        elif not (status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES):
+        elif not status.is_success(code):
             log.error(f"Unable to get version of a schema: {code}")
             return
 
@@ -364,7 +364,7 @@ class SchemaRegistryClient(requests.Session):
             elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
                 log.error(f"Invalid subject or schema: {code}")
                 return False
-            elif status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
+            elif status.is_success(code):
                 return result.get("is_compatible")
             else:
                 log.error(
@@ -399,7 +399,8 @@ class SchemaRegistryClient(requests.Session):
 
         body = {"compatibility": level}
         result, code = self.request(url, method="PUT", body=body, headers=headers)
-        if status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES:
+
+        if status.is_success(code):
             return result["compatibility"]
 
         raise ClientError(
@@ -426,10 +427,8 @@ class SchemaRegistryClient(requests.Session):
             url = "/".join([url, subject])
 
         result, code = self.request(url, headers=headers)
-        is_successful_request = (
-            status.HTTP_200_OK <= code < status.HTTP_300_MULTIPLE_CHOICES
-        )
-        if not is_successful_request:
+
+        if not status.is_success(code):
             raise ClientError(
                 f"Unable to fetch compatibility level. Error code: {code}",
                 http_code=code,

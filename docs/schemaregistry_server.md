@@ -38,6 +38,22 @@ Schema Registry is a distributed storage layer for Avro Schemas which uses Kafka
 
 `POST /compatibility/subjects/(string: subject)/versions/(versionId: version)` - Test input schema against a particular version of a subject's schema for compatibility. Note that the compatibility level applied for the check is the configured compatibility level for the subject (http:get:: /config/(string: subject)). If this subject's compatibility level was never changed, then the global compatibility level applies (http:get:: /config).
 
+These are the compatibility types:
+
+*BACKWARD*: (default) consumers using the new schema can read data written by producers using the latest registered schema
+
+*BACKWARD_TRANSITIVE*: consumers using the new schema can read data written by producers using all previously registered schemas
+
+*FORWARD*: consumers using the latest registered schema can read data written by producers using the new schema
+
+*FORWARD_TRANSITIVE*: consumers using all previously registered schemas can read data written by producers using the new schema
+
+*FULL*: the new schema is forward and backward compatible with the latest registered schema
+
+*FULL_TRANSITIVE*: the new schema is forward and backward compatible with all previously registered schemas
+
+*NONE*: schema compatibility checks are disabled
+
 ### Config
 
 `GET /config` - Get global compatibility level.
