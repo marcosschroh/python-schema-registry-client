@@ -67,8 +67,8 @@ class MessageSerializer:
 
     def encode_record_with_schema(self, subject, schema, record, is_key=False):
         """
-        Given a parsed avro schema, encode a record for the given topic.  The
-        record is expected to be a dictionary.
+        Given a parsed avro schema, encode a record for the given subject.
+        The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
 
         Args:

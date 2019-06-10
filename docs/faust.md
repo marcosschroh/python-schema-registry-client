@@ -37,9 +37,9 @@ from schema_registry.serializer import MessageSerializer
 
 class AvroSerializer(MessageSerializer, Codec):
 
-    def __init__(self, schema_registry_client, destination_topic, schema, is_key=False):
+    def __init__(self, schema_registry_client, schema_subject, schema, is_key=False):
         self.schema_registry_client = schema_registry_client
-        self.destination_topic = destination_topic
+        self.schema_subject = schema_subject
         self.schema = schema
         self.is_key = is_key
 
@@ -60,9 +60,9 @@ class AvroSerializer(MessageSerializer, Codec):
 
         # method available on MessageSerializer
         return self.encode_record_with_schema(
-            topic=self.destination_topic,
-            schema=self.schema,
-            record=obj,
+            self.schema_subject,
+            self.schema,
+            obj,
             is_key=self.is_key,
         )
 ```
@@ -93,9 +93,10 @@ avro_user_schema = SchemaFromJSONData({
 })
 
 avro_user_serializer = AvroSerializer(
-        schema_registry_client=client,
-        destination_topic="users",
-        schema=avro_user_schema)
+    client,
+    "users",
+    avro_user_schema
+)
 
 
 # function used to register the codec
