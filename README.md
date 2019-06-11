@@ -17,6 +17,11 @@ python 3.6+, avro-python3, fastavro, requests
 ```
 pip install python-schema-registry-client
 ```
+If you want the `Faust` functionality:
+
+```
+pip install python-schema-registry-client[faust]
+```
 
 ## Client API, Serializer, Faust Integration and Schema Server description
 

@@ -19,6 +19,12 @@ python 3.6+, avro-python3, fastavro, requests
 pip install python-schema-registry-client
 ```
 
+If you want the `Faust` functionality:
+
+```
+pip install python-schema-registry-client[faust]
+```
+
 ## When use this library?
 
 Usually, we have a situacion like this:

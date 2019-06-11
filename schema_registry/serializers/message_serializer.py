@@ -8,11 +8,7 @@ import avro
 import avro.io
 
 from schema_registry.client.errors import ClientError
-from schema_registry.serializer.errors import (
-    SerializerError,
-    KeySerializerError,
-    ValueSerializerError,
-)
+from .errors import SerializerError, KeySerializerError, ValueSerializerError
 
 log = logging.getLogger(__name__)
 
