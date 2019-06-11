@@ -114,4 +114,4 @@ async def publish_users():
     await users.send(value=user, value_serializer=avro_user_serializer)
 ```
 
-The full example is here[https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py]
+The full example is [here](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py)
