@@ -5,7 +5,7 @@ import logging
 from avro.schema import SchemaFromJSONData
 
 from schema_registry.client import SchemaRegistryClient, errors
-from schema_registry.serializer.message_serializer import MessageSerializer
+from schema_registry.serializers import MessageSerializer
 
 logger = logging.getLogger(__name__)
 

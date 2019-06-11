@@ -25,57 +25,15 @@ For our demostration, let's imagine that we have the folling `schema`:
 }
 ```
 
-Let's create the serializer codec:
-
-```python
-# codecs.avro.py
-from faust.serializers.codecs import Codec
-
-# get from the library
-from schema_registry.serializer import MessageSerializer
-
-
-class AvroSerializer(MessageSerializer, Codec):
-
-    def __init__(self, schema_registry_client, schema_subject, schema, is_key=False):
-        self.schema_registry_client = schema_registry_client
-        self.schema_subject = schema_subject
-        self.schema = schema
-        self.is_key = is_key
-
-        MessageSerializer.__init__(self, schema_registry_client)
-        Codec.__init__(self)
-
-    def _loads(self, s: bytes):
-        # method available on MessageSerializer
-        return self.decode_message(s)
-
-    def _dumps(self, obj):
-        """
-        Given a parsed avro schema, encode a record for the given topic.  The
-        record is expected to be a dictionary.
-
-        The schema is registered with the subject of 'topic-value'
-        """
-
-        # method available on MessageSerializer
-        return self.encode_record_with_schema(
-            self.schema_subject,
-            self.schema,
-            obj,
-            is_key=self.is_key,
-        )
-```
-
-Let's register the custom `codec serializer`
+Let's register the custom `codec`
 
 ```python
 # codecs.codec.py
 
 from avro.schema import SchemaFromJSONData
-from schema_registry.client import SchemaRegistryClient
 
-from codecs.avro import AvroSerializer
+from schema_registry.client import SchemaRegistryClient
+from schema_registry.serializers import FaustSerializer
 
 # create an instance of the `SchemaRegistryClient`
 client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
@@ -92,11 +50,7 @@ avro_user_schema = SchemaFromJSONData({
      ]
 })
 
-avro_user_serializer = AvroSerializer(
-    client,
-    "users",
-    avro_user_schema
-)
+avro_user_serializer = FaustSerializer(client, "users", avro_user_schema)
 
 
 # function used to register the codec
@@ -159,3 +113,5 @@ async def publish_users():
     user = {"first_name": "foo", "last_name": "bar"}
     await users.send(value=user, value_serializer=avro_user_serializer)
 ```
+
+The full example is here[https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py]
