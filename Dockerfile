@@ -2,7 +2,7 @@ FROM python:3.7-slim
     
 RUN echo 'deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends apt-utils
+    && apt-get install -y --no-install-recommends apt-utils git
 
 ENV PIP_FORMAT=legacy
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1

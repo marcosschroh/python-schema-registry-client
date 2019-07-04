@@ -16,6 +16,6 @@ matrix:
   include:	
     - name: Test Python 3.7
       python: 3.7
-      script: ./scripts/test.sh
+      script: ./scripts/clean.sh && ./scripts/test.sh
     - name: Black template	
       script: black --check schema_registry tests setup.py
