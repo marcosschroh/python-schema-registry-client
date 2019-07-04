@@ -20,6 +20,8 @@ services:
     volumes: 
       - ./schema_registry:/schema_registry/schema_registry
       - ./tests:/schema_registry/tests
+      - ./scripts:/schema_registry/scripts
+      - ./.git:/schema_registry/.git
   zookeeper:
     image: "confluentinc/cp-zookeeper"
     hostname: zookeeper
