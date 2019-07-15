@@ -2,11 +2,11 @@ import json
 import logging
 import requests
 from collections import defaultdict
+from avro.schema import MappingProxyEncoder
 
 from schema_registry.client.errors import ClientError
 from schema_registry.client.load import loads
 from schema_registry.client import status, utils
-
 
 log = logging.getLogger(__name__)
 
@@ -174,7 +174,7 @@ class SchemaRegistryClient(requests.Session):
 
         url = "/".join([self.url, "subjects", subject, "versions"])
 
-        body = {"schema": json.dumps(avro_schema.to_json())}
+        body = {"schema": json.dumps(avro_schema.to_json(), cls=MappingProxyEncoder)}
 
         result, code = self.request(url, method="POST", body=body, headers=headers)
 
