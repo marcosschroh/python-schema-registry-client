@@ -11,7 +11,6 @@ def serializer_factory(schema_registry_client, schema_subject, schema, is_key=Fa
     assert (
         faust is not None
     ), "'faust' must be installed in order to use FaustSerializer"
-    print("This is faust", faust)
 
     class FaustSerializer(MessageSerializer, faust.Codec):
         def __init__(
