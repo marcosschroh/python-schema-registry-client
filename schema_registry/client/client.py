@@ -4,7 +4,7 @@ import requests
 from collections import defaultdict
 
 from schema_registry.client.errors import ClientError
-from schema_registry.client.load import loads
+from schema_registry.client.schema import load_schema
 from schema_registry.client import status, utils
 
 
@@ -174,7 +174,7 @@ class SchemaRegistryClient(requests.Session):
 
         url = "/".join([self.url, "subjects", subject, "versions"])
 
-        body = {"schema": json.dumps(avro_schema.to_json())}
+        body = {"schema": json.dumps(avro_schema.schema)}
 
         result, code = self.request(url, method="POST", body=body, headers=headers)
 
@@ -245,7 +245,7 @@ class SchemaRegistryClient(requests.Session):
             # need to parse the schema
             schema_str = result.get("schema")
             try:
-                result = loads(schema_str)
+                result = load_schema(schema_str)
 
                 # cache the result
                 self._cache_schema(result, schema_id)
@@ -290,7 +290,7 @@ class SchemaRegistryClient(requests.Session):
             schema = self.id_to_schema[schema_id]
         else:
             try:
-                schema = loads(result["schema"])
+                schema = load_schema(result["schema"])
             except ClientError:
                 # bad schema - should not happen
                 raise
@@ -322,7 +322,7 @@ class SchemaRegistryClient(requests.Session):
             return version
 
         url = "/".join([self.url, "subjects", subject])
-        body = {"schema": json.dumps(avro_schema.to_json())}
+        body = {"schema": json.dumps(avro_schema.schema)}
 
         result, code = self.request(url, method="POST", body=body, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
@@ -355,7 +355,7 @@ class SchemaRegistryClient(requests.Session):
         url = "/".join(
             [self.url, "compatibility", "subjects", subject, "versions", str(version)]
         )
-        body = {"schema": json.dumps(avro_schema.to_json())}
+        body = {"schema": json.dumps(avro_schema.schema)}
         try:
             result, code = self.request(url, method="POST", body=body, headers=headers)
             if code == status.HTTP_404_NOT_FOUND:

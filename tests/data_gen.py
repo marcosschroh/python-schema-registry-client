@@ -1,18 +1,18 @@
 import os
 import os.path
-import random
+import faker
+import datetime
 
-from avro import schema
-from avro.datafile import DataFileWriter
-from avro.io import DatumWriter
-
-NAMES = ["stefan", "melanie", "nick", "darrel", "kent", "simon"]
-AGES = list(range(1, 10)) + [None]
-
+fake = faker.Faker()
+epoch = datetime.datetime.utcfromtimestamp(0)
 
 AVRO_SCHEMAS_DIR = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "avro_schemas"
 )
+
+
+def unix_time_millis(dt):
+    return (dt - epoch).total_seconds() * 1000.0
 
 
 def get_schema_path(fname):
@@ -26,14 +26,7 @@ def load_schema_file(fname):
 
 
 def create_basic_item(i):
-    return {"name": random.choice(NAMES) + "-" + str(i), "number": random.choice(AGES)}
-
-
-BASIC_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "basic_schema.avsc"))
-ADVANCED_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "adv_schema.avsc"))
-BASIC_ITEMS = map(create_basic_item, range(1, 20))
-USER_V1 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v1.avsc"))
-USER_V2 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc"))
+    return {"name": fake.first_name(), "number": fake.pyint(max=100)}
 
 
 def create_adv_item(i):
@@ -42,28 +35,26 @@ def create_adv_item(i):
     basic = create_basic_item(i)
     basic["family"] = dict(map(lambda bi: (bi["name"], bi), family))
     basic["friends"] = dict(map(lambda bi: (bi["name"], bi), friends))
+
     return basic
 
 
+def create_logical_item():
+    return {
+        "metadata": {
+            "timestamp": unix_time_millis(fake.past_datetime()),
+            "total": fake.pydecimal(left_digits=2, right_digits=2),
+        }
+    }
+
+
+BASIC_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "basic_schema.avsc"))
+ADVANCED_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "adv_schema.avsc"))
+BASIC_ITEMS = map(create_basic_item, range(1, 20))
+USER_V1 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v1.avsc"))
+USER_V2 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc"))
+LOGICAL_TYPES_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "logical_types_schema.avsc"))
 ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
-
-
-def _write_items(base_name, schema_str, items):
-    avro_schema = schema.Parse(schema_str)
-    avro_file = base_name + ".avro"
-    with DataFileWriter(open(avro_file, "w"), DatumWriter(), avro_schema) as writer:
-        for i in items:
-            writer.append(i)
-    writer.close
-    return avro_file
-
-
-def write_basic_items(base_name):
-    return _write_items(base_name, BASIC_SCHEMA, BASIC_ITEMS)
-
-
-def write_advanced_items(base_name):
-    return _write_items(base_name, ADVANCED_SCHEMA, ADVANCED_ITEMS)
 
 
 def cleanup(files):
@@ -72,7 +63,3 @@ def cleanup(files):
             os.remove(f)
         except OSError:
             pass
-
-
-if __name__ == "__main__":
-    write_advanced_items("advanced")
