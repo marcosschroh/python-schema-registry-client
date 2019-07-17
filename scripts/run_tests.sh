@@ -1,6 +1,4 @@
 #!/bin/sh
 
-tests=${1-"./tests"}
-
-pytest --cov=schema_registry ${tests}
+pytest --cov=schema_registry ${1}
 codecov && codecov --token=$CODECOV_TOKEN

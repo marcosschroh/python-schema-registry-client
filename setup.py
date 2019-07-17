@@ -5,12 +5,12 @@
 
 from setuptools import setup, find_packages
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["avro-python3>=1.9", "fastavro", "requests>=2.22.0"]
+requires = ["fastavro>=0.22.3", "requests>=2.22.0"]
 
 setup(
     name="python-schema-registry-client",

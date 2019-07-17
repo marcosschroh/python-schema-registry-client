@@ -7,9 +7,7 @@ Usage:
 ------
 
 ```python
-from avro.schema import SchemaFromJSONData
-
-from schema_registry.client import SchemaRegistryClient
+from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.serializer import MessageSerializer
 
 client = SchemaRegistryClient("http://127.0.0.1:8080")
@@ -17,7 +15,7 @@ client = SchemaRegistryClient("http://127.0.0.1:8080")
 message_serielizer = MessageSerializer(client)
 
 # Let's imagine that we have the foillowing schema.
-avro_user_schema = SchemaFromJSONData({
+avro_user_schema = schema.AvroSchema({
     "type": "record",
     "namespace": "com.example",
     "name": "AvroUsers",
