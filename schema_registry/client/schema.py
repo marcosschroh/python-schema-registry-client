@@ -1,8 +1,6 @@
 import json
 import fastavro
 
-# from .errors import ClientError
-
 
 class AvroSchema:
     def __init__(self, schema):
@@ -26,17 +24,6 @@ class AvroSchema:
 
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
-
-
-# def AvroSchema(schema):
-#     """
-#     Parse a schema given a schema string.
-#     The parse_schema assures that the schema is valid
-#     """
-#     try:
-#         return AvroSchema(schema)
-#     except (fastavro.schema.SchemaParseException, fastavro.schema.UnknownType) as e:
-#         raise ClientError(f"Schema parse failed: {e}")
 
 
 def load(fp):

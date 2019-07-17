@@ -1,5 +1,5 @@
-fastavro==0.22.3
-requests==2.22.0
+fastavro>=0.22.3
+requests>=2.22.0
 faust>=1.7.0
 
 # Code quality
