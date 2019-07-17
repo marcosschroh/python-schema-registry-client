@@ -8,11 +8,11 @@ Usage:
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializer import MessageSerializer
+from schema_registry.serializers import MessageSerializer
 
 client = SchemaRegistryClient("http://127.0.0.1:8080")
 
-message_serielizer = MessageSerializer(client)
+message_serializer = MessageSerializer(client)
 
 # Let's imagine that we have the foillowing schema.
 avro_user_schema = schema.AvroSchema({
@@ -53,10 +53,9 @@ bad_record = {
 }
 
 message_serializer.encode_record_with_schema(
-    "user", user_schema, bad_record)
-
-# Exception!!
-TypeError: unsupported operand type(s) for <<: 'str' and 'int'
+    "user", avro_user_schema, bad_record)
+# results in an error:
+#   TypeError: unsupported operand type(s) for <<: 'str' and 'int'
 ```
 
 Class and Methods:
