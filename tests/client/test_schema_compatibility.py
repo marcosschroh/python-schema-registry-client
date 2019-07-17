@@ -1,4 +1,7 @@
-from schema_registry.client import schema
+import requests
+import pytest
+
+from schema_registry.client import schema, errors
 
 from tests import data_gen
 
@@ -20,7 +23,21 @@ def test_update_compatibility(client):
     The latest User V2 schema is  BACKWARD and FORWARDFULL compatibility (FULL).
     So, we can ipdate compatibility level for the specified subject.
     """
-    assert client.update_compatibility("FULL", "test-user-schema") == "FULL"
+    assert client.update_compatibility("FULL", "test-user-schema")
+
+
+def test_update_compatibility_fail(client, response_klass, mocker):
+    http_code = 404
+    mocker.patch.object(
+        requests.sessions.Session,
+        "request",
+        return_value=response_klass(http_code),
+    )
+
+    with pytest.raises(errors.ClientError) as excinfo:
+        client.update_compatibility("FULL", "test-user-schema")
+
+        assert excinfo.http_code == http_code
 
 
 def test_get_compatibility(client):

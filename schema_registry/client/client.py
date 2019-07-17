@@ -7,7 +7,6 @@ from schema_registry.client.errors import ClientError
 from schema_registry.client.schema import AvroSchema
 from schema_registry.client import status, utils
 
-
 log = logging.getLogger(__name__)
 
 
@@ -263,8 +262,6 @@ class SchemaRegistryClient(requests.Session):
         GET /subjects/(string: subject)/versions/(versionId: version)
         Get a specific version of the schema registered under this subject
 
-        If the subject is not found a Nametupled (None,None,None) is returned.
-
         Args:
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
@@ -272,29 +269,35 @@ class SchemaRegistryClient(requests.Session):
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
+
+            None: If server returns a not success response:
+                404: Schema not found
+                422: Unprocessable entity
+                ~ (200 - 299): Not success
         """
         url = "/".join([self.url, "subjects", subject, "versions", str(version)])
 
         result, code = self.request(url, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             log.error(f"Schema not found: {code}")
-            return utils.SchemaVersion(None, None, None, None)
+            return
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             log.error(f"Invalid version: {code}")
-            return utils.SchemaVersion(None, None, None, None)
+            return
         elif not status.is_success(code):
-            return utils.SchemaVersion(None, None, None, None)
-        schema_id = result["id"]
-        version = result["version"]
+            log.error(f"Not success version: {code}")
+            return
+
+        schema_id = result.get("id")
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
         else:
             try:
                 schema = AvroSchema(result["schema"])
             except ClientError:
-                # bad schema - should not happen
                 raise
 
+        version = result.get("version")
         self._cache_schema(schema, schema_id, subject, version)
 
         return utils.SchemaVersion(subject, schema_id, schema, version)
@@ -312,14 +315,22 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            int: Schema version
+            dict:
+                subject (string) -- Name of the subject that this schema is registered under
+                id (int) -- Globally unique identifier of the schema
+                version (int) -- Version of the returned schema
+                schema (dict) -- The Avro schema
+
             None: If schema not found.
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
         version = schemas_to_version.get(avro_schema)
 
-        if version is not None:
-            return version
+        schemas_to_id = self.subject_to_schema_ids[subject]
+        schema_id = schemas_to_id.get(avro_schema)
+
+        if all((version, schema_id)):
+            return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url = "/".join([self.url, "subjects", subject])
         body = {"schema": json.dumps(avro_schema.schema)}
@@ -332,11 +343,11 @@ class SchemaRegistryClient(requests.Session):
             log.error(f"Unable to get version of a schema: {code}")
             return
 
-        schema_id = result["id"]
-        version = result["version"]
+        schema_id = result.get("id")
+        version = result.get("version")
         self._cache_schema(avro_schema, schema_id, subject, version)
 
-        return version
+        return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
 
     def test_compatibility(self, subject, avro_schema, version="latest", headers=None):
         """
@@ -350,7 +361,7 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            bool: True if compatible, False if not compatible
+            bool: True if schema given compatible, False otherwise
         """
         url = "/".join(
             [self.url, "compatibility", "subjects", subject, "versions", str(version)]
@@ -388,7 +399,10 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            None
+            bool: True if compatibility was updated
+
+        Raises:
+            ClientError: if the request was unsuccessful or an invalid
         """
         if level not in utils.VALID_LEVELS:
             raise ClientError(f"Invalid level specified: {level}")
@@ -401,7 +415,7 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method="PUT", body=body, headers=headers)
 
         if status.is_success(code):
-            return result["compatibility"]
+            return True
 
         raise ClientError(
             f"Unable to update level: {level}.", http_code=code, server_traceback=result

@@ -40,7 +40,7 @@ def test_custom_headers():
     assert extra_headers == client.extra_headers
 
 
-def test_override_headers(client, deployment_schema, mocker):
+def test_override_headers(client, deployment_schema, mocker, response_klass):
     extra_headers = {"custom-serialization": "application/x-avro-json"}
     client = SchemaRegistryClient(
         "https://127.0.0.1:65534", extra_headers=extra_headers
@@ -51,25 +51,13 @@ def test_override_headers(client, deployment_schema, mocker):
         == "application/x-avro-json"
     )
 
-    class Response:
-        def __init__(self, status_code, content=None):
-            self.status_code = status_code
-
-            if content is None:
-                content = {}
-
-            self.content = content
-
-        def json(self):
-            return self.content
-
     subject = "test"
     override_header = {"custom-serialization": "application/avro"}
 
     request_patch = mocker.patch.object(
         requests.sessions.Session,
         "request",
-        return_value=Response(200, content={"id": 1}),
+        return_value=response_klass(200, content={"id": 1}),
     )
     client.register(subject, deployment_schema, headers=override_header)
 
