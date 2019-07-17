@@ -137,9 +137,7 @@ class MessageSerializer:
         if writer_schema is None:
             raise SerializerError(f"unable to fetch schema with id {schema_id}")
 
-        reader_schema = (
-            self.reader_key_schema if is_key else self.reader_value_schema
-        )
+        reader_schema = self.reader_key_schema if is_key else self.reader_value_schema
 
         self.id_to_decoder_func[schema_id] = lambda payload: schemaless_reader(
             payload, writer_schema.schema, reader_schema

@@ -1,12 +1,13 @@
 import pytest
+import fastavro
 
-from schema_registry.client import schema, errors
+from schema_registry.client import schema
 
 from tests import data_gen
 
 
 def test_schema_from_string():
-    parsed = schema.load_schema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
 
     assert isinstance(parsed, schema.AvroSchema)
 
@@ -17,6 +18,5 @@ def test_schema_from_file():
 
 
 def test_schema_load_parse_error():
-    with pytest.raises(errors.ClientError) as excinfo:
-        schema.load(data_gen.get_schema_path("invalid_scema.avsc"))
-    assert "Schema parse failed:" in str(excinfo.value)
+    with pytest.raises(fastavro.schema.UnknownType):
+        schema.load(data_gen.get_schema_path("invalid_schema.avsc"))

@@ -4,12 +4,12 @@ from tests import data_gen
 
 
 def test_getters(client):
-    parsed = schema_loader.load_schema(data_gen.BASIC_SCHEMA)
+    parsed = schema_loader.AvroSchema(data_gen.BASIC_SCHEMA)
     subject = "subject-does-not-exist"
     version = client.check_version(subject, parsed)
     assert version is None
 
-    parsed_basic = schema_loader.load_schema(data_gen.BASIC_SCHEMA)
+    parsed_basic = schema_loader.AvroSchema(data_gen.BASIC_SCHEMA)
     client.register("test-basic-schema", parsed_basic)
     schema = client.get_by_id(1)
     assert schema is not None

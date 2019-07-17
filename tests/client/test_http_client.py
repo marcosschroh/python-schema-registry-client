@@ -8,7 +8,7 @@ from tests import data_gen
 
 def test_context(client):
     with client as c:
-        parsed = schema.load_schema(data_gen.BASIC_SCHEMA)
+        parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
         schema_id = c.register("test-basic-schema", parsed)
         assert schema_id > 0
         assert len(c.id_to_schema) == 1

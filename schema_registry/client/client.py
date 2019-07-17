@@ -4,7 +4,7 @@ import requests
 from collections import defaultdict
 
 from schema_registry.client.errors import ClientError
-from schema_registry.client.schema import load_schema
+from schema_registry.client.schema import AvroSchema
 from schema_registry.client import status, utils
 
 
@@ -245,7 +245,7 @@ class SchemaRegistryClient(requests.Session):
             # need to parse the schema
             schema_str = result.get("schema")
             try:
-                result = load_schema(schema_str)
+                result = AvroSchema(schema_str)
 
                 # cache the result
                 self._cache_schema(result, schema_id)
@@ -290,7 +290,7 @@ class SchemaRegistryClient(requests.Session):
             schema = self.id_to_schema[schema_id]
         else:
             try:
-                schema = load_schema(result["schema"])
+                schema = AvroSchema(result["schema"])
             except ClientError:
                 # bad schema - should not happen
                 raise

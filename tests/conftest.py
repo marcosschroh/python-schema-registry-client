@@ -34,26 +34,30 @@ def client():
 
 @pytest.fixture
 def deployment_schema():
-    return schema.load_schema({
-        "type": "record",
-        "namespace": "com.kubertenes",
-        "name": "AvroDeployment",
-        "fields": [
-            {"name": "image", "type": "string"},
-            {"name": "replicas", "type": "int"},
-            {"name": "port", "type": "int"},
-        ],
-    })
+    return schema.AvroSchema(
+        {
+            "type": "record",
+            "namespace": "com.kubertenes",
+            "name": "AvroDeployment",
+            "fields": [
+                {"name": "image", "type": "string"},
+                {"name": "replicas", "type": "int"},
+                {"name": "port", "type": "int"},
+            ],
+        }
+    )
 
 
 @pytest.fixture
 def country_schema():
-    return schema.load_schema({
-        "type": "record",
-        "namespace": "com.example",
-        "name": "AvroSomeSchema",
-        "fields": [{"name": "country", "type": "string"}],
-    })
+    return schema.AvroSchema(
+        {
+            "type": "record",
+            "namespace": "com.example",
+            "name": "AvroSomeSchema",
+            "fields": [{"name": "country", "type": "string"}],
+        }
+    )
 
 
 @pytest.fixture
@@ -71,21 +75,23 @@ def user_schema_v3():
         ]
     }
     """
-    return schema.load_schema({
-        "type": "record",
-        "name": "User",
-        "aliases": ["UserKey"],
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "favorite_number", "type": ["int", "null"], "default": 42},
-            {
-                "name": "favorite_color",
-                "type": ["string", "null"],
-                "default": "purple",
-            },
-            {"name": "country", "type": ["null", "string"], "default": None},
-        ],
-    })
+    return schema.AvroSchema(
+        {
+            "type": "record",
+            "name": "User",
+            "aliases": ["UserKey"],
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "favorite_number", "type": ["int", "null"], "default": 42},
+                {
+                    "name": "favorite_color",
+                    "type": ["string", "null"],
+                    "default": "purple",
+                },
+                {"name": "country", "type": ["null", "string"], "default": None},
+            ],
+        }
+    )
 
 
 @pytest.fixture

@@ -53,7 +53,9 @@ ADVANCED_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "adv_schema.av
 BASIC_ITEMS = map(create_basic_item, range(1, 20))
 USER_V1 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v1.avsc"))
 USER_V2 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc"))
-LOGICAL_TYPES_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "logical_types_schema.avsc"))
+LOGICAL_TYPES_SCHEMA = load_schema_file(
+    os.path.join(AVRO_SCHEMAS_DIR, "logical_types_schema.avsc")
+)
 ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
 
 

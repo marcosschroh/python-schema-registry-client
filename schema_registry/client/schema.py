@@ -1,11 +1,10 @@
 import json
 import fastavro
 
-from .errors import ClientError
+# from .errors import ClientError
 
 
 class AvroSchema:
-
     def __init__(self, schema):
         if isinstance(schema, str):
             schema = json.loads(schema)
@@ -29,19 +28,19 @@ class AvroSchema:
         return self.__hash__() == other.__hash__()
 
 
-def load_schema(schema):
-    """
-    Parse a schema given a schema string.
-    The parse_schema assures that the schema is valid
-    """
-    try:
-        return AvroSchema(schema)
-    except (fastavro.schema.SchemaParseException, fastavro.schema.UnknownType) as e:
-        raise ClientError(f"Schema parse failed: {e}")
+# def AvroSchema(schema):
+#     """
+#     Parse a schema given a schema string.
+#     The parse_schema assures that the schema is valid
+#     """
+#     try:
+#         return AvroSchema(schema)
+#     except (fastavro.schema.SchemaParseException, fastavro.schema.UnknownType) as e:
+#         raise ClientError(f"Schema parse failed: {e}")
 
 
 def load(fp):
     """Parse a schema from a file path"""
     with open(fp, mode="r") as f:
         content = f.read()
-        return load_schema(content)
+        return AvroSchema(content)
