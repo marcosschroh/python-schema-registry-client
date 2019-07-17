@@ -29,9 +29,7 @@ def test_update_compatibility(client):
 def test_update_compatibility_fail(client, response_klass, mocker):
     http_code = 404
     mocker.patch.object(
-        requests.sessions.Session,
-        "request",
-        return_value=response_klass(http_code),
+        requests.sessions.Session, "request", return_value=response_klass(http_code)
     )
 
     with pytest.raises(errors.ClientError) as excinfo:

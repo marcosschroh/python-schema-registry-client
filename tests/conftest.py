@@ -22,9 +22,7 @@ flat_schemas = {
         "type": "record",
         "namespace": "com.example",
         "name": "AvroSomeSchema",
-        "fields": [
-            {"name": "country", "type": "string"}
-        ],
+        "fields": [{"name": "country", "type": "string"}],
     },
     "user_schema_v3": {
         "type": "record",
@@ -33,14 +31,10 @@ flat_schemas = {
         "fields": [
             {"name": "name", "type": "string"},
             {"name": "favorite_number", "type": ["int", "null"], "default": 42},
-            {
-                "name": "favorite_color",
-                "type": ["string", "null"],
-                "default": "purple",
-            },
+            {"name": "favorite_color", "type": ["string", "null"], "default": "purple"},
             {"name": "country", "type": ["null", "string"], "default": None},
         ],
-    }
+    },
 }
 
 
