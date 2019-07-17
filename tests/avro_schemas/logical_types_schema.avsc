@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "visit",
+  "fields": [
+    {
+      "name": "metadata",
+      "type": {
+        "type": "record",
+        "name": "metadata_record",
+        "fields": [
+          {
+            "name": "timestamp",
+            "type": {
+              "type": "long",
+              "logicalType": "timestamp-millis"
+            }
+          },
+          {
+            "name": "total",
+            "type": {
+              "type": "bytes",
+              "logicalType": "decimal",
+              "precision": 4,
+              "scale": 2
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

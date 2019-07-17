@@ -29,10 +29,7 @@ Let's register the custom `codec`
 
 ```python
 # codecs.codec.py
-
-from avro.schema import SchemaFromJSONData
-
-from schema_registry.client import SchemaRegistryClient
+from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.serializers import FaustSerializer
 
 # create an instance of the `SchemaRegistryClient`
@@ -40,7 +37,7 @@ client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
 
 # schema that we want to use. For this example we 
 # are using a dict, but this schema could be located in a file called avro_user_schema.avsc
-avro_user_schema = SchemaFromJSONData({
+avro_user_schema = schema.AvroSchema({
      "type": "record",
      "namespace": "com.example",
      "name": "AvroUsers",

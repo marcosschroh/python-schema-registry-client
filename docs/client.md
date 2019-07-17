@@ -38,7 +38,12 @@ def get_schema(subject, version="latest", headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-            SchemaVersion (nametupled): (subject, schema_id, schema, version)
+        SchemaVersion (nametupled): (subject, schema_id, schema, version)
+
+        None: If server returns a not success response:
+            404: Schema not found
+            422: Unprocessable entity
+            ~ (200 - 299): Not success
     """
 ```
 
@@ -114,7 +119,7 @@ def test_compatibility(subject, avro_schema, version="latest", headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        bool: True if compatible, False if not compatible
+        bool: True if schema given compatible, False otherwise
     """
 ```
 
@@ -153,6 +158,9 @@ def update_compatibility(level, subject, headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        None
+        bool: True if compatibility was updated
+
+    Raises:
+        ClientError: if the request was unsuccessful or an invalid
     """
 ```
