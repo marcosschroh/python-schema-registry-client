@@ -6,8 +6,11 @@ from collections import defaultdict
 from schema_registry.client.errors import ClientError
 from schema_registry.client.schema import AvroSchema
 from schema_registry.client import status, utils
+from schema_registry.client.urls import UrlManager
+from schema_registry.client.paths import paths
 
-log = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
 
 
 class SchemaRegistryClient(requests.Session):
@@ -52,20 +55,23 @@ class SchemaRegistryClient(requests.Session):
         self.url = url.rstrip("/")
         self.extra_headers = extra_headers
 
+        self.verify = conf.pop("ssl.ca.location", None)
+        self.cert = self._configure_client_tls(conf)
+        self.auth = self._configure_basic_auth(conf)
+
+        url = conf.pop("url")
+        self.url_manager = UrlManager(url, paths)
+
+        if len(conf) > 0:
+            raise ValueError("fUnrecognized configuration properties:{conf}")
+
+        # CACHE:
         # subj => { schema => id }
         self.subject_to_schema_ids = defaultdict(dict)
         # id => avro_schema
         self.id_to_schema = defaultdict(dict)
         # subj => { schema => version }
         self.subject_to_schema_versions = defaultdict(dict)
-
-        self.verify = conf.pop("ssl.ca.location", None)
-        self.cert = self._configure_client_tls(conf)
-        self.auth = self._configure_basic_auth(conf)
-        self.url = conf.pop("url")
-
-        if len(conf) > 0:
-            raise ValueError("fUnrecognized configuration properties:{conf}")
 
     @staticmethod
     def _configure_basic_auth(conf):
@@ -171,11 +177,10 @@ class SchemaRegistryClient(requests.Session):
         if schema_id is not None:
             return schema_id
 
-        url = "/".join([self.url, "subjects", subject, "versions"])
-
+        url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(avro_schema.schema)}
 
-        result, code = self.request(url, method="POST", body=body, headers=headers)
+        result, code = self.request(url, method=method, body=body, headers=headers)
 
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
@@ -209,9 +214,9 @@ class SchemaRegistryClient(requests.Session):
         Returns:
             int: version of the schema deleted under this subject
         """
-        url = "/".join([self.url, "subjects", subject])
+        url, method = self.url_manager.url_for("delete_subject", subject=subject)
 
-        result, code = self.request(url, method="DELETE", headers=headers)
+        result, code = self.request(url, method=method, headers=headers)
         if not status.is_success(code):
             raise ClientError(
                 "Unable to delete subject", http_code=code, server_traceback=result
@@ -232,14 +237,14 @@ class SchemaRegistryClient(requests.Session):
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
-        # fetch from the registry
-        url = "/".join([self.url, "schemas", "ids", str(schema_id)])
 
-        result, code = self.request(url, headers=headers)
+        url, method = self.url_manager.url_for("get_by_id", schema_id=schema_id)
+
+        result, code = self.request(url, method=method, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
-            log.error(f"Schema not found: {code}")
+            logger.error(f"Schema not found: {code}")
         elif not status.is_success(code):
-            log.error(f"Unable to get schema for the specific ID: {code}")
+            logger.error(f"Unable to get schema for the specific ID: {code}")
         else:
             # need to parse the schema
             schema_str = result.get("schema")
@@ -275,17 +280,19 @@ class SchemaRegistryClient(requests.Session):
                 422: Unprocessable entity
                 ~ (200 - 299): Not success
         """
-        url = "/".join([self.url, "subjects", subject, "versions", str(version)])
+        url, method = self.url_manager.url_for(
+            "get_schema", subject=subject, version=version
+        )
 
-        result, code = self.request(url, headers=headers)
+        result, code = self.request(url, method=method, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
-            log.error(f"Schema not found: {code}")
+            logger.error(f"Schema not found: {code}")
             return
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            log.error(f"Invalid version: {code}")
+            logger.error(f"Invalid version: {code}")
             return
         elif not status.is_success(code):
-            log.error(f"Not success version: {code}")
+            logger.error(f"Not success version: {code}")
             return
 
         schema_id = result.get("id")
@@ -332,15 +339,15 @@ class SchemaRegistryClient(requests.Session):
         if all((version, schema_id)):
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
-        url = "/".join([self.url, "subjects", subject])
+        url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(avro_schema.schema)}
 
-        result, code = self.request(url, method="POST", body=body, headers=headers)
+        result, code = self.request(url, method=method, body=body, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
-            log.error(f"Not found: {code}")
+            logger.error(f"Not found: {code}")
             return
         elif not status.is_success(code):
-            log.error(f"Unable to get version of a schema: {code}")
+            logger.error(f"Unable to get version of a schema: {code}")
             return
 
         schema_id = result.get("id")
@@ -363,27 +370,28 @@ class SchemaRegistryClient(requests.Session):
         Returns:
             bool: True if schema given compatible, False otherwise
         """
-        url = "/".join(
-            [self.url, "compatibility", "subjects", subject, "versions", str(version)]
+        url, method = self.url_manager.url_for(
+            "test_compatibility", subject=subject, version=version
         )
         body = {"schema": json.dumps(avro_schema.schema)}
+
         try:
-            result, code = self.request(url, method="POST", body=body, headers=headers)
+            result, code = self.request(url, method=method, body=body, headers=headers)
             if code == status.HTTP_404_NOT_FOUND:
-                log.error(f"Subject or version not found: {code}")
+                logger.error(f"Subject or version not found: {code}")
                 return False
             elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-                log.error(f"Invalid subject or schema: {code}")
+                logger.error(f"Invalid subject or schema: {code}")
                 return False
             elif status.is_success(code):
                 return result.get("is_compatible")
             else:
-                log.error(
+                logger.error(
                     f"Unable to check the compatibility: {code}. Traceback: {result}"
                 )
                 return False
         except Exception as e:
-            log.error(f"request() failed: {e}")
+            logger.error(f"request() failed: {e}")
             return False
 
     def update_compatibility(self, level, subject=None, headers=None):
@@ -407,12 +415,10 @@ class SchemaRegistryClient(requests.Session):
         if level not in utils.VALID_LEVELS:
             raise ClientError(f"Invalid level specified: {level}")
 
-        url = "/".join([self.url, "config"])
-        if subject:
-            url += "/" + subject
-
+        url, method = self.url_manager.url_for("update_compatibility", subject=subject)
         body = {"compatibility": level}
-        result, code = self.request(url, method="PUT", body=body, headers=headers)
+
+        result, code = self.request(url, method=method, body=body, headers=headers)
 
         if status.is_success(code):
             return True
@@ -421,7 +427,7 @@ class SchemaRegistryClient(requests.Session):
             f"Unable to update level: {level}.", http_code=code, server_traceback=result
         )
 
-    def get_compatibility(self, subject, headers=None):
+    def get_compatibility(self, subject=None, headers=None):
         """
         Get the current compatibility level for a subject.
 
@@ -436,11 +442,8 @@ class SchemaRegistryClient(requests.Session):
             ClientError: if the request was unsuccessful or an invalid
             compatibility level was returned
         """
-        url = "/".join([self.url, "config"])
-        if subject:
-            url = "/".join([url, subject])
-
-        result, code = self.request(url, headers=headers)
+        url, method = self.url_manager.url_for("get_compatibility", subject=subject)
+        result, code = self.request(url, method=method, headers=headers)
 
         if not status.is_success(code):
             raise ClientError(
