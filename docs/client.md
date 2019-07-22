@@ -61,7 +61,7 @@ def get_by_id(schema_id: int, headers: dict = None) -> client.schema.AvroSchema:
     """
 ```
 
-Register a Schema:
+#### Register a Schema:
 
 ```python
 def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None) -> int:
@@ -75,6 +75,8 @@ def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict 
         int: schema_id
     """
 ```
+
+#### Get Subjects
 
 ```python
 def get_subjects(self, headers: dict = None) -> list:
@@ -106,7 +108,7 @@ def delete_subject(subject: str, headers: dict = None) -> list:
     """
 ```
 
-Check if a schema has already been registered under the specified subject:
+#### Check if a schema has already been registered under the specified subject
 
 ```python
 def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None) -> dict:
@@ -127,6 +129,8 @@ def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: 
     """
 ```
 
+#### Get schema version under a specific subject
+
 ```python
 def get_versions(self, subject: str, headers: dict = None) -> list:
     """
@@ -141,6 +145,8 @@ def get_versions(self, subject: str, headers: dict = None) -> list:
         list (str): version of the schema registered under this subject
     """
 ```
+
+#### Deletes a specific version of the schema registered under a subject
 
 ```python
 def delete_version(self, subject: str, version="latest", headers: dict = None):
