@@ -14,3 +14,7 @@ def test_delete_subject(client, user_schema_v3):
         client.register(subject, version)
 
     assert len(client.delete_subject(subject)) == len(versions)
+
+
+def test_delete_subject_does_not_exist(client):
+    assert not client.delete_subject("a-random-subject")

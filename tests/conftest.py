@@ -67,6 +67,7 @@ def client():
         "test-deployment",
         "test-country",
         "test-basic-schema-backup",
+        "test-advance-schema",
         "test-user-schema",
         "subject-does-not-exist",
         "test-logical-types-schema",
