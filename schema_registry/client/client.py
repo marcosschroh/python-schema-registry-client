@@ -21,7 +21,7 @@ class SchemaRegistryClient(requests.Session):
         url (str|dict) url: Url to schema registry or dictionary containing client configuration.
         ca_location (str): File or directory path to CA certificate(s) for verifying the Schema Registry key.
         cert_location (str): Path to public key used for authentication.
-        key_location (str): Path to private key used for authentication.
+        key_location (str): Path to ./vate key used for authentication.
         extra_headers (dict): Extra headers to add on every requests.
     """
 
@@ -155,7 +155,9 @@ class SchemaRegistryClient(requests.Session):
                     self.subject_to_schema_versions, subject, schema, version
                 )
 
-    def register(self, subject, avro_schema, headers=None):
+    def register(
+        self, subject: str, avro_schema: AvroSchema, headers: dict = None
+    ) -> int:
         """
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
@@ -200,7 +202,29 @@ class SchemaRegistryClient(requests.Session):
 
         return schema_id
 
-    def delete_subject(self, subject, headers=None):
+    def get_subjects(self, headers: dict = None) -> list:
+        """
+        GET /subjects/(string: subject)
+        Get list of all registered subjects in your Schema Registry.
+
+        Args:
+            subject (str): subject name
+            headers (dict): Extra headers to add on the requests
+
+        Returns:
+            list [str]: list of registered subjects.
+        """
+        url, method = self.url_manager.url_for("get_subjects")
+        result, code = self.request(url, method=method, headers=headers)
+
+        if status.is_success(code):
+            return result
+
+        raise ClientError(
+            "Unable to delete subject", http_code=code, server_traceback=result
+        )
+
+    def delete_subject(self, subject: str, headers: dict = None) -> list:
         """
         DELETE /subjects/(string: subject)
         Deletes the specified subject and its associated compatibility level if registered.
@@ -212,18 +236,21 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            int: version of the schema deleted under this subject
+            list (int): version of the schema deleted under this subject
         """
         url, method = self.url_manager.url_for("delete_subject", subject=subject)
-
         result, code = self.request(url, method=method, headers=headers)
-        if not status.is_success(code):
-            raise ClientError(
-                "Unable to delete subject", http_code=code, server_traceback=result
-            )
-        return result
 
-    def get_by_id(self, schema_id, headers=None):
+        if status.is_success(code):
+            return result
+        elif code == status.HTTP_404_NOT_FOUND:
+            return []
+
+        raise ClientError(
+            "Unable to delete subject", http_code=code, server_traceback=result
+        )
+
+    def get_by_id(self, schema_id: int, headers: dict = None) -> AvroSchema:
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -233,7 +260,7 @@ class SchemaRegistryClient(requests.Session):
             headers (dict): Extra headers to add on the requests
 
         Returns:
-            avro.schema.RecordSchema: Avro Record schema
+            client.schema.AvroSchema: Avro Record schema
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
@@ -243,6 +270,7 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method=method, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             logger.error(f"Schema not found: {code}")
+            return
         elif not status.is_success(code):
             logger.error(f"Unable to get schema for the specific ID: {code}")
         else:
@@ -262,7 +290,9 @@ class SchemaRegistryClient(requests.Session):
                     server_traceback=result,
                 )
 
-    def get_schema(self, subject, version="latest", headers=None):
+    def get_schema(
+        self, subject: str, version: str = "latest", headers: dict = None
+    ) -> utils.SchemaVersion:
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
         Get a specific version of the schema registered under this subject
@@ -309,7 +339,73 @@ class SchemaRegistryClient(requests.Session):
 
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
-    def check_version(self, subject, avro_schema, headers=None):
+    def get_versions(self, subject: str, headers: dict = None) -> list:
+        """
+        GET subjects/{subject}/versions
+        Get a list of versions registered under the specified subject.
+
+        Args:
+            subject (str): subject name
+            headers (dict): Extra headers to add on the requests
+
+        Returns:
+            list (str): version of the schema registered under this subject
+        """
+        url, method = self.url_manager.url_for("get_versions", subject=subject)
+
+        result, code = self.request(url, method=method, headers=headers)
+        if status.is_success(code):
+            return result
+        elif code == status.HTTP_404_NOT_FOUND:
+            logger.error(f"Subject {subject} not found")
+            return []
+
+        raise ClientError(
+            f"Unable to get the versions for subject {subject}",
+            http_code=code,
+            server_traceback=result,
+        )
+
+    def delete_version(self, subject: str, version="latest", headers: dict = None):
+        """
+        DELETE /subjects/(string: subject)/versions/(versionId: version)
+
+        Deletes a specific version of the schema registered under this subject.
+        This only deletes the version and the schema ID remains intact making
+        it still possible to decode data using the schema ID.
+        This API is recommended to be used only in development environments or
+        under extreme circumstances where-in, its required to delete a previously
+        registered schema for compatibility purposes or re-register previously registered schema.
+
+        Args:
+            subject (str): subject name
+            version (str): Version of the schema to be deleted. 
+                Valid values for versionId are between [1,2^31-1] or the string "latest".
+                "latest" deletes the last registered schema under the specified subject.
+            headers (dict): Extra headers to add on the requests
+
+        Returns:
+            int: version of the schema deleted
+            None: If the subject or version does not exist.
+        """
+        url, method = self.url_manager.url_for(
+            "delete_version", subject=subject, version=version
+        )
+
+        result, code = self.request(url, method=method, headers=headers)
+
+        if status.is_success(code):
+            return result
+        elif status.is_client_error(code):
+            return
+
+        raise ClientError(
+            "Unable to delete the version", http_code=code, server_traceback=result
+        )
+
+    def check_version(
+        self, subject: str, avro_schema: AvroSchema, headers: dict = None
+    ) -> dict:
         """
         POST /subjects/(string: subject)
         Check if a schema has already been registered under the specified subject.
@@ -346,17 +442,26 @@ class SchemaRegistryClient(requests.Session):
         if code == status.HTTP_404_NOT_FOUND:
             logger.error(f"Not found: {code}")
             return
-        elif not status.is_success(code):
-            logger.error(f"Unable to get version of a schema: {code}")
-            return
+        elif status.is_success(code):
+            schema_id = result.get("id")
+            version = result.get("version")
+            self._cache_schema(avro_schema, schema_id, subject, version)
 
-        schema_id = result.get("id")
-        version = result.get("version")
-        self._cache_schema(avro_schema, schema_id, subject, version)
+            return utils.SchemaVersion(
+                subject, schema_id, version, result.get("schema")
+            )
 
-        return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
+        raise ClientError(
+            "Unable to get version of a schema", http_code=code, server_traceback=result
+        )
 
-    def test_compatibility(self, subject, avro_schema, version="latest", headers=None):
+    def test_compatibility(
+        self,
+        subject: str,
+        avro_schema: AvroSchema,
+        version="latest",
+        headers: dict = None,
+    ) -> bool:
         """
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
         Test the compatibility of a candidate parsed schema for a given subject.
@@ -374,27 +479,24 @@ class SchemaRegistryClient(requests.Session):
             "test_compatibility", subject=subject, version=version
         )
         body = {"schema": json.dumps(avro_schema.schema)}
+        result, code = self.request(url, method=method, body=body, headers=headers)
 
-        try:
-            result, code = self.request(url, method=method, body=body, headers=headers)
-            if code == status.HTTP_404_NOT_FOUND:
-                logger.error(f"Subject or version not found: {code}")
-                return False
-            elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-                logger.error(f"Invalid subject or schema: {code}")
-                return False
-            elif status.is_success(code):
-                return result.get("is_compatible")
-            else:
-                logger.error(
-                    f"Unable to check the compatibility: {code}. Traceback: {result}"
-                )
-                return False
-        except Exception as e:
-            logger.error(f"request() failed: {e}")
+        if code == status.HTTP_404_NOT_FOUND:
+            logger.error(f"Subject or version not found: {code}")
             return False
+        elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
+            logger.error(f"Invalid subject or schema: {code}")
+            return False
+        elif status.is_success(code):
+            return result.get("is_compatible")
 
-    def update_compatibility(self, level, subject=None, headers=None):
+        raise ClientError(
+            "Unable to check the compatibility", http_code=code, server_traceback=result
+        )
+
+    def update_compatibility(
+        self, level: str, subject: str = None, headers: dict = None
+    ) -> bool:
         """
         PUT /config/(string: subject)
         Update the compatibility level.
@@ -427,7 +529,7 @@ class SchemaRegistryClient(requests.Session):
             f"Unable to update level: {level}.", http_code=code, server_traceback=result
         )
 
-    def get_compatibility(self, subject=None, headers=None):
+    def get_compatibility(self, subject: str = None, headers: dict = None) -> str:
         """
         Get the current compatibility level for a subject.
 
@@ -445,23 +547,23 @@ class SchemaRegistryClient(requests.Session):
         url, method = self.url_manager.url_for("get_compatibility", subject=subject)
         result, code = self.request(url, method=method, headers=headers)
 
-        if not status.is_success(code):
-            raise ClientError(
-                f"Unable to fetch compatibility level. Error code: {code}",
-                http_code=code,
-                server_traceback=result,
-            )
+        if status.is_success(code):
+            compatibility = result.get("compatibilityLevel")
+            if compatibility not in utils.VALID_LEVELS:
+                if compatibility is None:
+                    error_msg_suffix = "No compatibility was returned"
+                else:
+                    error_msg_suffix = str(compatibility)
+                raise ClientError(
+                    f"Invalid compatibility level received: {error_msg_suffix}",
+                    http_code=code,
+                    server_traceback=result,
+                )
 
-        compatibility = result.get("compatibilityLevel")
-        if compatibility not in utils.VALID_LEVELS:
-            if compatibility is None:
-                error_msg_suffix = "No compatibility was returned"
-            else:
-                error_msg_suffix = str(compatibility)
-            raise ClientError(
-                f"Invalid compatibility level received: {error_msg_suffix}",
-                http_code=code,
-                server_traceback=result,
-            )
+            return compatibility
 
-        return compatibility
+        raise ClientError(
+            f"Unable to fetch compatibility level. Error code: {code}",
+            http_code=code,
+            server_traceback=result,
+        )

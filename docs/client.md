@@ -30,7 +30,7 @@ Methods:
 Get Schema for a given version. If version is `None`, try to resolve the latest schema
 
 ```python
-def get_schema(subject, version="latest", headers=None):
+def get_schema(subject: str, version="latest", headers: dict = None) -> utils.SchemaVersion:
     """
     Args:
         subject (str): subject name
@@ -38,7 +38,7 @@ def get_schema(subject, version="latest", headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        SchemaVersion (nametupled): (subject, schema_id, schema, version)
+        utils.SchemaVersion (nametupled): (subject, schema_id, schema, version)
 
         None: If server returns a not success response:
             404: Schema not found
@@ -50,21 +50,21 @@ def get_schema(subject, version="latest", headers=None):
 #### Get schema by `id`:
 
 ```python
-def get_by_id(schema_id, headers=None):
+def get_by_id(schema_id: int, headers: dict = None) -> client.schema.AvroSchema:
     """
     Args:
         schema_id (int): Schema Id
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        avro.schema.RecordSchema: Avro Record schema
+        client.schema.AvroSchema: Avro Record schema
     """
 ```
 
 Register a Schema:
 
 ```python
-def register(subject, avro_schema, headers=None):
+def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None) -> int:
     """
     Args:
         subject (str): subject name
@@ -76,24 +76,40 @@ def register(subject, avro_schema, headers=None):
     """
 ```
 
+```python
+def get_subjects(self, headers: dict = None) -> list:
+    """
+    GET /subjects/(string: subject)
+    Get list of all registered subjects in your Schema Registry.
+
+    Args:
+        subject (str): subject name
+        headers (dict): Extra headers to add on the requests
+
+    Returns:
+        list [str]: list of registered subjects.
+    """
+```
+
+
 #### Delete Schema
 
 ```python
-def delete_subject(subject, headers=None):
+def delete_subject(subject: str, headers: dict = None) -> list:
     """
     Args:
         subject (str): subject name
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        int: version of the schema deleted under this subject
+        list (int): versions of the schema deleted under this subject
     """
 ```
 
 Check if a schema has already been registered under the specified subject:
 
 ```python
-def check_version(subject, avro_schema, headers=None):
+def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None) -> dict:
     """
     Args:
         subject (str): subject name
@@ -101,15 +117,60 @@ def check_version(subject, avro_schema, headers=None):
         headers (dict): Extra headers to add on the requests
 
     Returns:
-        int: Schema version
+        dict:
+            subject (string) -- Name of the subject that this schema is registered under
+            id (int) -- Globally unique identifier of the schema
+            version (int) -- Version of the returned schema
+            schema (dict) -- The Avro schema
+
         None: If schema not found.
+    """
+```
+
+```python
+def get_versions(self, subject: str, headers: dict = None) -> list:
+    """
+    GET subjects/{subject}/versions
+    Get a list of versions registered under the specified subject.
+
+    Args:
+        subject (str): subject name
+        headers (dict): Extra headers to add on the requests
+
+    Returns:
+        list (str): version of the schema registered under this subject
+    """
+```
+
+```python
+def delete_version(self, subject: str, version="latest", headers: dict = None):
+    """
+    DELETE /subjects/(string: subject)/versions/(versionId: version)
+
+    Deletes a specific version of the schema registered under this subject.
+    This only deletes the version and the schema ID remains intact making
+    it still possible to decode data using the schema ID.
+    This API is recommended to be used only in development environments or
+    under extreme circumstances where-in, its required to delete a previously
+    registered schema for compatibility purposes or re-register previously registered schema.
+
+    Args:
+        subject (str): subject name
+        version (str): Version of the schema to be deleted. 
+            Valid values for versionId are between [1,2^31-1] or the string "latest".
+            "latest" deletes the last registered schema under the specified subject.
+        headers (dict): Extra headers to add on the requests
+
+    Returns:
+        int: version of the schema deleted
+        None: If the subject or version does not exist.
     """
 ```
 
 #### Test Compatibility:
 
 ```python
-def test_compatibility(subject, avro_schema, version="latest", headers=None):
+def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, version="latest", headers: dict = None):
     """
     By default the latest version is checked against.
 
@@ -126,7 +187,7 @@ def test_compatibility(subject, avro_schema, version="latest", headers=None):
 #### Get Compatibility:
 
 ```python
-def get_compatibility(subject, headers=None):
+def get_compatibility(subject: str, headers: dict = None) -> str:
     """
     Get the current compatibility level for a subject.  Result will be one of:
 
@@ -147,7 +208,7 @@ def get_compatibility(subject, headers=None):
 #### Update Compatibility:
 
 ```python
-def update_compatibility(level, subject, headers=None):
+def update_compatibility(level: str, subject: str, headers: dict = None) -> bool:
     """
     Update the compatibility level for a subject.
     If subject is None, the compatibility level is global.

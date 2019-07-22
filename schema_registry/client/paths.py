@@ -1,6 +1,9 @@
 # Available urls supported with the client
 
 paths = [
+    ("get_subjects", "/subjects", "GET"),
+    ("get_versions", "/subjects/{subject}/versions", "GET"),
+    ("delete_version", "/subjects/{subject}/versions/{version}", "DELETE"),
     ("register", "/subjects/{subject}/versions", "POST"),
     ("delete_subject", "/subjects/{subject}", "DELETE"),
     ("get_schema", "/subjects/{subject}/versions/{version}", "GET"),
