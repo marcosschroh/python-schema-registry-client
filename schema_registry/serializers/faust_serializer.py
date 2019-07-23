@@ -1,12 +1,20 @@
+import typing
+
 from schema_registry.serializers import MessageSerializer
+from schema_registry.client import schema, SchemaRegistryClient
 
 try:
     import faust
 except ImportError:
-    faust = None
+    faust = None  # type: ignore
 
 
-def serializer_factory(schema_registry_client, schema_subject, schema, is_key=False):
+def serializer_factory(
+    schema_registry_client: SchemaRegistryClient,
+    schema_subject: str,
+    schema: "schema.AvroSchema",
+    is_key: bool = False,
+) -> "FaustSerializer":
 
     assert (
         faust is not None
@@ -14,7 +22,11 @@ def serializer_factory(schema_registry_client, schema_subject, schema, is_key=Fa
 
     class FaustSerializer(MessageSerializer, faust.Codec):
         def __init__(
-            self, schema_registry_client, schema_subject, schema, is_key=False
+            self,
+            schema_registry_client: SchemaRegistryClient,
+            schema_subject: str,
+            schema: "schema.AvroSchema",
+            is_key: bool = False,
         ):
             self.schema_registry_client = schema_registry_client
             self.schema_subject = schema_subject
@@ -24,11 +36,11 @@ def serializer_factory(schema_registry_client, schema_subject, schema, is_key=Fa
             MessageSerializer.__init__(self, schema_registry_client)
             faust.Codec.__init__(self)
 
-        def _loads(self, s: bytes):
+        def _loads(self, s: bytes) -> typing.Optional[typing.Dict]:
             # method available on MessageSerializer
             return self.decode_message(s)
 
-        def _dumps(self, obj):
+        def _dumps(self, obj: dict) -> bytes:
             """
             Given a parsed avro schema, encode a record for the given topic.  The
             record is expected to be a dictionary.

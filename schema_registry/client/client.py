@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import typing
 from collections import defaultdict
 
 from schema_registry.client.errors import ClientError
@@ -27,54 +28,45 @@ class SchemaRegistryClient(requests.Session):
 
     def __init__(
         self,
-        url,
-        ca_location=None,
-        cert_location=None,
-        key_location=None,
-        extra_headers=None,
-    ):
+        url: typing.Union[str, dict],
+        ca_location: str = None,
+        cert_location: str = None,
+        key_location: str = None,
+        extra_headers: dict = None,
+    ) -> None:
         super().__init__()
 
-        conf = url
-        if not isinstance(url, dict):
+        if isinstance(url, str):
             conf = {
                 "url": url,
                 "ssl.ca.location": ca_location,
                 "ssl.certificate.location": cert_location,
                 "ssl.key.location": key_location,
             }
+        else:
+            conf = url
 
-        # Ensure URL valid scheme is included; http[s]
-        url = conf.get("url", "")
-        if not isinstance(url, str):
-            raise TypeError("URL must be of type str")
+        schema_server_url = conf.get("url", "")
+        self.url_manager = UrlManager(schema_server_url, paths)  # type: ignore
 
-        if not url.startswith("http"):
-            raise ValueError("Invalid URL provided for Schema Registry")
-
-        self.url = url.rstrip("/")
         self.extra_headers = extra_headers
 
         self.verify = conf.pop("ssl.ca.location", None)
         self.cert = self._configure_client_tls(conf)
         self.auth = self._configure_basic_auth(conf)
 
-        url = conf.pop("url")
-        self.url_manager = UrlManager(url, paths)
-
-        if len(conf) > 0:
-            raise ValueError("fUnrecognized configuration properties:{conf}")
-
         # CACHE:
         # subj => { schema => id }
-        self.subject_to_schema_ids = defaultdict(dict)
+        self.subject_to_schema_ids = defaultdict(dict)  # type: dict
         # id => avro_schema
-        self.id_to_schema = defaultdict(dict)
+        self.id_to_schema = defaultdict(dict)  # type: dict
         # subj => { schema => version }
-        self.subject_to_schema_versions = defaultdict(dict)
+        self.subject_to_schema_versions = defaultdict(dict)  # type: dict
 
     @staticmethod
-    def _configure_basic_auth(conf):
+    def _configure_basic_auth(
+        conf: dict
+    ) -> typing.Union[None, str, typing.Tuple[str, str]]:
         url = conf["url"]
         auth_provider = conf.pop("basic.auth.credentials.source", "URL").upper()
 
@@ -82,6 +74,7 @@ class SchemaRegistryClient(requests.Session):
             raise ValueError(
                 f"schema.registry.basic.auth.credentials.source must be one of {utils.VALID_AUTH_PROVIDERS}"
             )
+
         if auth_provider == "SASL_INHERIT":
             if conf.pop("sasl.mechanism", "").upper() is ["GSSAPI"]:
                 raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
@@ -95,11 +88,11 @@ class SchemaRegistryClient(requests.Session):
         return auth
 
     @staticmethod
-    def _configure_client_tls(conf):
-        cert = (
-            conf.pop("ssl.certificate.location", None),
-            conf.pop("ssl.key.location", None),
-        )
+    def _configure_client_tls(
+        conf: dict
+    ) -> typing.Tuple[typing.Optional[typing.Any], typing.Optional[typing.Any]]:
+        cert = (conf.get("ssl.certificate.location"), conf.get("ssl.key.location"))
+
         # Both values can be None or no values can be None
         if bool(cert[0]) != bool(cert[1]):
             raise ValueError(
@@ -108,7 +101,7 @@ class SchemaRegistryClient(requests.Session):
 
         return cert
 
-    def prepare_headers(self, body=None, headers=None):
+    def prepare_headers(self, body: dict = None, headers: dict = None) -> dict:
         _headers = {"Accept": utils.ACCEPT_HEADERS}
 
         if self.extra_headers:
@@ -123,7 +116,9 @@ class SchemaRegistryClient(requests.Session):
 
         return _headers
 
-    def request(self, url, method="GET", body=None, headers=None):
+    def request(
+        self, url: str, method: str = "GET", body: dict = None, headers: dict = None
+    ) -> tuple:  # type: ignore
         if method not in utils.VALID_METHODS:
             raise ClientError(
                 f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
@@ -138,11 +133,19 @@ class SchemaRegistryClient(requests.Session):
             return response.content, response.status_code
 
     @staticmethod
-    def _add_to_cache(cache, subject, schema, value):
+    def _add_to_cache(
+        cache: dict, subject: str, schema: AvroSchema, value: typing.Union[str, int]
+    ) -> None:
         sub_cache = cache[subject]
         sub_cache[schema] = value
 
-    def _cache_schema(self, schema, schema_id, subject=None, version=None):
+    def _cache_schema(
+        self,
+        schema: AvroSchema,
+        schema_id: int,
+        subject: str = None,
+        version: typing.Union[str, int] = None,
+    ) -> None:
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
         else:
@@ -250,7 +253,9 @@ class SchemaRegistryClient(requests.Session):
             "Unable to delete subject", http_code=code, server_traceback=result
         )
 
-    def get_by_id(self, schema_id: int, headers: dict = None) -> AvroSchema:
+    def get_by_id(
+        self, schema_id: int, headers: dict = None
+    ) -> typing.Optional[AvroSchema]:
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -270,29 +275,27 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method=method, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             logger.error(f"Schema not found: {code}")
-            return
-        elif not status.is_success(code):
-            logger.error(f"Unable to get schema for the specific ID: {code}")
-        else:
-            # need to parse the schema
+            return None
+        elif status.is_success(code):
             schema_str = result.get("schema")
-            try:
-                result = AvroSchema(schema_str)
+            result = AvroSchema(schema_str)
 
-                # cache the result
-                self._cache_schema(result, schema_id)
-                return result
-            except ClientError:
-                # bad schema - should not happen
-                raise ClientError(
-                    f"Received bad schema (id {schema_id})",
-                    http_code=code,
-                    server_traceback=result,
-                )
+            # cache the result
+            self._cache_schema(result, schema_id)
+            return result
+
+        raise ClientError(
+            f"Received bad schema (id {schema_id})",
+            http_code=code,
+            server_traceback=result,
+        )
 
     def get_schema(
-        self, subject: str, version: str = "latest", headers: dict = None
-    ) -> utils.SchemaVersion:
+        self,
+        subject: str,
+        version: typing.Union[int, str] = "latest",
+        headers: dict = None,
+    ) -> typing.Optional[utils.SchemaVersion]:
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
         Get a specific version of the schema registered under this subject
@@ -317,13 +320,13 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method=method, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             logger.error(f"Schema not found: {code}")
-            return
+            return None
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             logger.error(f"Invalid version: {code}")
-            return
+            return None
         elif not status.is_success(code):
             logger.error(f"Not success version: {code}")
-            return
+            return None
 
         schema_id = result.get("id")
         if schema_id in self.id_to_schema:
@@ -334,7 +337,7 @@ class SchemaRegistryClient(requests.Session):
             except ClientError:
                 raise
 
-        version = result.get("version")
+        version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)
 
         return utils.SchemaVersion(subject, schema_id, schema, version)
@@ -366,7 +369,12 @@ class SchemaRegistryClient(requests.Session):
             server_traceback=result,
         )
 
-    def delete_version(self, subject: str, version="latest", headers: dict = None):
+    def delete_version(
+        self,
+        subject: str,
+        version: typing.Union[int, str] = "latest",
+        headers: dict = None,
+    ) -> typing.Optional[int]:
         """
         DELETE /subjects/(string: subject)/versions/(versionId: version)
 
@@ -397,7 +405,7 @@ class SchemaRegistryClient(requests.Session):
         if status.is_success(code):
             return result
         elif status.is_client_error(code):
-            return
+            return None
 
         raise ClientError(
             "Unable to delete the version", http_code=code, server_traceback=result
@@ -405,7 +413,7 @@ class SchemaRegistryClient(requests.Session):
 
     def check_version(
         self, subject: str, avro_schema: AvroSchema, headers: dict = None
-    ) -> dict:
+    ) -> typing.Optional[utils.SchemaVersion]:
         """
         POST /subjects/(string: subject)
         Check if a schema has already been registered under the specified subject.
@@ -441,7 +449,7 @@ class SchemaRegistryClient(requests.Session):
         result, code = self.request(url, method=method, body=body, headers=headers)
         if code == status.HTTP_404_NOT_FOUND:
             logger.error(f"Not found: {code}")
-            return
+            return None
         elif status.is_success(code):
             schema_id = result.get("id")
             version = result.get("version")
@@ -459,7 +467,7 @@ class SchemaRegistryClient(requests.Session):
         self,
         subject: str,
         avro_schema: AvroSchema,
-        version="latest",
+        version: typing.Union[int, str] = "latest",
         headers: dict = None,
     ) -> bool:
         """
