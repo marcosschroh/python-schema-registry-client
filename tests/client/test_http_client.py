@@ -85,26 +85,26 @@ def test_init_with_dict():
             "ssl.key.location": "/path/to/key",
         }
     )
-    assert "https://127.0.0.1:65534" == client.url
+    assert "https://127.0.0.1:65534" == client.url_manager.url
 
 
 def test_empty_url():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         SchemaRegistryClient({"url": ""})
 
 
 def test_invalid_type_url():
-    with pytest.raises(TypeError):
+    with pytest.raises(AttributeError):
         SchemaRegistryClient(url=1)
 
 
 def test_invalid_type_url_dict():
-    with pytest.raises(TypeError):
+    with pytest.raises(AttributeError):
         SchemaRegistryClient({"url": 1})
 
 
 def test_invalid_url():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         SchemaRegistryClient({"url": "example.com:65534"})
 
 
@@ -146,19 +146,5 @@ def test_basic_auth_invalid():
             {
                 "url": "https://user_url:secret_url@127.0.0.1:65534",
                 "basic.auth.credentials.source": "VAULT",
-            }
-        )
-
-
-def test_invalid_conf():
-    with pytest.raises(ValueError):
-        SchemaRegistryClient(
-            {
-                "url": "https://user_url:secret_url@127.0.0.1:65534",
-                "basic.auth.credentials.source": "SASL_INHERIT",
-                "sasl.username": "user_sasl",
-                "sasl.password": "secret_sasl",
-                "invalid.conf": 1,
-                "invalid.conf2": 2,
             }
         )

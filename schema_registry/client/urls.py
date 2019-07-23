@@ -1,4 +1,5 @@
 import urllib
+import typing
 
 from collections import defaultdict
 
@@ -16,11 +17,15 @@ class UrlManager:
 
         self.paths = {path.name: path for path in map(lambda path: Path(path), paths)}
 
-    def url_for(self, func: str, **kwargs) -> tuple:
+    @property
+    def url(self) -> str:
+        return self.base_url
+
+    def url_for(self, func: str, **kwargs: typing.Any) -> tuple:
         """
         Generate a url for a given function
         """
-        path = self.paths.get(func)
+        path = self.paths[func]
         url = path.generate_url(**kwargs)
 
         return urllib.parse.urljoin(self.base_url, url), path.method
@@ -36,7 +41,7 @@ class Path:
     def name(self) -> str:
         return self.func
 
-    def generate_url(self, *args, **kwargs) -> str:
+    def generate_url(self, **kwargs: typing.Any) -> str:
         parameters = {key: value for key, value in kwargs.items() if value}
 
         return self.url.format_map(defaultdict(str, **parameters))

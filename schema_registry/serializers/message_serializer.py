@@ -3,10 +3,12 @@ import logging
 import struct
 import sys
 import traceback
+import typing
 
 from fastavro import schemaless_reader, schemaless_writer
 
 from schema_registry.client.errors import ClientError
+from schema_registry.client import schema, SchemaRegistryClient
 from .errors import SerializerError, KeySerializerError, ValueSerializerError
 
 log = logging.getLogger(__name__)
@@ -19,10 +21,10 @@ class ContextStringIO(io.BytesIO):
     Wrapper to allow use of StringIO via 'with' constructs.
     """
 
-    def __enter__(self):
+    def __enter__(self) -> "ContextStringIO":
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: typing.Any) -> bool:
         self.close()
         return False
 
@@ -36,19 +38,28 @@ class MessageSerializer:
     """
 
     def __init__(
-        self, schemaregistry_client, reader_key_schema=None, reader_value_schema=None
+        self,
+        schemaregistry_client: SchemaRegistryClient,
+        reader_key_schema: typing.Optional[schema.AvroSchema] = None,
+        reader_value_schema: typing.Optional[schema.AvroSchema] = None,
     ):
         self.schemaregistry_client = schemaregistry_client
-        self.id_to_decoder_func = {}
-        self.id_to_writers = {}
+        self.id_to_decoder_func = {}  # type: dict
+        self.id_to_writers = {}  # type: dict
         self.reader_key_schema = reader_key_schema
         self.reader_value_schema = reader_value_schema
-        self.schema_name_to_id = {}
+        self.schema_name_to_id = {}  # type: dict
 
-    def _get_encoder_func(self, avro_schema):
+    def _get_encoder_func(self, avro_schema: schema.AvroSchema) -> typing.Callable:
         return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)
 
-    def encode_record_with_schema(self, subject, avro_schema, record, is_key=False):
+    def encode_record_with_schema(
+        self,
+        subject: str,
+        avro_schema: schema.AvroSchema,
+        record: dict,
+        is_key: bool = False,
+    ) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
@@ -87,7 +98,9 @@ class MessageSerializer:
 
         return self.encode_record_with_schema_id(schema_id, record, is_key=is_key)
 
-    def encode_record_with_schema_id(self, schema_id, record, is_key=False):
+    def encode_record_with_schema_id(
+        self, schema_id: int, record: dict, is_key: bool = False
+    ) -> bytes:
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
@@ -125,7 +138,9 @@ class MessageSerializer:
 
             return outf.getvalue()
 
-    def _get_decoder_func(self, schema_id, payload, is_key=False):
+    def _get_decoder_func(
+        self, schema_id: int, payload: ContextStringIO, is_key: bool = False
+    ) -> typing.Callable:
         if schema_id in self.id_to_decoder_func:
             return self.id_to_decoder_func[schema_id]
 
@@ -145,7 +160,9 @@ class MessageSerializer:
 
         return self.id_to_decoder_func[schema_id]
 
-    def decode_message(self, message, is_key=False):
+    def decode_message(
+        self, message: typing.Union[None, bytes], is_key: bool = False
+    ) -> typing.Union[None, dict]:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
