@@ -10,7 +10,7 @@ Python Rest Client to interact against [schema-registry](https://docs.confluent.
 
 ## Requirements
 
-python 3.6+, fastavro>=0.22.3, requests>=2.22.0
+python 3.6+, fastavro<=0.22.3, requests<=2.22.0
 
 ## Installation
 
