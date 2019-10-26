@@ -38,13 +38,13 @@ client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
 # schema that we want to use. For this example we 
 # are using a dict, but this schema could be located in a file called avro_user_schema.avsc
 avro_user_schema = schema.AvroSchema({
-     "type": "record",
-     "namespace": "com.example",
-     "name": "AvroUsers",
-     "fields": [
-       {"name": "first_name", "type": "string"},
-       {"name": "last_name", "type": "string"}
-     ]
+    "type": "record",
+    "namespace": "com.example",
+    "name": "AvroUsers",
+    "fields": [
+        {"name": "first_name", "type": "string"},
+        {"name": "last_name", "type": "string"}
+    ]
 })
 
 avro_user_serializer = FaustSerializer(client, "users", avro_user_schema)

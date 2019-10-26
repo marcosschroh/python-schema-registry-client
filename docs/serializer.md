@@ -15,6 +15,7 @@ client = SchemaRegistryClient("http://127.0.0.1:8080")
 message_serializer = MessageSerializer(client)
 
 # Let's imagine that we have the foillowing schema.
+
 avro_user_schema = schema.AvroSchema({
     "type": "record",
     "namespace": "com.example",

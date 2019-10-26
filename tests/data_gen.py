@@ -47,6 +47,15 @@ def create_logical_item():
         }
     }
 
+def create_nested_schema():
+    return {
+        "name": fake.first_name(),
+        "uid": fake.pyint(min=0, max=9999, step=1),
+        "order": {
+            "uid": fake.pyint(min=0, max=9999, step=1)
+        }
+    }
+
 
 BASIC_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "basic_schema.avsc"))
 ADVANCED_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "adv_schema.avsc"))
@@ -57,6 +66,7 @@ LOGICAL_TYPES_SCHEMA = load_schema_file(
     os.path.join(AVRO_SCHEMAS_DIR, "logical_types_schema.avsc")
 )
 ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
+NESTED_SCHENA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "nested_schema.avsc"))
 
 
 def cleanup(files):
