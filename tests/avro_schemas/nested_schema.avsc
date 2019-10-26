@@ -1,0 +1,31 @@
+{
+    "name": "Customer",
+    "namespace": "com.questanalytics.core",
+    "type": "record",
+    "fields": [
+        {
+            "name": "uid",
+            "type": "int",
+            "default": "NONE"
+        },
+        {
+            "name": "order",
+            "type": {
+                "name": "OrderRecord",
+                "namespace": "com.questanalytics.core",
+                "type": "record",
+                "fields": [{
+                    "name": "uid",
+                    "type": "int",
+                    "default": "NONE"
+                }]
+            },
+            "default": "NONE"
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "default": "NONE"
+        }
+    ]
+}

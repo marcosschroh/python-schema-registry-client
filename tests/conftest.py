@@ -72,6 +72,7 @@ def client():
         "subject-does-not-exist",
         "test-logical-types-schema",
         "test-schema-version",
+        "test-nested-schema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.

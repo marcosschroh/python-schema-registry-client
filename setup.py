@@ -10,7 +10,7 @@ __version__ = "1.2.1"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["fastavro>=0.22.3", "requests>=2.22.0"]
+requires = ["fastavro<=0.22.3", "requests<=2.22.0"]
 
 setup(
     name="python-schema-registry-client",
@@ -20,7 +20,7 @@ setup(
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
-    extras_require={"faust": ["faust>=1.7.0"]},
+    extras_require={"faust": ["faust<=1.8.1,"]},
     url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="",
     packages=find_packages(exclude=("tests",)),
