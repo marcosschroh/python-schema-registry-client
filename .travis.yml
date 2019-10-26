@@ -18,4 +18,4 @@ matrix:
       python: 3.7
       script: ./scripts/clean.sh && ./scripts/test.sh
     - name: Lint
-      script: black --check schema_registry tests setup.py
+      script: ./scripts/lint.sh
