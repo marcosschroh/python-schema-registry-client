@@ -7,7 +7,7 @@ class AvroSchema:
     def __init__(self, schema: str) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
-        self.schema = fastavro.parse_schema(schema)
+        self.schema = fastavro.parse_schema(schema, _force=True)
         self.generate_hash()
 
     def generate_hash(self) -> None:
