@@ -17,6 +17,7 @@ setup(
     version=__version__,
     description="Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
