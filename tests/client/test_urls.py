@@ -1,5 +1,6 @@
-import pytest
 import urllib
+
+import pytest
 
 from schema_registry.client import urls
 

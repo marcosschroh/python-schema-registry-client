@@ -2,7 +2,6 @@ import pytest
 import requests
 
 from schema_registry.client import SchemaRegistryClient, schema
-
 from tests import data_gen
 
 

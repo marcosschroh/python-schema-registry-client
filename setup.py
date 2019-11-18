@@ -3,7 +3,7 @@
 
 """ setup.py for python-schema_registry."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 __version__ = "1.2.4"
 
@@ -12,10 +12,14 @@ with open("README.md") as readme_file:
 
 requires = ["fastavro<=0.22.3", "requests<=2.22.0"]
 
+description = """Python Rest Client to interact against Schema Registry \
+    Confluent Server to manage Avro Schemas
+"""
+
 setup(
     name="python-schema-registry-client",
     version=__version__,
-    description="Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas",
+    description=description,
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marcos Schroh",

@@ -1,7 +1,7 @@
 import typing
 
-from schema_registry.serializers import MessageSerializer
-from schema_registry.client import schema, SchemaRegistryClient
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers.message_serializer import MessageSerializer
 
 try:
     import faust

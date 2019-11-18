@@ -1,15 +1,15 @@
 import json
 import logging
-import requests
 import typing
 from collections import defaultdict
 
-from schema_registry.client.errors import ClientError
-from schema_registry.client.schema import AvroSchema
-from schema_registry.client import status, utils
-from schema_registry.client.urls import UrlManager
-from schema_registry.client.paths import paths
+import requests
 
+from schema_registry.client import status, utils
+from schema_registry.client.errors import ClientError
+from schema_registry.client.paths import paths
+from schema_registry.client.schema import AvroSchema
+from schema_registry.client.urls import UrlManager
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,8 @@ class SchemaRegistryClient(requests.Session):
 
     Args:
         url (str|dict) url: Url to schema registry or dictionary containing client configuration.
-        ca_location (str): File or directory path to CA certificate(s) for verifying the Schema Registry key.
+        ca_location (str): File or directory path to CA certificate(s)
+            for verifying the Schema Registry key.
         cert_location (str): Path to public key used for authentication.
         key_location (str): Path to ./vate key used for authentication.
         extra_headers (dict): Extra headers to add on every requests.
@@ -57,30 +58,33 @@ class SchemaRegistryClient(requests.Session):
 
         # CACHE:
         # subj => { schema => id }
-        self.subject_to_schema_ids = defaultdict(dict)  # type: dict
+        self.subject_to_schema_ids = defaultdict(dict)  # type: typing.Dict
         # id => avro_schema
-        self.id_to_schema = defaultdict(dict)  # type: dict
+        self.id_to_schema = defaultdict(dict)  # type: typing.Dict
         # subj => { schema => version }
-        self.subject_to_schema_versions = defaultdict(dict)  # type: dict
+        self.subject_to_schema_versions = defaultdict(dict)  # type: typing.Dict
 
     @staticmethod
     def _configure_basic_auth(
         conf: dict
-    ) -> typing.Union[None, str, typing.Tuple[str, str]]:
+    ) -> typing.Union[None, str, typing.Tuple[typing.Any, ...]]:
         url = conf["url"]
         auth_provider = conf.pop("basic.auth.credentials.source", "URL").upper()
 
         if auth_provider not in utils.VALID_AUTH_PROVIDERS:
             raise ValueError(
-                f"schema.registry.basic.auth.credentials.source must be one of {utils.VALID_AUTH_PROVIDERS}"
+                f"""
+                schema.registry.basic.auth.credentials.source
+                must be one of {utils.VALID_AUTH_PROVIDERS}
+                """
             )
 
-        if auth_provider == "SASL_INHERIT":
+        if auth_provider == "USER_INFO":
+            auth = tuple(conf.pop("basic.auth.user.info", "").split(":"))
+        elif auth_provider == "SASL_INHERIT":
             if conf.pop("sasl.mechanism", "").upper() is ["GSSAPI"]:
                 raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
             auth = (conf.pop("sasl.username", ""), conf.pop("sasl.password", ""))
-        elif auth_provider == "USER_INFO":
-            auth = tuple(conf.pop("basic.auth.user.info", "").split(":"))
         else:
             auth = requests.utils.get_auth_from_url(url)
         conf["url"] = requests.utils.urldefragauth(url)
@@ -96,7 +100,10 @@ class SchemaRegistryClient(requests.Session):
         # Both values can be None or no values can be None
         if bool(cert[0]) != bool(cert[1]):
             raise ValueError(
-                "Both schema.registry.ssl.certificate.location and schema.registry.ssl.key.location must be set"
+                """
+                Both schema.registry.ssl.certificate.location and
+                schema.registry.ssl.key.location must be set
+                """
             )
 
         return cert
@@ -387,7 +394,7 @@ class SchemaRegistryClient(requests.Session):
 
         Args:
             subject (str): subject name
-            version (str): Version of the schema to be deleted. 
+            version (str): Version of the schema to be deleted.
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
