@@ -1,7 +1,8 @@
+import datetime
 import os
 import os.path
+
 import faker
-import datetime
 
 fake = faker.Faker()
 epoch = datetime.datetime.utcfromtimestamp(0)

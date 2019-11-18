@@ -1,9 +1,9 @@
-import pytest
-import struct
 import datetime
+import struct
+
+import pytest
 
 from schema_registry.client import schema
-
 from tests import data_gen
 
 

@@ -7,9 +7,10 @@ import typing
 
 from fastavro import schemaless_reader, schemaless_writer
 
+from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.client.errors import ClientError
-from schema_registry.client import schema, SchemaRegistryClient
-from .errors import SerializerError, KeySerializerError, ValueSerializerError
+
+from .errors import KeySerializerError, SerializerError, ValueSerializerError
 
 log = logging.getLogger(__name__)
 
@@ -44,11 +45,11 @@ class MessageSerializer:
         reader_value_schema: typing.Optional[schema.AvroSchema] = None,
     ):
         self.schemaregistry_client = schemaregistry_client
-        self.id_to_decoder_func = {}  # type: dict
-        self.id_to_writers = {}  # type: dict
+        self.id_to_decoder_func = {}  # type: typing.Dict
+        self.id_to_writers = {}  # type: typing.Dict
         self.reader_key_schema = reader_key_schema
         self.reader_value_schema = reader_value_schema
-        self.schema_name_to_id = {}  # type: dict
+        self.schema_name_to_id = {}  # type: typing.Dict
 
     def _get_encoder_func(self, avro_schema: schema.AvroSchema) -> typing.Callable:
         return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)

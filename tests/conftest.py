@@ -1,6 +1,7 @@
-import os
-import pytest
 import logging
+import os
+
+import pytest
 
 from schema_registry.client import SchemaRegistryClient, errors, schema
 from schema_registry.serializers import MessageSerializer

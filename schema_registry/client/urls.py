@@ -1,6 +1,5 @@
-import urllib
 import typing
-
+import urllib
 from collections import defaultdict
 
 

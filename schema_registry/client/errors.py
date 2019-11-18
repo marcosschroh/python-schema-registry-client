@@ -7,7 +7,7 @@ class ClientError(Exception):
         self.message = message
         self.server_traceback = server_traceback
         self.http_code = http_code
-        super(ClientError, self).__init__(self.__str__())
+        super().__init__(message)
 
     def __repr__(self) -> str:
         return f"ClientError(error={self.message})"

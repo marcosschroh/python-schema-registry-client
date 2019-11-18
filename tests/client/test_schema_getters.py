@@ -1,5 +1,4 @@
 from schema_registry.client import schema as schema_loader
-
 from tests import data_gen
 
 
