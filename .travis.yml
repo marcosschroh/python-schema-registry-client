@@ -1,7 +1,6 @@
 # Config file for automatic testing at travis-ci.org
-dist: xenial   # required for Python >= 3.7
-
 language: python
+cache: pip
 
 services:
   - docker
@@ -13,9 +12,13 @@ before_install:
 install: pip install -r requirements.txt
 
 matrix:
-  include:	
+  include:
+    - name: Test Python 3.6
+      python: 3.6
+      script: ./scripts/clean.sh && ./scripts/test.sh
     - name: Test Python 3.7
       python: 3.7
       script: ./scripts/clean.sh && ./scripts/test.sh
     - name: Lint
+      python: 3.7
       script: ./scripts/lint.sh

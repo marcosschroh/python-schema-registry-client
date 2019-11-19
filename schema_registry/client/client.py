@@ -47,7 +47,7 @@ class SchemaRegistryClient(requests.Session):
         else:
             conf = url
 
-        schema_server_url = conf.get("url", "")
+        schema_server_url = conf.get("url")
         self.url_manager = UrlManager(schema_server_url, paths)  # type: ignore
 
         self.extra_headers = extra_headers
@@ -66,8 +66,8 @@ class SchemaRegistryClient(requests.Session):
 
     @staticmethod
     def _configure_basic_auth(
-        conf: dict
-    ) -> typing.Union[None, str, typing.Tuple[typing.Any, ...]]:
+        conf: typing.Dict[str, typing.Any]
+    ) -> typing.Tuple[str, str]:
         url = conf["url"]
         auth_provider = conf.pop("basic.auth.credentials.source", "URL").upper()
 
@@ -87,24 +87,26 @@ class SchemaRegistryClient(requests.Session):
             auth = (conf.pop("sasl.username", ""), conf.pop("sasl.password", ""))
         else:
             auth = requests.utils.get_auth_from_url(url)
-        conf["url"] = requests.utils.urldefragauth(url)
 
-        return auth
+        # remove ignore after mypy fix https://github.com/python/mypy/issues/4805
+        return auth  # type: ignore
 
     @staticmethod
     def _configure_client_tls(
-        conf: dict
-    ) -> typing.Tuple[typing.Optional[typing.Any], typing.Optional[typing.Any]]:
-        cert = (conf.get("ssl.certificate.location"), conf.get("ssl.key.location"))
+        conf: typing.Dict[str, typing.Any]
+    ) -> typing.Optional[typing.Tuple[str, str]]:
+        cert_location = conf.get("ssl.certificate.location")
+        key_location = conf.get("ssl.key.location")
+
+        msg = (
+            "Both schema.registry.ssl.certificate.location and"
+            "schema.registry.ssl.key.location must be set"
+        )
 
         # Both values can be None or no values can be None
-        if bool(cert[0]) != bool(cert[1]):
-            raise ValueError(
-                """
-                Both schema.registry.ssl.certificate.location and
-                schema.registry.ssl.key.location must be set
-                """
-            )
+        assert bool(cert_location) == bool(key_location), msg
+
+        cert = (cert_location, key_location) if cert_location and key_location else None
 
         return cert
 
@@ -123,9 +125,9 @@ class SchemaRegistryClient(requests.Session):
 
         return _headers
 
-    def request(
+    def request(  # type: ignore
         self, url: str, method: str = "GET", body: dict = None, headers: dict = None
-    ) -> tuple:  # type: ignore
+    ) -> tuple:
         if method not in utils.VALID_METHODS:
             raise ClientError(
                 f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}"
