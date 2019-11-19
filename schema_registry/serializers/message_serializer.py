@@ -10,7 +10,7 @@ from fastavro import schemaless_reader, schemaless_writer
 from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.client.errors import ClientError
 
-from .errors import KeySerializerError, SerializerError, ValueSerializerError
+from .errors import SerializerError
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +78,6 @@ class MessageSerializer:
         schema_id = self.schema_name_to_id.get(avro_schema.name)
 
         if not schema_id:
-            serialize_err = KeySerializerError if is_key else ValueSerializerError
 
             subject_suffix = "-key" if is_key else "-value"
             # get the latest schema for the subject
@@ -88,7 +87,7 @@ class MessageSerializer:
 
             if not schema_id:
                 message = f"Unable to retrieve schema id for subject {subject}"
-                raise serialize_err(message)
+                raise SerializerError(message)
 
             # cache writer
             self.id_to_writers[schema_id] = self._get_encoder_func(avro_schema)
@@ -114,18 +113,16 @@ class MessageSerializer:
         Returns:
             func: decoder function
         """
-        serialize_err = KeySerializerError if is_key else ValueSerializerError
-
         # use slow avro
         if schema_id not in self.id_to_writers:
             try:
                 avro_schema = self.schemaregistry_client.get_by_id(schema_id)
                 if not avro_schema:
-                    raise serialize_err("Schema does not exist")
+                    raise SerializerError("Schema does not exist")
                 self.id_to_writers[schema_id] = self._get_encoder_func(avro_schema)
             except ClientError:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                raise serialize_err(
+                raise SerializerError(
                     repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
                 )
 

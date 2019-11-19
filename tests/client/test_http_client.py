@@ -14,7 +14,7 @@ def test_context(client):
 
 
 def test_cert_no_key():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         SchemaRegistryClient(
             url="https://127.0.0.1:65534", cert_location="/path/to/cert"
         )

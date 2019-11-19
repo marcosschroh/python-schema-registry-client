@@ -5,16 +5,8 @@ class SerializerError(Exception):
         self.message = message
         super().__init__(message)
 
-        def __repr__(self) -> str:
-            return f"{self.__class__.__name__}(error={self.message})"
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(error={self.message})"
 
-        def __str__(self) -> str:
-            return self.message
-
-
-class KeySerializerError(SerializerError):
-    pass
-
-
-class ValueSerializerError(SerializerError):
-    pass
+    def __str__(self) -> str:
+        return self.message
