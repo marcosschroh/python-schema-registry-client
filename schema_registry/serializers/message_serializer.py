@@ -25,9 +25,8 @@ class ContextStringIO(io.BytesIO):
     def __enter__(self) -> "ContextStringIO":
         return self
 
-    def __exit__(self, *args: typing.Any) -> bool:
+    def __exit__(self, *args: typing.Any) -> None:
         self.close()
-        return False
 
 
 class MessageSerializer:

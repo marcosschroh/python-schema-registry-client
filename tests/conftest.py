@@ -59,7 +59,7 @@ def response_klass():
 
 @pytest.fixture
 def client():
-    url = os.getenv("SCHEMA_REGISTRY_URL")
+    url = os.getenv("SCHEMA_REGISTRY_URL", "http://schema-registry-server:8081")
     client = SchemaRegistryClient(url)
     yield client
 
