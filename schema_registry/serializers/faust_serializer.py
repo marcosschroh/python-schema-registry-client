@@ -38,16 +38,11 @@ class Serializer(message_serializer.MessageSerializer, faust.Codec):
         """
 
         # method available on MessageSerializer
-        return self.encode_record_with_schema(
-            self.schema_subject, self.schema, obj, is_key=self.is_key
-        )
+        return self.encode_record_with_schema(self.schema_subject, self.schema, obj, is_key=self.is_key)
 
 
 def serializer_factory(
-    schema_registry_client: SchemaRegistryClient,
-    schema_subject: str,
-    schema: schema.AvroSchema,
-    is_key: bool = False,
+    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: schema.AvroSchema, is_key: bool = False
 ) -> Serializer:
 
     assert faust is not None, "faust must be installed in order to use FaustSerializer"

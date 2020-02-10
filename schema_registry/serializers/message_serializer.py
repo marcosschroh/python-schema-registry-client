@@ -54,11 +54,7 @@ class MessageSerializer:
         return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)
 
     def encode_record_with_schema(
-        self,
-        subject: str,
-        avro_schema: schema.AvroSchema,
-        record: dict,
-        is_key: bool = False,
+        self, subject: str, avro_schema: schema.AvroSchema, record: dict, is_key: bool = False
     ) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
@@ -97,9 +93,7 @@ class MessageSerializer:
 
         return self.encode_record_with_schema_id(schema_id, record, is_key=is_key)
 
-    def encode_record_with_schema_id(
-        self, schema_id: int, record: dict, is_key: bool = False
-    ) -> bytes:
+    def encode_record_with_schema_id(self, schema_id: int, record: dict, is_key: bool = False) -> bytes:
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
@@ -121,9 +115,7 @@ class MessageSerializer:
                 self.id_to_writers[schema_id] = self._get_encoder_func(avro_schema)
             except ClientError:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                raise SerializerError(
-                    repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
-                )
+                raise SerializerError(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
 
         writer = self.id_to_writers[schema_id]
         with ContextStringIO() as outf:
@@ -135,9 +127,7 @@ class MessageSerializer:
 
             return outf.getvalue()
 
-    def _get_decoder_func(
-        self, schema_id: int, payload: ContextStringIO, is_key: bool = False
-    ) -> typing.Callable:
+    def _get_decoder_func(self, schema_id: int, payload: ContextStringIO, is_key: bool = False) -> typing.Callable:
         if schema_id in self.id_to_decoder_func:
             return self.id_to_decoder_func[schema_id]
 
@@ -157,9 +147,7 @@ class MessageSerializer:
 
         return self.id_to_decoder_func[schema_id]
 
-    def decode_message(
-        self, message: typing.Union[None, bytes], is_key: bool = False
-    ) -> typing.Union[None, dict]:
+    def decode_message(self, message: typing.Union[None, bytes], is_key: bool = False) -> typing.Union[None, dict]:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.

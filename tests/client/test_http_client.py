@@ -15,16 +15,12 @@ def test_context(client):
 
 def test_cert_no_key():
     with pytest.raises(AssertionError):
-        SchemaRegistryClient(
-            url="https://127.0.0.1:65534", cert_location="/path/to/cert"
-        )
+        SchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
 
 
 def test_cert_with_key():
     client = SchemaRegistryClient(
-        url="https://127.0.0.1:65534",
-        cert_location="/path/to/cert",
-        key_location="/path/to/key",
+        url="https://127.0.0.1:65534", cert_location="/path/to/cert", key_location="/path/to/key"
     )
 
     assert ("/path/to/cert", "/path/to/key") == client.cert
@@ -33,45 +29,32 @@ def test_cert_with_key():
 def test_custom_headers():
     extra_headers = {"custom-serialization": "application/x-avro-json"}
 
-    client = SchemaRegistryClient(
-        url="https://127.0.0.1:65534", extra_headers=extra_headers
-    )
+    client = SchemaRegistryClient(url="https://127.0.0.1:65534", extra_headers=extra_headers)
     assert extra_headers == client.extra_headers
 
 
 def test_override_headers(client, deployment_schema, mocker, response_klass):
     extra_headers = {"custom-serialization": "application/x-avro-json"}
-    client = SchemaRegistryClient(
-        "https://127.0.0.1:65534", extra_headers=extra_headers
-    )
+    client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
 
-    assert (
-        client.prepare_headers().get("custom-serialization")
-        == "application/x-avro-json"
-    )
+    assert client.prepare_headers().get("custom-serialization") == "application/x-avro-json"
 
     subject = "test"
     override_header = {"custom-serialization": "application/avro"}
 
     request_patch = mocker.patch.object(
-        requests.sessions.Session,
-        "request",
-        return_value=response_klass(200, content={"id": 1}),
+        requests.sessions.Session, "request", return_value=response_klass(200, content={"id": 1})
     )
     client.register(subject, deployment_schema, headers=override_header)
 
     prepare_headers = client.prepare_headers(body="1")
     prepare_headers["custom-serialization"] = "application/avro"
 
-    request_patch.assert_called_once_with(
-        "POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY
-    )
+    request_patch.assert_called_once_with("POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY)
 
 
 def test_cert_path():
-    client = SchemaRegistryClient(
-        url="https://127.0.0.1:65534", ca_location="/path/to/ca"
-    )
+    client = SchemaRegistryClient(url="https://127.0.0.1:65534", ca_location="/path/to/ca")
 
     assert "/path/to/ca" == client.verify
 
@@ -108,9 +91,7 @@ def test_invalid_url():
 
 
 def test_basic_auth_url():
-    client = SchemaRegistryClient(
-        {"url": "https://user_url:secret_url@127.0.0.1:65534"}
-    )
+    client = SchemaRegistryClient({"url": "https://user_url:secret_url@127.0.0.1:65534"})
 
     assert ("user_url", "secret_url") == client.auth
 
@@ -142,8 +123,5 @@ def test_basic_auth_sasl_inherit():
 def test_basic_auth_invalid():
     with pytest.raises(ValueError):
         SchemaRegistryClient(
-            {
-                "url": "https://user_url:secret_url@127.0.0.1:65534",
-                "basic.auth.credentials.source": "VAULT",
-            }
+            {"url": "https://user_url:secret_url@127.0.0.1:65534", "basic.auth.credentials.source": "VAULT"}
         )
