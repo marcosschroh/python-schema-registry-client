@@ -64,15 +64,9 @@ def test_encode_logical_types(client, message_serializer):
 
 
 def test_encode_decode_with_schema_from_json(message_serializer, deployment_schema):
-    deployment_record = {
-        "image": "registry.gitlab.com/my-project:1.0.0",
-        "replicas": 1,
-        "port": 8080,
-    }
+    deployment_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": 1, "port": 8080}
 
-    message_encoded = message_serializer.encode_record_with_schema(
-        "deployment", deployment_schema, deployment_record
-    )
+    message_encoded = message_serializer.encode_record_with_schema("deployment", deployment_schema, deployment_record)
 
     assert message_encoded
     assert len(message_encoded) > 5
@@ -84,16 +78,10 @@ def test_encode_decode_with_schema_from_json(message_serializer, deployment_sche
 
 
 def test_fail_encode_with_schema(message_serializer, deployment_schema):
-    bad_record = {
-        "image": "registry.gitlab.com/my-project:1.0.0",
-        "replicas": "1",
-        "port": "8080",
-    }
+    bad_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": "1", "port": "8080"}
 
     with pytest.raises(TypeError):
-        message_serializer.encode_record_with_schema(
-            "deployment", deployment_schema, bad_record
-        )
+        message_serializer.encode_record_with_schema("deployment", deployment_schema, bad_record)
 
 
 def test_encode_record_with_schema(client, message_serializer):

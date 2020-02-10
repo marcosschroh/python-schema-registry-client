@@ -30,7 +30,7 @@ setup(
     download_url="https://pypi.org/project/python-schema-registry-client/#files",
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    license="GPLv3",
+    license="MIT",
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",

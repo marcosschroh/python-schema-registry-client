@@ -5,9 +5,7 @@ from tests import data_gen
 
 def test_create_faust_serializer(client, country_schema):
     schema_subject = "test-country"
-    faust_serializer = serializer.FaustSerializer(
-        client, schema_subject, country_schema
-    )
+    faust_serializer = serializer.FaustSerializer(client, schema_subject, country_schema)
 
     assert faust_serializer.schema_registry_client == client
     assert faust_serializer.schema_subject == schema_subject
@@ -17,9 +15,7 @@ def test_create_faust_serializer(client, country_schema):
 
 def test_dumps_load_message(client, country_schema):
     schema_subject = "test-country"
-    faust_serializer = serializer.FaustSerializer(
-        client, schema_subject, country_schema
-    )
+    faust_serializer = serializer.FaustSerializer(client, schema_subject, country_schema)
 
     record = {"country": "Argentina"}
     message_encoded = faust_serializer._dumps(record)
