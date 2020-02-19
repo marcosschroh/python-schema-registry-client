@@ -1,4 +1,4 @@
-fastavro==0.22.3
+fastavro
 requests
 faust
 

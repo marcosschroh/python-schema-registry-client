@@ -41,7 +41,7 @@ def create_adv_item(i):
 def create_logical_item():
     return {
         "metadata": {
-            "timestamp": unix_time_millis(fake.past_datetime()),
+            "timestamp": fake.past_datetime(),
             "total": fake.pydecimal(left_digits=2, right_digits=2),
         }
     }

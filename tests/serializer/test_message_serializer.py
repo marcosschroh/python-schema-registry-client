@@ -51,15 +51,14 @@ def test_encode_logical_types(client, message_serializer):
     message = message_serializer.encode_record_with_schema_id(schema_id, record)
 
     decoded = message_serializer.decode_message(message)
-    decoded_datetime = decoded.get("metadata").get("timestamp")
 
+    decoded_datetime = decoded.get("metadata").get("timestamp")
     timestamp = record.get("metadata").get("timestamp")
-    date_time = datetime.datetime.fromtimestamp(timestamp / 1000.0)
 
     decoded_total = decoded.get("metadata").get("total")
     total = record.get("metadata").get("total")
 
-    assert date_time == decoded_datetime.replace(tzinfo=None)
+    assert timestamp == decoded_datetime.replace(tzinfo=None)
     assert total == decoded_total
 
 
