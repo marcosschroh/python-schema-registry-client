@@ -25,7 +25,7 @@ def load_schema_file(fname):
 
 
 def create_basic_item(i):
-    return {"name": fake.first_name(), "number": fake.pyint(max=100)}
+    return {"name": fake.first_name(), "number": fake.pyint(max_value=100)}
 
 
 def create_adv_item(i):
@@ -41,7 +41,7 @@ def create_adv_item(i):
 def create_logical_item():
     return {
         "metadata": {
-            "timestamp": unix_time_millis(fake.past_datetime()),
+            "timestamp": fake.past_datetime(),
             "total": fake.pydecimal(left_digits=2, right_digits=2),
         }
     }
@@ -50,8 +50,8 @@ def create_logical_item():
 def create_nested_schema():
     return {
         "name": fake.first_name(),
-        "uid": fake.pyint(min=0, max=9999, step=1),
-        "order": {"uid": fake.pyint(min=0, max=9999, step=1)},
+        "uid": fake.pyint(min_value=0, max_value=9999, step=1),
+        "order": {"uid": fake.pyint(min_value=0, max_value=9999, step=1)},
     }
 
 

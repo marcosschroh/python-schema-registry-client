@@ -8,10 +8,9 @@
 
 Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) resources.
 
-
 ## Requirements
 
-python 3.6+, fastavro<=0.22.3, requests<=2.22.0
+python 3.6+, fastavro, requests
 
 ## Installation
 
@@ -21,11 +20,11 @@ pip install python-schema-registry-client
 
 If you want the `Faust` functionality:
 
-```
+```bash
 pip install python-schema-registry-client[faust]
 ```
 
-## When use this library?
+## When use this library
 
 Usually, we have a situacion like this:
 
@@ -35,7 +34,7 @@ So, our producers/consumers have to serialize/deserialize messages every time th
 
 Also, could be a use case that we would like to have an Application only to administrate `Avro Schemas` (register, update compatibilities, delete old schemas, etc.), so the `SchemaRegistryClient` is perfect.
 
-## Run Tests
+## Development
 
 The tests are run against the `Schema Server` using `docker compose`, so you will need
 `Docker` and `Docker Compose` installed.

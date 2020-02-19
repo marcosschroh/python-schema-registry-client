@@ -28,7 +28,7 @@ def test_dumps_load_message(client, country_schema):
     assert message_decoded == record
 
 
-def test_nester_schema(client):
+def test_nested_schema(client):
     nested_schema = schema.AvroSchema(data_gen.NESTED_SCHENA)
     schema_subject = "test-nested-schema"
     faust_serializer = serializer.FaustSerializer(client, schema_subject, nested_schema)

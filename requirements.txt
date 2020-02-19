@@ -1,20 +1,20 @@
-fastavro==0.22.3
-requests==2.22.0
-faust==1.9.0
+fastavro
+requests
+faust
 
 # Code quality
 # ------------------------------------------------------------------------------
-black==19.10b0
-autoflake==1.3.1
-flake8==3.7.9
-mypy==0.761
-isort==4.3.21
+black
+autoflake
+flake8
+mypy
+isort
 
 # Testing
 # ------------------------------------------------------------------------------
-pytest==5.3.5
-pytest-mock==1.13.0
-faker==1.0.7
+pytest
+pytest-mock
+faker
 
 # Docs
 # ------------------------------------------------------------------------------
@@ -23,5 +23,5 @@ mkdocs-material
 
 # Coverage
 #-------------------------------------------------------------------------------
-codecov>=1.4.0
-pytest-cov==2.7.1
+codecov
+pytest-cov

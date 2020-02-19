@@ -40,21 +40,19 @@ class MessageSerializer:
     def __init__(
         self,
         schemaregistry_client: SchemaRegistryClient,
-        reader_key_schema: typing.Optional[schema.AvroSchema] = None,
-        reader_value_schema: typing.Optional[schema.AvroSchema] = None,
+        reader_schema: typing.Optional[schema.AvroSchema] = None,
     ):
         self.schemaregistry_client = schemaregistry_client
         self.id_to_decoder_func = {}  # type: typing.Dict
         self.id_to_writers = {}  # type: typing.Dict
-        self.reader_key_schema = reader_key_schema
-        self.reader_value_schema = reader_value_schema
+        self.reader_schema = reader_schema
         self.schema_name_to_id = {}  # type: typing.Dict
 
     def _get_encoder_func(self, avro_schema: schema.AvroSchema) -> typing.Callable:
         return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)
 
     def encode_record_with_schema(
-        self, subject: str, avro_schema: schema.AvroSchema, record: dict, is_key: bool = False
+        self, subject: str, avro_schema: schema.AvroSchema, record: dict
     ) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
@@ -73,11 +71,7 @@ class MessageSerializer:
         schema_id = self.schema_name_to_id.get(avro_schema.name)
 
         if not schema_id:
-
-            subject_suffix = "-key" if is_key else "-value"
-            # get the latest schema for the subject
-            subject = f"{subject}{subject_suffix}"
-            # register it
+            # Try to register the schema
             schema_id = self.schemaregistry_client.register(subject, avro_schema)
 
             if not schema_id:
@@ -91,9 +85,9 @@ class MessageSerializer:
             logging.info(f"Caching Schema {avro_schema.name} with ID: {schema_id}")
             self.schema_name_to_id[avro_schema.name] = schema_id
 
-        return self.encode_record_with_schema_id(schema_id, record, is_key=is_key)
+        return self.encode_record_with_schema_id(schema_id, record)
 
-    def encode_record_with_schema_id(self, schema_id: int, record: dict, is_key: bool = False) -> bytes:
+    def encode_record_with_schema_id(self, schema_id: int, record: dict) -> bytes:
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
@@ -127,7 +121,7 @@ class MessageSerializer:
 
             return outf.getvalue()
 
-    def _get_decoder_func(self, schema_id: int, payload: ContextStringIO, is_key: bool = False) -> typing.Callable:
+    def _get_decoder_func(self, schema_id: int, payload: ContextStringIO) -> typing.Callable:
         if schema_id in self.id_to_decoder_func:
             return self.id_to_decoder_func[schema_id]
 
@@ -139,10 +133,8 @@ class MessageSerializer:
         if writer_schema is None:
             raise SerializerError(f"unable to fetch schema with id {schema_id}")
 
-        reader_schema = self.reader_key_schema if is_key else self.reader_value_schema
-
         self.id_to_decoder_func[schema_id] = lambda payload: schemaless_reader(
-            payload, writer_schema.schema, reader_schema
+            payload, writer_schema.schema, self.reader_schema
         )
 
         return self.id_to_decoder_func[schema_id]
@@ -169,6 +161,6 @@ class MessageSerializer:
             magic, schema_id = struct.unpack(">bI", payload.read(5))
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")
-            decoder_func = self._get_decoder_func(schema_id, payload, is_key)
+            decoder_func = self._get_decoder_func(schema_id, payload)
 
             return decoder_func(payload)
