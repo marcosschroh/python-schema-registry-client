@@ -9,8 +9,8 @@ python setup.py sdist
 twine upload dist/*
 
 # # creating git tag
-echo "Creating tag version v${VERSION}:"
-echo "git tag -a v${VERSION} -m 'Bump version v${VERSION}'"
+echo "Considering doing the following actions:"
+echo "git tag -a v${VERSION} -m 'release previous-version → v${VERSION}'"
 echo "git push origin v${VERSION}"
 
 # deploy documentation
