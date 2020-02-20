@@ -38,9 +38,7 @@ class MessageSerializer:
     """
 
     def __init__(
-        self,
-        schemaregistry_client: SchemaRegistryClient,
-        reader_schema: typing.Optional[schema.AvroSchema] = None,
+        self, schemaregistry_client: SchemaRegistryClient, reader_schema: typing.Optional[schema.AvroSchema] = None
     ):
         self.schemaregistry_client = schemaregistry_client
         self.id_to_decoder_func = {}  # type: typing.Dict
@@ -51,9 +49,7 @@ class MessageSerializer:
     def _get_encoder_func(self, avro_schema: schema.AvroSchema) -> typing.Callable:
         return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)
 
-    def encode_record_with_schema(
-        self, subject: str, avro_schema: schema.AvroSchema, record: dict
-    ) -> bytes:
+    def encode_record_with_schema(self, subject: str, avro_schema: schema.AvroSchema, record: dict) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
