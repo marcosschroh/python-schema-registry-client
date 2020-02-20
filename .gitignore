@@ -103,7 +103,6 @@ bh_unicode_properties.cache
 # https://packagecontrol.io/packages/sublime-github
 GitHub.sublime-settings
 
-
 ### Vim template
 # Swap
 [._]*.s[a-v][a-z]
@@ -117,8 +116,6 @@ Session.vim
 # Auto-generated tag files
 tags
 
-
 .pytest_cache/
-
 
 .ipython/

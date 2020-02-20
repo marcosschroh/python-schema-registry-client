@@ -1,4 +1,3 @@
-import datetime
 import struct
 
 import pytest

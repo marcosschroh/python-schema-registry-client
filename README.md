@@ -43,5 +43,11 @@ The tests are run against the `Schema Server` using `docker compose`, so you wil
 `Docker` and `Docker Compose` installed.
 
 ```bash
-./scripts/test.sh
+./scripts/run_tests
+```
+
+Run code linting:
+
+```bash
+./scripts/lint
 ```

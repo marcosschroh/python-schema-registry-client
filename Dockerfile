@@ -17,6 +17,10 @@ WORKDIR /schema_registry/
 COPY wait_for_services.sh .
 COPY requirements.txt .
 
+# Code quality
+COPY .flake8 .
+COPY mypy.ini .
+
 # create a file in order to have coverage
 RUN touch .coverage
 
