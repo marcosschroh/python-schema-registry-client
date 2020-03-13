@@ -213,7 +213,7 @@ class SchemaRegistryClient(requests.Session):
         if status.is_success(code):
             return result
 
-        raise ClientError("Unable to delete subject", http_code=code, server_traceback=result)
+        raise ClientError("Unable to get subjects", http_code=code, server_traceback=result)
 
     def delete_subject(self, subject: str, headers: dict = None) -> list:
         """
