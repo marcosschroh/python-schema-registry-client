@@ -58,6 +58,7 @@ USER_V2 = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc"))
 LOGICAL_TYPES_SCHEMA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "logical_types_schema.avsc"))
 ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
 NESTED_SCHENA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "nested_schema.avsc"))
+ORDER_SCHENA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "order_schema.avsc"))
 
 
 def cleanup(files):

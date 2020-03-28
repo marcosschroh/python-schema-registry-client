@@ -1,0 +1,9 @@
+{
+    "type": "record",
+    "name": "Order",
+    "aliases": ["Order"],
+    "fields": [
+        {"name": "uid", "type": "int"}
+    ]
+}
+   
