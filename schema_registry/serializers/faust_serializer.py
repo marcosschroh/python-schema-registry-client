@@ -25,20 +25,46 @@ class Serializer(message_serializer.MessageSerializer, faust.Codec):
         message_serializer.MessageSerializer.__init__(self, schema_registry_client)
         faust.Codec.__init__(self)
 
-    def _loads(self, s: bytes) -> typing.Optional[typing.Dict]:
+    def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
         # method available on MessageSerializer
-        return self.decode_message(s)
+        return self.decode_message(event)
 
-    def _dumps(self, obj: dict) -> bytes:
+    def _dumps(self, payload: typing.Dict[str, typing.Any]) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given topic.  The
         record is expected to be a dictionary.
 
         The schema is registered with the subject of 'topic-value'
         """
-
+        payload = self.clean_payload(payload)
         # method available on MessageSerializer
-        return self.encode_record_with_schema(self.schema_subject, self.schema, obj)
+        return self.encode_record_with_schema(self.schema_subject, self.schema, payload)
+
+    @staticmethod
+    def clean_payload(payload: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
+        """
+        Try to clean payload retrieve by faust.Record.to_representation.
+        All values inside payload should be native types and not faust.Record
+
+        On Faust versions <=1.9.0 Record.to_representation always returns a dict with native types
+        as a values which are compatible with fastavro.
+        On Faust 1.10.0 <= versions Record.to_representation always returns a dic but values
+        can also be faust.Record, so fastavro is incapable of serialize them
+
+        Args:
+            payload (dict): Payload to clean
+
+        Returns:
+            dict that represents the clean payload
+        """
+        return {
+            key: (
+                Serializer.clean_payload(value.to_representation())  # type: ignore
+                if isinstance(value, faust.Record)
+                else value
+            )
+            for key, value in payload.items()
+        }
 
 
 def serializer_factory(

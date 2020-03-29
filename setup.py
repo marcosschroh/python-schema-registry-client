@@ -25,7 +25,7 @@ setup(
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
-    extras_require={"faust": ["faust<=1.9.0"]},
+    extras_require={"faust": ["faust"]},
     url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="https://pypi.org/project/python-schema-registry-client/#files",
     packages=find_packages(exclude=("tests",)),
