@@ -10,6 +10,10 @@ class UrlManager:
         assert parsed_url.scheme, f"The url does not have a schema, add one. For example http://{base_url}"
 
         # this is the absolute url to the server
+        # make sure that url ends with /
+        if not base_url.endswith("/"):
+            base_url += "/"
+
         self.base_url = base_url
 
         self.paths = {path.name: path for path in map(lambda path: Path(path), paths)}
