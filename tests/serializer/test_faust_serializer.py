@@ -1,4 +1,5 @@
 import faust
+
 from schema_registry.client import schema
 from schema_registry.serializers import faust_serializer as serializer
 from tests import data_gen
