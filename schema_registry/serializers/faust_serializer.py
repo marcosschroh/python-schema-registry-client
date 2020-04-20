@@ -1,23 +1,22 @@
 import typing
-from importlib.util import find_spec
 
 from schema_registry.client import SchemaRegistryClient
 from schema_registry.client.schema import AvroSchema
 from schema_registry.serializers import message_serializer
 
-_has_faust = find_spec("faust") is not None
+try:
+    from faust import Codec, Record
+except ImportError:
+    Codec = None  # type: ignore
 
 
 def serializer_factory(
-    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: AvroSchema,
+    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: AvroSchema
 ) -> "Serializer":  # type: ignore # noqa: F821
 
-    if _has_faust:
-        import faust
-    else:
-        raise ImportError("'faust' not found and is required for 'FaustSerializer'")
+    assert Codec is not None, "faust must be installed in order to use FaustSerializer"
 
-    class Serializer(message_serializer.MessageSerializer, faust.Codec):
+    class Serializer(message_serializer.MessageSerializer, Codec):
         def __init__(
             self,
             schema_registry_client: SchemaRegistryClient,
@@ -31,7 +30,7 @@ def serializer_factory(
             self.is_key = is_key
 
             message_serializer.MessageSerializer.__init__(self, schema_registry_client)
-            faust.Codec.__init__(self)
+            Codec.__init__(self)
 
         def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
             # method available on MessageSerializer
@@ -64,7 +63,7 @@ def serializer_factory(
             return {
                 key: (
                     Serializer.clean_payload(value.to_representation())  # type: ignore
-                    if isinstance(value, faust.Record)
+                    if isinstance(value, Record)
                     else value
                 )
                 for key, value in payload.items()
