@@ -5,7 +5,6 @@ import pytest
 from schema_registry.client import urls
 from schema_registry.client.paths import paths
 
-
 BASE_URLS = ("http://localhost:8081", "http://localhost:8082/api/schema-registry/")
 
 

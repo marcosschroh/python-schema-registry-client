@@ -32,7 +32,6 @@ class ContextStringIO(io.BytesIO):
 class MessageSerializer:
     """
     A helper class that can serialize and deserialize messages
-
     Args:
         schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
     """
@@ -54,13 +53,11 @@ class MessageSerializer:
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
-
         Args:
             subject (str): Subject name
             schema (avro.schema.RecordSchema): Avro Schema
             record (dict): An object to serialize
             is_key (bool): If the record is a key
-
         Returns:
             bytes: Encoded record with schema ID as bytes
         """
@@ -87,12 +84,10 @@ class MessageSerializer:
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
-
         Args:
             schema_id (int): integer ID
             record (dict): An object to serialize
             is_key (bool): If the record is a key
-
         Returns:
             func: decoder function
         """
@@ -139,10 +134,8 @@ class MessageSerializer:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
-
         Args:
             message (str|bytes or None): message key or value to be decoded
-
         Returns:
             dict: Decoded message contents.
         """
