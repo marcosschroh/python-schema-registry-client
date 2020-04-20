@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
