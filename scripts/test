@@ -1,7 +1,8 @@
 #!/bin/sh
 
-pytest --cov=schema_registry ${1} --cov-fail-under=85 && \
-    codecov && codecov --token=$CODECOV_TOKEN && \
-    flake8 . && \
-    black --line-length 120 --check . && \
-    mypy schema_registry
+set -o errexit
+
+docker-compose build
+
+# run tests against schema registry server
+docker-compose run -e CODECOV_TOKEN=${CODECOV_TOKEN} schema-registry-client ./scripts/run_test ${1-"./tests"}

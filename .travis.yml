@@ -15,4 +15,4 @@ matrix:
   include:
     - name: Test Python 3.7
       python: 3.7
-      script: ./scripts/run_tests
+      script: ./scripts/test
