@@ -2,9 +2,7 @@
 
 Class that serialize and deserialize messages. It interacts with the `SchemaRegistryClient` to get `Avro Schemas` in order to process messages. In your application you will intereact with it.
 
-
-Usage:
-------
+## Usage
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
@@ -59,8 +57,7 @@ message_serializer.encode_record_with_schema(
 #   TypeError: unsupported operand type(s) for <<: 'str' and 'int'
 ```
 
-Class and Methods:
------------------
+## Class and Methods
 
 ```python
 MessageSerializer
@@ -68,7 +65,7 @@ MessageSerializer
         schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
 ```
 
-#### Encode record with a `Schema`:
+#### Encode record with a `Schema`
 
 ```python
 def encode_record_with_schema(subject, schema, record, is_key=False):
@@ -84,7 +81,7 @@ def encode_record_with_schema(subject, schema, record, is_key=False):
     """
 ```
 
-#### Encode a record with a `schema id`:
+#### Encode a record with a `schema id`
 
 ```python
 def encode_record_with_schema_id(schema_id, record, is_key=False):
@@ -99,7 +96,7 @@ def encode_record_with_schema_id(schema_id, record, is_key=False):
     """
 ```
 
-#### Decode a message encoded previously:
+#### Decode a message encoded previously
 
 ```python
 def decode_message(message, is_key=False):

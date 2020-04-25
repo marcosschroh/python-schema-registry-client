@@ -9,9 +9,10 @@ repo_url: https://github.com/marcosschroh/python-schema-registry-client
 
 nav:
     - Introduction: 'index.md'
+    - SchemaRegistryClient Api: 'client.md'
     - Message Serializer: 'serializer.md'
     - Faust integration: 'faust.md'
-    - SchemaRegistryClient Api: 'client.md'
+    - Schemas: 'schemas.md'
     - Exceptions: 'exceptions.md'
     - Schema Registry Server: 'schemaregistry_server.md'
 

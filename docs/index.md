@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/marcosschroh/python-schema-registry-client/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/python-schema-registry-client)
 [![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
 
-
 Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) resources.
 
 ## Requirements
@@ -40,5 +39,10 @@ The tests are run against the `Schema Server` using `docker compose`, so you wil
 `Docker` and `Docker Compose` installed.
 
 ```bash
-./scripts/test.sh
+./scripts/test
 ```
+
+Run code linting:
+
+```bash
+./scripts/lint

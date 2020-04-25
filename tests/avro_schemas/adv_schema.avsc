@@ -1,7 +1,7 @@
 {
-    "name": "advanced",
     "type": "record",
     "doc": "advanced schema for tests",
+    "name": "advanced",
     "namespace": "python.test.advanced",
     "fields": [
         {

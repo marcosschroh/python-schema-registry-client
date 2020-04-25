@@ -267,12 +267,15 @@ class SchemaRegistryClient(requests.Session):
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
         Get a specific version of the schema registered under this subject
+
         Args:
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
             headers (dict): Extra headers to add on the requests
+
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
+
             None: If server returns a not success response:
                 404: Schema not found
                 422: Unprocessable entity
@@ -309,9 +312,11 @@ class SchemaRegistryClient(requests.Session):
         """
         GET subjects/{subject}/versions
         Get a list of versions registered under the specified subject.
+
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
+
         Returns:
             list (str): version of the schema registered under this subject
         """
@@ -337,12 +342,14 @@ class SchemaRegistryClient(requests.Session):
         This API is recommended to be used only in development environments or
         under extreme circumstances where-in, its required to delete a previously
         registered schema for compatibility purposes or re-register previously registered schema.
+
         Args:
             subject (str): subject name
             version (str): Version of the schema to be deleted.
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
+
         Returns:
             int: version of the schema deleted
             None: If the subject or version does not exist.
@@ -366,16 +373,14 @@ class SchemaRegistryClient(requests.Session):
         Check if a schema has already been registered under the specified subject.
         If so, this returns the schema string along with its globally unique identifier,
         its version under this subject and the subject name.
+
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema
             headers (dict): Extra headers to add on the requests
+
         Returns:
-            dict:
-                subject (string) -- Name of the subject that this schema is registered under
-                id (int) -- Globally unique identifier of the schema
-                version (int) -- Version of the returned schema
-                schema (dict) -- The Avro schema
+            SchemaVersion (nametupled): (subject, schema_id, schema, version)
             None: If schema not found.
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
@@ -410,10 +415,12 @@ class SchemaRegistryClient(requests.Session):
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
         Test the compatibility of a candidate parsed schema for a given subject.
         By default the latest version is checked against.
+
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema
             headers (dict): Extra headers to add on the requests
+
         Returns:
             bool: True if schema given compatible, False otherwise
         """
@@ -437,13 +444,16 @@ class SchemaRegistryClient(requests.Session):
         PUT /config/(string: subject)
         Update the compatibility level.
         If subject is None, the compatibility level is global.
+
         Args:
             level (str): one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
                 FULL, FULL_TRANSITIVE, NONE
             subject (str): Option subject
             headers (dict): Extra headers to add on the requests
+
         Returns:
             bool: True if compatibility was updated
+
         Raises:
             ClientError: if the request was unsuccessful or an invalid
         """
@@ -463,12 +473,15 @@ class SchemaRegistryClient(requests.Session):
     def get_compatibility(self, subject: str = None, headers: dict = None) -> str:
         """
         Get the current compatibility level for a subject.
+
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
+
         Returns:
             str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
                 FULL, FULL_TRANSITIVE, NONE
+
         Raises:
             ClientError: if the request was unsuccessful or an invalid
             compatibility level was returned

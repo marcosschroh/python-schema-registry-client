@@ -4,9 +4,7 @@ The `Schema Registry Client` consumes the API exposed by the `schema-registry` t
 
 You probably won't use this but is good to know that exists. The `MessageSerialzer` is whom interact with the `SchemaRegistryClient`
 
-
-SchemaRegistryClient:
----------------------
+## SchemaRegistryClient
 
 ```python
 SchemaRegistryClient
@@ -22,8 +20,7 @@ SchemaRegistryClient
         extra_headers (dict): Extra headers to add on every requests.
 ```
 
-Methods:
---------
+## Methods
 
 #### Get Schema
 
@@ -47,7 +44,7 @@ def get_schema(subject: str, version="latest", headers: dict = None) -> utils.Sc
     """
 ```
 
-#### Get schema by `id`:
+#### Get schema by `id`
 
 ```python
 def get_by_id(schema_id: int, headers: dict = None) -> client.schema.AvroSchema:
@@ -61,7 +58,7 @@ def get_by_id(schema_id: int, headers: dict = None) -> client.schema.AvroSchema:
     """
 ```
 
-#### Register a Schema:
+#### Register a Schema
 
 ```python
 def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None) -> int:
@@ -92,7 +89,6 @@ def get_subjects(self, headers: dict = None) -> list:
         list [str]: list of registered subjects.
     """
 ```
-
 
 #### Delete Schema
 
@@ -162,7 +158,7 @@ def delete_version(self, subject: str, version="latest", headers: dict = None):
 
     Args:
         subject (str): subject name
-        version (str): Version of the schema to be deleted. 
+        version (str): Version of the schema to be deleted.
             Valid values for versionId are between [1,2^31-1] or the string "latest".
             "latest" deletes the last registered schema under the specified subject.
         headers (dict): Extra headers to add on the requests
@@ -173,7 +169,7 @@ def delete_version(self, subject: str, version="latest", headers: dict = None):
     """
 ```
 
-#### Test Compatibility:
+#### Test Compatibility
 
 ```python
 def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, version="latest", headers: dict = None):
@@ -190,7 +186,7 @@ def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, vers
     """
 ```
 
-#### Get Compatibility:
+#### Get Compatibility
 
 ```python
 def get_compatibility(subject: str, headers: dict = None) -> str:
@@ -211,7 +207,7 @@ def get_compatibility(subject: str, headers: dict = None) -> str:
     """
 ```
 
-#### Update Compatibility:
+#### Update Compatibility
 
 ```python
 def update_compatibility(level: str, subject: str, headers: dict = None) -> bool:
