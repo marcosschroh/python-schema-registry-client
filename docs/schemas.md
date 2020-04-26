@@ -8,7 +8,7 @@
 
 `schema`: Result of parsing the raw_schema with `fastavro`
 
-`flat_schena`: Parsed schema without `__fastavro_parsed` flag
+`flat_schema`: Parsed schema without `__fastavro_parsed` flag
 
 `expanded_schema`: Parsed schema where all named types are expanded to their real schema
 
