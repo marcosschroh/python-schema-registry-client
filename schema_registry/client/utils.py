@@ -16,3 +16,9 @@ VALID_AUTH_PROVIDERS = ("URL", "USER_INFO", "SASL_INHERIT")
 
 HEADERS = "application/vnd.schemaregistry.v1+json"
 ACCEPT_HEADERS = "application/vnd.schema_registry.v1+json, application/vnd.schema_registry+json, application/json"
+
+URL = "url"
+SSL_CA_LOCATION = "ssl.ca.location"
+SSL_CERTIFICATE_LOCATION = "ssl.certificate.location"
+SSL_KEY_LOCATION = "ssl.key.location"
+SSL_KEY_PASSWORD = "ssl.key.password"

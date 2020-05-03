@@ -3,7 +3,8 @@ import logging
 import typing
 from collections import defaultdict
 
-import requests
+import httpx
+from requests import utils as requests_utils
 
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
@@ -14,7 +15,7 @@ from schema_registry.client.urls import UrlManager
 logger = logging.getLogger(__name__)
 
 
-class SchemaRegistryClient(requests.Session):
+class SchemaRegistryClient:
     """
     A client that talks to a Schema Registry over HTTP
     Args:
@@ -23,6 +24,7 @@ class SchemaRegistryClient(requests.Session):
             for verifying the Schema Registry key.
         cert_location (str): Path to public key used for authentication.
         key_location (str): Path to ./vate key used for authentication.
+        key_password (str): Key password
         extra_headers (dict): Extra headers to add on every requests.
     """
 
@@ -32,36 +34,47 @@ class SchemaRegistryClient(requests.Session):
         ca_location: str = None,
         cert_location: str = None,
         key_location: str = None,
+        key_password: str = None,
         extra_headers: dict = None,
     ) -> None:
-        super().__init__()
 
         if isinstance(url, str):
             conf = {
-                "url": url,
-                "ssl.ca.location": ca_location,
-                "ssl.certificate.location": cert_location,
-                "ssl.key.location": key_location,
+                utils.URL: url,
+                utils.SSL_CA_LOCATION: ca_location,
+                utils.SSL_CERTIFICATE_LOCATION: cert_location,
+                utils.SSL_KEY_LOCATION: key_location,
+                utils.SSL_KEY_PASSWORD: key_password,
             }
         else:
             conf = url
 
-        schema_server_url = conf.get("url")
-        self.url_manager = UrlManager(schema_server_url, paths)  # type: ignore
+        self.conf = conf
+        schema_server_url = conf.get(utils.URL, "")
 
+        self.url_manager = UrlManager(schema_server_url, paths)  # type: ignore
         self.extra_headers = extra_headers
 
-        self.verify = conf.pop("ssl.ca.location", None)
-        self.cert = self._configure_client_tls(conf)
-        self.auth = self._configure_basic_auth(conf)
+        self.session = self._create_session()
 
-        # CACHE:
-        # subj => { schema => id }
-        self.subject_to_schema_ids = defaultdict(dict)  # type: typing.Dict
-        # id => avro_schema
-        self.id_to_schema = defaultdict(dict)  # type: typing.Dict
-        # subj => { schema => version }
-        self.subject_to_schema_versions = defaultdict(dict)  # type: typing.Dict
+        # Cache Schemas: subj => { schema => id }
+        self.subject_to_schema_ids: dict = defaultdict(dict)
+        # Cache Schemas: id => avro_schema
+        self.id_to_schema: dict = defaultdict(dict)
+        # Cache Schemas: subj => { schema => version }
+        self.subject_to_schema_versions: dict = defaultdict(dict)
+
+    def _create_session(self) -> httpx.Client:
+        """
+        Create a httpx Client session
+        Returns:
+            httpx.Client
+        """
+        verify = self.conf.get(utils.SSL_CA_LOCATION, False)
+        certificate = self._configure_client_tls(self.conf)
+        auth = self._configure_basic_auth(self.conf)
+
+        return httpx.Client(cert=certificate, verify=verify, auth=auth)  # type: ignore
 
     @staticmethod
     def _configure_basic_auth(conf: typing.Dict[str, typing.Any]) -> typing.Tuple[str, str]:
@@ -83,24 +96,28 @@ class SchemaRegistryClient(requests.Session):
                 raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
             auth = (conf.pop("sasl.username", ""), conf.pop("sasl.password", ""))
         else:
-            auth = requests.utils.get_auth_from_url(url)
+            auth = requests_utils.get_auth_from_url(url)
 
         # remove ignore after mypy fix https://github.com/python/mypy/issues/4805
         return auth  # type: ignore
 
     @staticmethod
-    def _configure_client_tls(conf: typing.Dict[str, typing.Any]) -> typing.Optional[typing.Tuple[str, str]]:
-        cert_location = conf.get("ssl.certificate.location")
-        key_location = conf.get("ssl.key.location")
+    def _configure_client_tls(
+        conf: dict,
+    ) -> typing.Optional[typing.Union[str, typing.Tuple[str, str], typing.Tuple[str, str, str]]]:
+        certificate = conf.get(utils.SSL_CERTIFICATE_LOCATION)
 
-        msg = "Both schema.registry.ssl.certificate.location and" "schema.registry.ssl.key.location must be set"
+        if certificate:
+            key_path = conf.get(utils.SSL_KEY_LOCATION)
+            key_password = conf.get(utils.SSL_KEY_PASSWORD)
 
-        # Both values can be None or no values can be None
-        assert bool(cert_location) == bool(key_location), msg
+            if key_path:
+                certificate = (certificate, key_path)
 
-        cert = (cert_location, key_location) if cert_location and key_location else None
+                if key_password:
+                    certificate += (key_password,)
 
-        return cert
+        return certificate
 
     def prepare_headers(self, body: dict = None, headers: dict = None) -> dict:
         _headers = {"Accept": utils.ACCEPT_HEADERS}
@@ -109,7 +126,6 @@ class SchemaRegistryClient(requests.Session):
             _headers.update(self.extra_headers)
 
         if body:
-            _headers["Content-Length"] = str(len(body))
             _headers["Content-Type"] = utils.HEADERS
 
         if headers:
@@ -117,14 +133,14 @@ class SchemaRegistryClient(requests.Session):
 
         return _headers
 
-    def request(  # type: ignore
-        self, url: str, method: str = "GET", body: dict = None, headers: dict = None
-    ) -> tuple:
+    def request(self, url: str, method: str = "GET", body: dict = None, headers: dict = None) -> tuple:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
 
         _headers = self.prepare_headers(body=body, headers=headers)
-        response = super().request(method, url, headers=_headers, json=body)
+
+        with self.session as session:
+            response = session.request(method, url, headers=_headers, json=body)
 
         try:
             return response.json(), response.status_code
@@ -156,10 +172,12 @@ class SchemaRegistryClient(requests.Session):
         and receive a schema id.
         avro_schema must be a parsed schema from the python avro library
         Multiple instances of the same schema will result in cache misses.
+
         Args:
             subject (str): subject name
             avro_schema (avro.schema.RecordSchema): Avro schema to be registered
             headers (dict): Extra headers to add on the requests
+
         Returns:
             int: schema_id
         """
@@ -196,9 +214,11 @@ class SchemaRegistryClient(requests.Session):
         """
         GET /subjects/(string: subject)
         Get list of all registered subjects in your Schema Registry.
+
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
+
         Returns:
             list [str]: list of registered subjects.
         """
@@ -216,9 +236,11 @@ class SchemaRegistryClient(requests.Session):
         Deletes the specified subject and its associated compatibility level if registered.
         It is recommended to use this API only when a topic needs to be
         recycled or in development environments.
+
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
+
         Returns:
             list (int): version of the schema deleted under this subject
         """
@@ -236,9 +258,11 @@ class SchemaRegistryClient(requests.Session):
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
+
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
+
         Returns:
             client.schema.AvroSchema: Avro Record schema
         """
@@ -255,7 +279,6 @@ class SchemaRegistryClient(requests.Session):
             schema_str = result.get("schema")
             result = AvroSchema(schema_str)
 
-            # cache the result
             self._cache_schema(result, schema_id)
             return result
 
@@ -298,10 +321,7 @@ class SchemaRegistryClient(requests.Session):
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
         else:
-            try:
-                schema = AvroSchema(result["schema"])
-            except ClientError:
-                raise
+            schema = AvroSchema(result["schema"])
 
         version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)

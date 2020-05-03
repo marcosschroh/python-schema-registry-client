@@ -10,7 +10,7 @@ __version__ = "1.3.0"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["fastavro", "requests"]
+requires = ["fastavro", "httpx"]
 
 description = """Python Rest Client to interact against Schema Registry \
     Confluent Server to manage Avro Schemas
