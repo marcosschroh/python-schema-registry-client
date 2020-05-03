@@ -1,5 +1,5 @@
 fastavro
-requests
+httpx
 faust
 
 # Code quality

@@ -8,6 +8,8 @@ from schema_registry.serializers import MessageSerializer
 
 logger = logging.getLogger(__name__)
 
+CERTIFICATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "certificates")
+
 flat_schemas = {
     "deployment_schema": {
         "type": "record",
@@ -120,3 +122,12 @@ def user_schema_v3():
 @pytest.fixture
 def message_serializer(client):
     return MessageSerializer(client)
+
+
+@pytest.fixture
+def certificates():
+    return {
+        "certificate": os.path.join(CERTIFICATES_DIR, "cert.pem"),
+        "key": os.path.join(CERTIFICATES_DIR, "key.pem"),
+        "password": "test",
+    }
