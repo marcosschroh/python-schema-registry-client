@@ -3,9 +3,9 @@ import logging
 import typing
 from collections import defaultdict
 
-import httpx
 from requests import utils as requests_utils
 
+import httpx
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
@@ -63,6 +63,20 @@ class SchemaRegistryClient:
         self.id_to_schema: dict = defaultdict(dict)
         # Cache Schemas: subj => { schema => version }
         self.subject_to_schema_versions: dict = defaultdict(dict)
+
+    def __getstate__(self) -> typing.Dict:
+        state = self.__dict__.copy()
+        # Remove the unpicklable session.
+        del state["session"]
+
+        return state
+
+    def __setstate__(self, state: typing.Dict) -> None:
+        self.__dict__.update(state)
+        self.session = self._create_session()
+
+    def __eq__(self, obj: typing.Any) -> bool:
+        return self.conf == obj.conf and self.extra_headers == obj.extra_headers
 
     def _create_session(self) -> httpx.Client:
         """

@@ -1,7 +1,10 @@
+import pickle
+
 import pytest
 
 import httpx
-from schema_registry.client import SchemaRegistryClient, utils
+from schema_registry.client import SchemaRegistryClient, schema, utils
+from tests import data_gen
 
 
 def test_invalid_cert():
@@ -20,6 +23,21 @@ def test_cert_with_key(certificates):
     assert client.conf[utils.SSL_CERTIFICATE_LOCATION] == certificates["certificate"]
     assert client.conf[utils.SSL_KEY_LOCATION] == certificates["key"]
     assert client.conf[utils.SSL_KEY_PASSWORD] == certificates["password"]
+
+
+def test_pickelable(client):
+    unpickled_client = pickle.loads(pickle.dumps(client))
+
+    assert client == unpickled_client
+
+    # make sure that is possible to do client operations with unpickled_client
+    subject = "test-basic-schema"
+    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    unpickled_client.get_subjects()
+    schema_id = unpickled_client.register(subject, parsed)
+
+    assert schema_id > 0
+    assert unpickled_client.delete_subject(subject)
 
 
 def test_custom_headers():
