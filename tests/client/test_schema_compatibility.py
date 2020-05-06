@@ -1,6 +1,6 @@
+import httpx
 import pytest
 
-import httpx
 from schema_registry.client import errors, schema
 from tests import data_gen
 
