@@ -1,8 +1,9 @@
 import pickle
 
-import pytest
-
 import httpx
+import pytest
+from httpx._client import UNSET
+
 from schema_registry.client import SchemaRegistryClient, schema, utils
 from tests import data_gen
 
@@ -51,7 +52,7 @@ def test_override_headers(client, deployment_schema, mocker, response_klass):
     extra_headers = {"custom-serialization": "application/x-avro-json"}
     client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
 
-    assert client.prepare_headers().get("custom-serialization") == "application/x-avro-json"
+    assert client.session.headers.get("custom-serialization") == "application/x-avro-json"
 
     subject = "test"
     override_header = {"custom-serialization": "application/avro"}
@@ -62,7 +63,7 @@ def test_override_headers(client, deployment_schema, mocker, response_klass):
     prepare_headers = client.prepare_headers(body="1")
     prepare_headers["custom-serialization"] = "application/avro"
 
-    request_patch.assert_called_once_with("POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY)
+    request_patch.assert_called_once_with("POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY, timeout=UNSET)
 
 
 def test_cert_path():
