@@ -55,10 +55,7 @@ def serializer_factory(
                 # str is also a sequence, need to make sure we don't iterate over it.
                 return item
             elif isinstance(item, Mapping):
-                return item.__class__({
-                    key: Serializer._clean_item(value)
-                    for key, value in item.items()
-                })
+                return item.__class__({key: Serializer._clean_item(value) for key, value in item.items()})
             elif isinstance(item, Sequence):
                 return item.__class__(Serializer._clean_item(value) for value in item)
             return item
