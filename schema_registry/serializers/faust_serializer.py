@@ -1,4 +1,5 @@
 import typing
+from collections.abc import Mapping, Sequence
 
 from schema_registry.client import SchemaRegistryClient
 from schema_registry.client.schema import AvroSchema
@@ -47,6 +48,19 @@ def serializer_factory(
             return self.encode_record_with_schema(self.schema_subject, self.schema, payload)
 
         @staticmethod
+        def _clean_item(item: typing.Any) -> typing.Any:
+            if isinstance(item, Record):
+                return Serializer._clean_item(item.to_representation())
+            elif isinstance(item, str):
+                # str is also a sequence, need to make sure we don't iterate over it.
+                return item
+            elif isinstance(item, Mapping):
+                return type(item)({key: Serializer._clean_item(value) for key, value in item.items()})  # type: ignore
+            elif isinstance(item, Sequence):
+                return type(item)(Serializer._clean_item(value) for value in item)  # type: ignore
+            return item
+
+        @staticmethod
         def clean_payload(payload: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
             """
             Try to clean payload retrieve by faust.Record.to_representation.
@@ -60,14 +74,7 @@ def serializer_factory(
             Returns:
                 dict that represents the clean payload
             """
-            return {
-                key: (
-                    Serializer.clean_payload(value.to_representation())  # type: ignore
-                    if isinstance(value, Record)
-                    else value
-                )
-                for key, value in payload.items()
-            }
+            return Serializer._clean_item(payload)
 
     return Serializer(schema_registry_client, schema_subject, schema)
 
