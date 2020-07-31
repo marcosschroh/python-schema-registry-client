@@ -223,7 +223,7 @@ class SchemaRegistryClient:
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
-        schema_id = schemas_to_id.get(avro_schema.name)
+        schema_id = schemas_to_id.get(avro_schema)
 
         if schema_id is not None:
             return schema_id
