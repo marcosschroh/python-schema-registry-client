@@ -74,5 +74,6 @@ def test_flat_schema(client):
     schema_version = client.get_schema(subject)
     parsed_schema = schema_version.schema
     parsed_schema.schema.pop("__fastavro_parsed")
+    parsed_schema.schema.pop("__named_schemas")
 
     assert schema_version.schema.flat_schema == parsed_schema.schema
