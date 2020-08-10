@@ -28,8 +28,8 @@ class SchemaRegistryClient:
         key_location (str): Path to ./vate key used for authentication.
         key_password (str): Key password
         extra_headers (dict): Dictionary of HTTP headers to include when sending requests.
-        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
-        pool_limits (httpx.PoolLimits): The connection pool configuration to use when
+        timeout (httpx._client.TimeoutTypes): Optional. The timeout configuration to use when sending requests.
+        pool_limits (httpx.Limits): Optional. The connection pool configuration to use when
             determining the maximum number of concurrently open HTTP connections.
     """
 
@@ -41,8 +41,8 @@ class SchemaRegistryClient:
         key_location: str = None,
         key_password: str = None,
         extra_headers: dict = None,
-        timeout: TimeoutTypes = httpx._config.DEFAULT_TIMEOUT_CONFIG,
-        pool_limits: httpx.PoolLimits = httpx._config.DEFAULT_POOL_LIMITS,
+        timeout: typing.Optional[TimeoutTypes] = None,
+        pool_limits: typing.Optional[httpx.Limits] = None,
     ) -> None:
 
         if isinstance(url, str):
@@ -97,14 +97,24 @@ class SchemaRegistryClient:
         certificate = self._configure_client_tls(self.conf)
         auth = self._configure_basic_auth(self.conf)
 
-        return httpx.Client(
-            cert=certificate,
-            verify=verify,  # type: ignore
-            auth=auth,
-            headers=self.extra_headers,
-            timeout=self.timeout,
-            pool_limits=self.pool_limits,
-        )  # type: ignore
+        client_kwargs = {
+            "cert": certificate,
+            "verify": verify,  # type: ignore
+            "auth": auth,
+        }
+
+        # If these values haven't been explicitly defined let httpx sort out
+        # the default values.
+        if self.extra_headers is not None:
+            client_kwargs["headers"] = self.extra_headers  # type:ignore
+
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout  # type:ignore
+
+        if self.pool_limits is not None:
+            client_kwargs["limits"] = self.pool_limits  # type:ignore
+
+        return httpx.Client(**client_kwargs)  # type: ignore
 
     @staticmethod
     def _configure_basic_auth(conf: typing.Dict[str, typing.Any]) -> typing.Tuple[str, str]:
