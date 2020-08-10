@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2020-08-10
+
+### Fixed
+
+- Fix `client.register cache lookup` [#62](https://github.com/marcosschroh/python-schema-registry-client/pull/62)
+- Don't rely on httpx's private config values [#66](https://github.com/marcosschroh/python-schema-registry-client/pull/66)
+
 ## [1.4.1] - 2020-07-14
 
 ### Changed
