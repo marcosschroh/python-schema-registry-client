@@ -41,7 +41,7 @@ class SchemaRegistryClient:
         key_location: str = None,
         key_password: str = None,
         extra_headers: dict = None,
-        timeout: typing.Optional[TimeoutTypes] = None,
+        timeout: typing.Optional[httpx.Timeout] = None,
         pool_limits: typing.Optional[httpx.Limits] = None,
     ) -> None:
 

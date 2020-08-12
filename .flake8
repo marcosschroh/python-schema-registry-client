@@ -1,5 +1,0 @@
-[flake8]
-ignore = E999,E231
-extend-ignore = E203
-exclude = .git,__pycache__,docs/source/build,dist
-max-line-length = 120

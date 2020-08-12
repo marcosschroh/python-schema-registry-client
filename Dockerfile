@@ -18,8 +18,8 @@ COPY wait_for_services.sh .
 COPY requirements.txt .
 
 # Code quality
-COPY .flake8 .
-COPY mypy.ini .
+COPY setup.cfg .
+COPY pyproject.toml .
 
 # create a file in order to have coverage
 RUN touch .coverage

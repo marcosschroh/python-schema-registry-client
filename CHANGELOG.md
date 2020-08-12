@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `client.register cache lookup` [#62](https://github.com/marcosschroh/python-schema-registry-client/pull/62)
+- Support for new release of `httpx`. For `httpx < 0.14.0` versions usage of `python-schema-registry-client==1.4.1`
 - Don't rely on httpx's private config values [#66](https://github.com/marcosschroh/python-schema-registry-client/pull/66)
 
 ## [1.4.1] - 2020-07-14

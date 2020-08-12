@@ -7,6 +7,6 @@ fi
 
 set -x
 
-${PREFIX}black --line-length 120 .
+${PREFIX}black .
 ${PREFIX}autoflake --in-place --recursive schema_registry tests setup.py
-${PREFIX}isort -rc --line-width 120 .
+${PREFIX}isort .

@@ -48,6 +48,19 @@ def test_custom_headers():
     assert extra_headers == client.extra_headers
 
 
+def test_custom_httpx_config():
+    """
+    Test the SchemaRegistryClient creation with custom httpx config
+    """
+    timeout = httpx.Timeout(10.0, connect=60.0)
+    pool_limits = httpx.Limits(max_keepalive=5, max_connections=10)
+
+    client = SchemaRegistryClient(url="https://127.0.0.1:65534", timeout=timeout, pool_limits=pool_limits,)
+
+    assert client.timeout == timeout
+    assert client.pool_limits == pool_limits
+
+
 def test_override_headers(client, deployment_schema, mocker, response_klass):
     extra_headers = {"custom-serialization": "application/x-avro-json"}
     client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
