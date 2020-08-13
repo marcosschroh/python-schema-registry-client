@@ -22,7 +22,7 @@ SchemaRegistryClient
         key_password (str): Key password
         extra_headers (dict): Extra headers to add on every requests.
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
-        pool_limits (httpx.PoolLimits): The connection pool configuration to use when
+        pool_limits (httpx.Limits): The connection pool configuration to use when
             determining the maximum number of concurrently open HTTP connections.
 ```
 
