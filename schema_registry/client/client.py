@@ -2,10 +2,10 @@ import json
 import logging
 import typing
 from collections import defaultdict
+from urllib.parse import urlparse
 
 import httpx
 from httpx._client import UNSET, TimeoutTypes, UnsetType
-from requests import utils as requests_utils
 
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
@@ -136,7 +136,9 @@ class SchemaRegistryClient:
                 raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
             auth = (conf.pop("sasl.username", ""), conf.pop("sasl.password", ""))
         else:
-            auth = requests_utils.get_auth_from_url(url)
+            parsed_url = urlparse(url)
+            auth = (parsed_url.username or "", parsed_url.password or "")
+
 
         # remove ignore after mypy fix https://github.com/python/mypy/issues/4805
         return auth  # type: ignore
