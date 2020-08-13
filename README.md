@@ -39,6 +39,12 @@ Also, could be a use case that we would like to have an Application only to admi
 
 ## Development
 
+Install the project and development utilities in edit mode:
+
+```bash
+pip3 install -e ".[tests,docs,faust]
+```
+
 The tests are run against the `Schema Server` using `docker compose`, so you will need
 `Docker` and `Docker Compose` installed.
 

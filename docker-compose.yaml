@@ -15,13 +15,14 @@ services:
       - SCHEMA_REGISTRY_SERVER=schema-registry-server
       - SCHEMA_REGISTRY_SERVER_PORT=8081
     ports:
-      - "8084:80"
-      - "8000:8000"
+      - "127.0.0.1:8084:80"
+      - "127.0.0.1:8000:8000"
     volumes: 
       - ./schema_registry:/schema_registry/schema_registry
       - ./tests:/schema_registry/tests
       - ./scripts:/schema_registry/scripts
       - ./.git:/schema_registry/.git
+      - ./setup.py:/schema_registry/setup.py
   zookeeper:
     image: "confluentinc/cp-zookeeper"
     hostname: zookeeper
@@ -34,8 +35,8 @@ services:
     hostname: kafka
     container_name: kafka
     ports:
-    - 9092:9092
-    - 29092:29092
+    - 127.0.0.1:9092:9092
+    - 127.0.0.1:29092:29092
     depends_on:
     - zookeeper
     environment:
@@ -52,7 +53,7 @@ services:
       - kafka
       - zookeeper
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     environment:
       - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:32181
       - SCHEMA_REGISTRY_HOST_NAME=schema-registry
