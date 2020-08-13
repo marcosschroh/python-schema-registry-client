@@ -9,7 +9,7 @@ before_install:
   - docker-compose -v
   - docker -v
 
-install: pip install -r requirements.txt
+install: pip install -e ".[tests,docs,faust]"
 
 matrix:
   include:
