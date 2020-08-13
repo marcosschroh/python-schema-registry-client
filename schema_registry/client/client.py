@@ -139,7 +139,6 @@ class SchemaRegistryClient:
             parsed_url = urlparse(url)
             auth = (parsed_url.username or "", parsed_url.password or "")
 
-
         # remove ignore after mypy fix https://github.com/python/mypy/issues/4805
         return auth  # type: ignore
 
