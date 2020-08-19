@@ -10,7 +10,7 @@ __version__ = "1.4.4"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["fastavro", "httpx"]
+requires = ["fastavro>=0.24,<0.25", "httpx>=0.14,<0.15"]
 
 description = """Python Rest Client to interact against Schema Registry \
     Confluent Server to manage Avro Schemas
@@ -25,7 +25,22 @@ setup(
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
-    extras_require={"faust": ["faust"]},
+    extras_require={
+        "faust": ["faust<2",],
+        "docs": ["mkdocs", "mkdocs-material",],
+        "tests": [
+            "black",
+            "autoflake",
+            "flake8",
+            "mypy",
+            "isort",
+            "pytest",
+            "pytest-mock",
+            "faker",
+            "codecov",
+            "pytest-cov",
+        ],
+    },
     url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="https://pypi.org/project/python-schema-registry-client/#files",
     packages=find_packages(exclude=("tests",)),
