@@ -23,12 +23,10 @@ def serializer_factory(
             schema_registry_client: SchemaRegistryClient,
             schema_subject: str,
             schema: AvroSchema,
-            is_key: bool = False,
         ):
             self.schema_registry_client = schema_registry_client
             self.schema_subject = schema_subject
             self.schema = schema
-            self.is_key = is_key
 
             message_serializer.MessageSerializer.__init__(self, schema_registry_client)
             Codec.__init__(self)

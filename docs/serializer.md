@@ -68,13 +68,12 @@ MessageSerializer
 #### Encode record with a `Schema`
 
 ```python
-def encode_record_with_schema(subject, schema, record, is_key=False):
+def encode_record_with_schema(subject, schema, record):
     """
     Args:
         subject (str): Subject name
         schema (avro.schema.RecordSchema): Avro Schema
         record (dict): An object to serialize
-        is_key (bool): If the record is a key
 
     Returns:
         bytes: Encoded record with schema ID as bytes
@@ -84,12 +83,11 @@ def encode_record_with_schema(subject, schema, record, is_key=False):
 #### Encode a record with a `schema id`
 
 ```python
-def encode_record_with_schema_id(schema_id, record, is_key=False):
+def encode_record_with_schema_id(schema_id, record):
     """
     Args:
         schema_id (int): integer ID
         record (dict): An object to serialize
-        is_key (bool): If the record is a key
 
     Returns:
         func: decoder function
@@ -99,7 +97,7 @@ def encode_record_with_schema_id(schema_id, record, is_key=False):
 #### Decode a message encoded previously
 
 ```python
-def decode_message(message, is_key=False):
+def decode_message(message):
     """
     Args:
         message (str|bytes or None): message key or value to be decoded
