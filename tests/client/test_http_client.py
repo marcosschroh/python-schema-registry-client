@@ -1,4 +1,5 @@
 import pickle
+from base64 import b64encode
 
 import httpx
 import pytest
@@ -55,7 +56,11 @@ def test_custom_httpx_config():
     timeout = httpx.Timeout(10.0, connect=60.0)
     pool_limits = httpx.Limits(max_keepalive=5, max_connections=10)
 
-    client = SchemaRegistryClient(url="https://127.0.0.1:65534", timeout=timeout, pool_limits=pool_limits,)
+    client = SchemaRegistryClient(
+        url="https://127.0.0.1:65534",
+        timeout=timeout,
+        pool_limits=pool_limits,
+    )
 
     assert client.timeout == timeout
     assert client.pool_limits == pool_limits
@@ -118,33 +123,49 @@ def test_invalid_url():
 
 
 def test_basic_auth_url():
-    client = SchemaRegistryClient({"url": "https://user_url:secret_url@127.0.0.1:65534"})
+    username = "secret-user"
+    password = "secret"
+    client = SchemaRegistryClient({"url": f"https://{username}:{password}@127.0.0.1:65534"})
+    userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
+    token = b64encode(userpass).decode()
 
-    assert ("user_url", "secret_url") == client.session.auth
+    assert client.session.auth._auth_header == f"Basic {token}"
 
 
-def test_basic_auth_userinfo():
+def test_basic_auth_user_info():
+    username = "secret-user"
+    password = "secret"
     client = SchemaRegistryClient(
         {
             "url": "https://user_url:secret_url@127.0.0.1:65534",
             "basic.auth.credentials.source": "user_info",
-            "basic.auth.user.info": "user_userinfo:secret_userinfo",
+            "basic.auth.user.info": f"{username}:{password}",
         }
     )
-    assert ("user_userinfo", "secret_userinfo") == client.session.auth
+
+    userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
+    token = b64encode(userpass).decode()
+
+    assert client.session.auth._auth_header == f"Basic {token}"
 
 
 def test_basic_auth_sasl_inherit():
+    username = "secret-user-sasl"
+    password = "secret-sasl"
     client = SchemaRegistryClient(
         {
             "url": "https://user_url:secret_url@127.0.0.1:65534",
             "basic.auth.credentials.source": "SASL_INHERIT",
             "sasl.mechanism": "PLAIN",
-            "sasl.username": "user_sasl",
-            "sasl.password": "secret_sasl",
+            "sasl.username": username,
+            "sasl.password": password,
         }
     )
-    assert ("user_sasl", "secret_sasl") == client.session.auth
+
+    userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
+    token = b64encode(userpass).decode()
+
+    assert client.session.auth._auth_header == f"Basic {token}"
 
 
 def test_basic_auth_invalid():

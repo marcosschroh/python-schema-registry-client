@@ -7,6 +7,6 @@ fi
 
 set -x
 
-${PREFIX}black .
+${PREFIX}black schema_registry tests
 ${PREFIX}autoflake --in-place --recursive schema_registry tests setup.py
-${PREFIX}isort .
+${PREFIX}isort schema_registry tests

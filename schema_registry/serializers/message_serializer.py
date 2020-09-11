@@ -57,7 +57,6 @@ class MessageSerializer:
             subject (str): Subject name
             schema (avro.schema.RecordSchema): Avro Schema
             record (dict): An object to serialize
-            is_key (bool): If the record is a key
         Returns:
             bytes: Encoded record with schema ID as bytes
         """
@@ -87,7 +86,6 @@ class MessageSerializer:
         Args:
             schema_id (int): integer ID
             record (dict): An object to serialize
-            is_key (bool): If the record is a key
         Returns:
             func: decoder function
         """
@@ -130,7 +128,7 @@ class MessageSerializer:
 
         return self.id_to_decoder_func[schema_id]
 
-    def decode_message(self, message: typing.Union[None, bytes], is_key: bool = False) -> typing.Union[None, dict]:
+    def decode_message(self, message: typing.Union[None, bytes]) -> typing.Union[None, dict]:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
