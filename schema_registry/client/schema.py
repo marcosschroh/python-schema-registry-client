@@ -1,6 +1,7 @@
 import json
 import typing
 
+import aiofiles
 import fastavro
 
 
@@ -63,4 +64,11 @@ def load(fp: str) -> AvroSchema:
     """Parse a schema from a file path"""
     with open(fp, mode="r") as f:
         content = f.read()
+        return AvroSchema(content)
+
+
+async def async_load(fp: str) -> AvroSchema:
+    """Parse a schema from a file path"""
+    async with aiofiles.open(fp, mode="r") as f:
+        content = await f.read()
         return AvroSchema(content)

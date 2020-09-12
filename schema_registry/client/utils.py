@@ -14,6 +14,9 @@ VALID_LEVELS = (BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE, FULL
 VALID_METHODS = ("GET", "POST", "PUT", "DELETE")
 VALID_AUTH_PROVIDERS = ("URL", "USER_INFO", "SASL_INHERIT")
 
+HEADER_AVRO_JSON = "application/x-avro-json"
+HEADER_AVRO = "application/avro"
+HEADER_APPLICATION_JSON = "application/json"
 HEADERS = "application/vnd.schemaregistry.v1+json"
 ACCEPT_HEADERS = "application/vnd.schemaregistry.v1+json, application/vnd.schemaregistry+json, application/json"
 

@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from schema_registry.client import SchemaRegistryClient, errors, schema
+from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema
 from schema_registry.serializers import MessageSerializer
 
 logger = logging.getLogger(__name__)
@@ -131,3 +131,60 @@ def certificates():
         "key": os.path.join(CERTIFICATES_DIR, "key.pem"),
         "password": "test",
     }
+
+
+class AsyncMock:
+    def __init__(self, module, func, returned_value=None):
+        self.module = module
+        self.func = func
+        self.returned_value = returned_value
+        self.original_object = getattr(module, func)
+        self.args_called_with = None
+        self.kwargs_called_with = None
+
+    def __enter__(self):
+        setattr(self.module, self.func, self.mock)
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        setattr(self.module, self.func, self.original_object)
+
+    def assert_called_with(self, **kwargs):
+        for key, value in kwargs.items():
+            assert self.kwargs_called_with[key] == value
+
+    async def mock(self, *args, **kwargs):
+        self.args_called_with = args
+        self.kwargs_called_with = kwargs
+
+        return self.returned_value
+
+
+@pytest.fixture
+def async_mock():
+    return AsyncMock
+
+
+@pytest.fixture
+async def async_client():
+    url = os.getenv("SCHEMA_REGISTRY_URL")
+    client = AsyncSchemaRegistryClient(url)
+    yield client
+
+    subjects = {
+        "test-basic-schema",
+        "test-deployment",
+        "test-country",
+        "test-basic-schema-backup",
+        "test-advance-schema",
+        "test-user-schema",
+        "subject-does-not-exist",
+        "test-logical-types-schema",
+        "test-schema-version",
+    }
+
+    # Executing the clean up. Delete all the subjects between tests.
+    for subject in subjects:
+        try:
+            await client.delete_subject(subject)
+        except errors.ClientError as exc:
+            logger.info(exc.message)
