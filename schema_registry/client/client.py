@@ -240,7 +240,7 @@ class SchemaRegistryClient:
             return schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -490,7 +490,7 @@ class SchemaRegistryClient:
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
@@ -528,7 +528,7 @@ class SchemaRegistryClient:
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
-        body = {"schema": json.dumps(avro_schema.schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
