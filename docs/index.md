@@ -9,7 +9,7 @@ Python Rest Client to interact against [schema-registry](https://docs.confluent.
 
 ## Requirements
 
-python 3.6+, fastavro, httpx
+python 3.6+
 
 ## Installation
 
@@ -21,6 +21,52 @@ If you want the `Faust` functionality:
 
 ```bash
 pip install python-schema-registry-client[faust]
+```
+
+## Usage
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+deployment_schema = {
+    "type": "record",
+    "namespace": "com.kubertenes",
+    "name": "AvroDeployment",
+    "fields": [
+        {"name": "image", "type": "string"},
+        {"name": "replicas", "type": "int"},
+        {"name": "port", "type": "int"},
+    ],
+}
+
+avro_schema = schema.AvroSchema(deployment_schema)
+
+schema_id = client.register("test-deployment", avro_schema)
+```
+
+or async
+
+```python
+from schema_registry.client import AsyncSchemaRegistryClient, schema
+
+async_client = AsyncSchemaRegistryClient(url="http://127.0.0.1:8081")
+
+deployment_schema = {
+    "type": "record",
+    "namespace": "com.kubertenes",
+    "name": "AvroDeployment",
+    "fields": [
+        {"name": "image", "type": "string"},
+        {"name": "replicas", "type": "int"},
+        {"name": "port", "type": "int"},
+    ],
+}
+
+avro_schema = schema.AvroSchema(deployment_schema)
+
+schema_id = await async_client.register("test-deployment", avro_schema)
 ```
 
 ## When use this library
@@ -46,3 +92,13 @@ Run code linting:
 
 ```bash
 ./scripts/lint
+
+To perform tests using the python shell you can execute `docker-compose up` and the `schema registry server` will run on `http://127.0.0.1:8081`, the you can interact against it using the `SchemaRegistryClient`:
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+# do some operations with the client...
+```

@@ -10,7 +10,7 @@ __version__ = "1.4.7"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["fastavro>=0.24,<0.25", "httpx>=0.14,<0.15"]
+requires = ["fastavro>=0.24,<0.25", "httpx>=0.14,<0.15", "aiofiles>=0.5.0",]
 
 description = """Python Rest Client to interact against Schema Registry \
     Confluent Server to manage Avro Schemas
@@ -36,6 +36,7 @@ setup(
             "isort",
             "pytest",
             "pytest-mock",
+            "pytest-asyncio",
             "faker",
             "codecov",
             "pytest-cov",

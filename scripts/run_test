@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pytest --cov=schema_registry ${1} --cov-fail-under=87 && \
+pytest --cov=schema_registry ${1} --cov-fail-under=84 && \
     codecov && codecov --token=$CODECOV_TOKEN && \
     flake8 schema_registry/ tests/ && \
     black --check --diff schema_registry tests && \
