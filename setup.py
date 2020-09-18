@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" setup.py for python-schema_registry."""
+""" setup.py for python-schema-registry-client."""
 
 from setuptools import find_packages, setup
 
@@ -12,9 +12,7 @@ with open("README.md") as readme_file:
 
 requires = ["fastavro>=0.24,<0.25", "httpx>=0.14,<0.15", "aiofiles>=0.5.0",]
 
-description = """Python Rest Client to interact against Schema Registry \
-    Confluent Server to manage Avro Schemas
-"""
+description = "Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas"
 
 setup(
     name="python-schema-registry-client",
@@ -40,17 +38,18 @@ setup(
             "faker",
             "codecov",
             "pytest-cov",
+            "dataclasses-avroschema",
         ],
     },
     url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="https://pypi.org/project/python-schema-registry-client/#files",
-    packages=find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=("tests", "docs",)),
     include_package_data=True,
     license="MIT",
     classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Software Development",
     ],
     keywords=(

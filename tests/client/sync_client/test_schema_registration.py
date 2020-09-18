@@ -90,3 +90,15 @@ def test_multi_register(client):
     latest_schema_3 = client.get_schema(subject)
 
     assert latest_schema_2 == latest_schema_3
+
+
+def test_register_dataclass_avro_schema(client, dataclass_avro_schema):
+    subject = "dataclasses-avroschema-subject"
+    schema_id = client.register(subject, dataclass_avro_schema.avro_schema())
+
+    assert schema_id > 0
+    assert len(client.id_to_schema) == 1
+
+    subjects = client.get_subjects()
+
+    assert subject in subjects

@@ -73,6 +73,48 @@ avro_schema = schema.AvroSchema(deployment_schema)
 schema_id = await async_client.register("test-deployment", avro_schema)
 ```
 
+## Usage with dataclasses-avroschema
+
+You can generate the `avro schema` directely from a python class using [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema)
+and use it in the API for `register schemas`, `check versions` and `test compatibility`:
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel, types
+
+from schema_registry.client import SchemaRegistryClient
+
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+
+@dataclasses.dataclass
+class UserAdvance(AvroModel):
+    name: str
+    age: int
+    pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
+    accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+    has_car: bool = False
+    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    country: str = "Argentina"
+    address: str = None
+
+# register the schema
+schema_id = client.register(subject, UserAdvance.avro_schema())
+
+print(schema_id)
+# >>> 12
+
+result = client.check_version(subject, UserAdvance.avro_schema())
+print(result)
+# >>> SchemaVersion(subject='dataclasses-avroschema-subject-2', schema_id=12, schema=1, version={"type":"record" ...')
+
+compatibility = client.test_compatibility(subject, UserAdvance.avro_schema())
+print(compatibility)
+
+# >>> True
+```
+
 ## When use this library
 
 Usually, we have a situacion like this:

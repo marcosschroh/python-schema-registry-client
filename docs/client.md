@@ -73,7 +73,7 @@ def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict 
     """
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema to be registered
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -122,7 +122,7 @@ def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: 
     """
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -192,7 +192,7 @@ def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, vers
 
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema parsed
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -263,14 +263,12 @@ AsyncSchemaRegistryClient
 
 ## Methods
 
-## Methods
-
 ### Get Schema
 
 Get Schema for a given version. If version is `None`, try to resolve the latest schema
 
 ```python
-def get_schema(subject: str, version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> utils.SchemaVersion:
+async def get_schema(subject: str, version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> utils.SchemaVersion:
     """
     Args:
         subject (str): subject name
@@ -291,7 +289,7 @@ def get_schema(subject: str, version="latest", headers: dict = None, timeout: ty
 ### Get schema by `id`
 
 ```python
-def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> client.schema.AvroSchema:
+async def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> client.schema.AvroSchema:
     """
     Args:
         schema_id (int): Schema Id
@@ -310,7 +308,7 @@ async def register(subject: str, avro_schema: client.schema.AvroSchema, headers:
     """
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema to be registered
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -359,7 +357,7 @@ async def check_version(subject: str, avro_schema: client.schema.AvroSchema, hea
     """
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -429,7 +427,7 @@ async def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema
 
     Args:
         subject (str): subject name
-        avro_schema (avro.schema.RecordSchema): Avro schema parsed
+        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
