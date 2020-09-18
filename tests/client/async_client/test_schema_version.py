@@ -31,6 +31,16 @@ async def test_check_version(async_client, country_schema):
 
 
 @pytest.mark.asyncio
+async def test_check_version_dataclases_avroschema(async_client, dataclass_avro_schema):
+    subject = "dataclasses-avroschema-subject"
+    schema_id = await async_client.register(subject, dataclass_avro_schema.avro_schema())
+    result = await async_client.check_version(subject, dataclass_avro_schema.avro_schema())
+
+    assert subject == result.subject
+    assert schema_id == result.schema_id
+
+
+@pytest.mark.asyncio
 async def test_delete_version(async_client, country_schema):
     subject = "test-schema-version"
     await async_client.register(subject, country_schema)

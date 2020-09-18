@@ -144,12 +144,18 @@ class BaseClient:
         return _headers
 
     @staticmethod
-    def _add_to_cache(cache: dict, subject: str, schema: AvroSchema, value: typing.Union[str, int]) -> None:
+    def _add_to_cache(
+        cache: dict, subject: str, schema: typing.Union[AvroSchema, str], value: typing.Union[str, int]
+    ) -> None:
         sub_cache = cache[subject]
         sub_cache[schema] = value
 
     def _cache_schema(
-        self, schema: AvroSchema, schema_id: int, subject: str = None, version: typing.Union[str, int] = None
+        self,
+        schema: typing.Union[AvroSchema, str],
+        schema_id: int,
+        subject: str = None,
+        version: typing.Union[str, int] = None,
     ) -> None:
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
@@ -220,7 +226,7 @@ class SchemaRegistryClient(BaseClient):
     def register(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
     ) -> int:
@@ -233,7 +239,7 @@ class SchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema to be registered
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -247,7 +253,7 @@ class SchemaRegistryClient(BaseClient):
             return schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -467,7 +473,7 @@ class SchemaRegistryClient(BaseClient):
     def check_version(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
     ) -> typing.Optional[utils.SchemaVersion]:
@@ -479,7 +485,7 @@ class SchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -494,10 +500,13 @@ class SchemaRegistryClient(BaseClient):
         schema_id = schemas_to_id.get(avro_schema)
 
         if all((version, schema_id)):
+            if isinstance(avro_schema, str):
+                avro_schema = AvroSchema(avro_schema)
+
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
@@ -515,7 +524,7 @@ class SchemaRegistryClient(BaseClient):
     def test_compatibility(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
@@ -527,7 +536,7 @@ class SchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -535,7 +544,8 @@ class SchemaRegistryClient(BaseClient):
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
@@ -681,7 +691,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def register(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
     ) -> int:
@@ -694,7 +704,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema to be registered
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -708,7 +718,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             return schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -928,7 +938,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def check_version(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
     ) -> typing.Optional[utils.SchemaVersion]:
@@ -940,7 +950,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -955,10 +965,13 @@ class AsyncSchemaRegistryClient(BaseClient):
         schema_id = schemas_to_id.get(avro_schema)
 
         if all((version, schema_id)):
+            if isinstance(avro_schema, str):
+                avro_schema = AvroSchema(avro_schema)
+
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
@@ -976,7 +989,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def test_compatibility(
         self,
         subject: str,
-        avro_schema: AvroSchema,
+        avro_schema: typing.Union[AvroSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
@@ -988,7 +1001,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema (avro.schema.RecordSchema): Avro schema
+            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
@@ -996,7 +1009,8 @@ class AsyncSchemaRegistryClient(BaseClient):
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:

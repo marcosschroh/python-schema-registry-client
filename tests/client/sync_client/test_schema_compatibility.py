@@ -17,6 +17,17 @@ def test_compatibility(client, user_schema_v3):
     assert compatibility
 
 
+def test_compatibility_dataclasses_avroschema(client, dataclass_avro_schema, dataclass_avro_schema_advance):
+    """
+    Test the compatibility of a new User Schema against the User schema version 2.
+    """
+    subject = "dataclasses-avroschema-subject"
+    client.register(subject, dataclass_avro_schema.avro_schema())
+
+    compatibility = client.test_compatibility(subject, dataclass_avro_schema_advance.avro_schema())
+    assert compatibility
+
+
 def test_update_compatibility_for_subject(client):
     """
     The latest User V2 schema is  BACKWARD and FORWARDFULL compatibility (FULL).

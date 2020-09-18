@@ -19,6 +19,18 @@ async def test_compatibility(async_client, user_schema_v3):
 
 
 @pytest.mark.asyncio
+async def test_compatibility_dataclasses_avroschema(async_client, dataclass_avro_schema, dataclass_avro_schema_advance):
+    """
+    Test the compatibility of a new User Schema against the User schema version 2.
+    """
+    subject = "dataclasses-avroschema-subject"
+    await async_client.register(subject, dataclass_avro_schema.avro_schema())
+
+    compatibility = await async_client.test_compatibility(subject, dataclass_avro_schema_advance.avro_schema())
+    assert compatibility
+
+
+@pytest.mark.asyncio
 async def test_update_compatibility_for_subject(async_client):
     """
     The latest User V2 schema is  BACKWARD and FORWARDFULL compatibility (FULL).

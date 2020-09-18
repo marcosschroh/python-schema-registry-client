@@ -23,6 +23,15 @@ def test_check_version(client, country_schema):
     assert schema_id == result.schema_id
 
 
+def test_check_version_dataclases_avroschema(client, dataclass_avro_schema):
+    subject = "dataclasses-avroschema-subject"
+    schema_id = client.register(subject, dataclass_avro_schema.avro_schema())
+    result = client.check_version(subject, dataclass_avro_schema.avro_schema())
+
+    assert subject == result.subject
+    assert schema_id == result.schema_id
+
+
 def test_delete_version(client, country_schema):
     subject = "test-schema-version"
     client.register(subject, country_schema)

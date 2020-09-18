@@ -1,4 +1,4 @@
-FROM python:3.6-slim
+FROM python:3.7-slim
     
 RUN echo 'deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \

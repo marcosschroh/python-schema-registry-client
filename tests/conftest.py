@@ -1,7 +1,10 @@
+import dataclasses
 import logging
 import os
+import typing
 
 import pytest
+from dataclasses_avroschema import AvroModel, types
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema
 from schema_registry.serializers import MessageSerializer
@@ -180,6 +183,7 @@ async def async_client():
         "subject-does-not-exist",
         "test-logical-types-schema",
         "test-schema-version",
+        "dataclasses-avroschema-subject",
     }
 
     # Executing the clean up. Delete all the subjects between tests.
@@ -188,3 +192,32 @@ async def async_client():
             await client.delete_subject(subject)
         except errors.ClientError as exc:
             logger.info(exc.message)
+
+
+@pytest.fixture
+def dataclass_avro_schema():
+    @dataclasses.dataclass
+    class UserAdvance(AvroModel):
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+
+    return UserAdvance
+
+
+@pytest.fixture
+def dataclass_avro_schema_advance():
+    @dataclasses.dataclass
+    class UserAdvance(AvroModel):
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+        country: str = "Argentina"
+        address: str = None
+
+    return UserAdvance

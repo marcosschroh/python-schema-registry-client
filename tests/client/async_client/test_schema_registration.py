@@ -99,3 +99,16 @@ async def test_multi_register(async_client):
     latest_schema_3 = await async_client.get_schema(subject)
 
     assert latest_schema_2 == latest_schema_3
+
+
+@pytest.mark.asyncio
+async def test_register_dataclass_avro_schema(async_client, dataclass_avro_schema):
+    subject = "dataclasses-avroschema-subject"
+    schema_id = await async_client.register(subject, dataclass_avro_schema.avro_schema())
+
+    assert schema_id > 0
+    assert len(async_client.id_to_schema) == 1
+
+    subjects = await async_client.get_subjects()
+
+    assert subject in subjects
