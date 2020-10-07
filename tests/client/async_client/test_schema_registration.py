@@ -61,12 +61,27 @@ async def test_dupe_register(async_client):
     subject = "test-basic-schema"
     schema_id = await async_client.register(subject, parsed)
 
+    # Verify we had a check version call
+    async_client.assert_url_suffix(0, "/subjects/%s" % subject)
+    async_client.assert_method(0, "POST")
+    # Verify that we had a register call
+    async_client.assert_url_suffix(1, "/subjects/%s/versions" % subject)
+    async_client.assert_method(1, "POST")
+    assert len(async_client.request_calls) == 2
+
     assert schema_id > 0
     latest = await async_client.get_schema(subject)
+
+    async_client.assert_url_suffix(2, "/subjects/%s/versions/latest" % subject)
+    async_client.assert_method(2, "GET")
+    assert len(async_client.request_calls) == 3
 
     # register again under same subject
     dupe_id = await async_client.register(subject, parsed)
     assert schema_id == dupe_id
+
+    # Served from cache
+    assert len(async_client.request_calls) == 3
 
     dupe_latest = await async_client.get_schema(subject)
     assert latest == dupe_latest

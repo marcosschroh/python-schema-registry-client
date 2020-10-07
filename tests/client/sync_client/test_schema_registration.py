@@ -53,12 +53,27 @@ def test_dupe_register(client):
     subject = "test-basic-schema"
     schema_id = client.register(subject, parsed)
 
+    # Verify we had a check version call
+    client.assert_url_suffix(0, "/subjects/%s" % subject)
+    client.assert_method(0, "POST")
+    # Verify that we had a register call
+    client.assert_url_suffix(1, "/subjects/%s/versions" % subject)
+    client.assert_method(1, "POST")
+    assert len(client.request_calls) == 2
+
     assert schema_id > 0
     latest = client.get_schema(subject)
+
+    client.assert_url_suffix(2, "/subjects/%s/versions/latest" % subject)
+    client.assert_method(2, "GET")
+    assert len(client.request_calls) == 3
 
     # register again under same subject
     dupe_id = client.register(subject, parsed)
     assert schema_id == dupe_id
+
+    # Served from cache
+    assert len(client.request_calls) == 3
 
     dupe_latest = client.get_schema(subject)
     assert latest == dupe_latest
