@@ -12,7 +12,7 @@ except ImportError:
 
 
 def serializer_factory(
-    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: AvroSchema
+    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: typing.Union[AvroSchema, typing.Dict]
 ) -> "Serializer":  # type: ignore # noqa: F821
 
     assert Codec is not None, "faust must be installed in order to use FaustSerializer"
@@ -22,7 +22,7 @@ def serializer_factory(
             self,
             schema_registry_client: SchemaRegistryClient,
             schema_subject: str,
-            schema: AvroSchema,
+            schema: typing.Union[AvroSchema, typing.Dict],
         ):
             self.schema_registry_client = schema_registry_client
             self.schema_subject = schema_subject
@@ -32,7 +32,7 @@ def serializer_factory(
             Codec.__init__(self)
 
         def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
-            # method available on MessageSerializer
+
             return self.decode_message(event)
 
         def _dumps(self, payload: typing.Dict[str, typing.Any]) -> bytes:
@@ -42,8 +42,8 @@ def serializer_factory(
             The schema is registered with the subject of 'topic-value'
             """
             payload = self.clean_payload(payload)
-            # method available on MessageSerializer
-            return self.encode_record_with_schema(self.schema_subject, self.schema, payload)
+
+            return self.encode_record_with_schema(self.schema_subject, self.schema, payload)  # type: ignore
 
         @staticmethod
         def _clean_item(item: typing.Any) -> typing.Any:

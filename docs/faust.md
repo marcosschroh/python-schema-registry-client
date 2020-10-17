@@ -47,7 +47,6 @@ avro_user_schema = schema.AvroSchema({
 
 avro_user_serializer = FaustSerializer(client, "users", avro_user_schema)
 
-
 # function used to register the codec
 def avro_user_codec():
     return avro_user_serializer
@@ -57,7 +56,6 @@ and ddd in `setup.py` the folloing code in order to tell faust where to find the
 
 ```python
 # setup.py
- 
 setup(
     ...
     entry_points={
@@ -75,6 +73,8 @@ Now the final step is to integrate the faust model with the AvroSerializer.
 
 ```python
 # users.models
+import faust
+
 
 class UserModel(faust.Record, serializer='avro_users'):
     first_name: str
@@ -110,3 +110,36 @@ async def publish_users():
 ```
 
 The full example is [here](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py)
+
+### Usage with dataclasses-avroschema
+
+You can also use this funcionality with [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and you won't have to provide the avro schema.
+The only thing that you need to do is add the `AvroModel` class and use its methods:
+
+```python
+# users.models
+import faust
+
+from dataclasses_avroschema import AvroModel
+
+
+class UserModel(faust.Record, AvroModel, serializer='avro_users'):  
+    first_name: str
+    last_name: str
+
+
+# codecs.codec.py
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers import FaustSerializer
+
+from users.models import UserModel
+
+# create an instance of the `SchemaRegistryClient`
+client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
+
+avro_user_serializer = FaustSerializer(client, "users", UserModel.avro_schema())  # usign the method avro_schema to get the avro schema representation
+
+# function used to register the codec
+def avro_user_codec():
+    return avro_user_serializer
+```

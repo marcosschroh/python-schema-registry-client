@@ -247,13 +247,17 @@ class SchemaRegistryClient(BaseClient):
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
+
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
         schema_id = schemas_to_id.get(avro_schema)
 
         if schema_id is not None:
             return schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -494,19 +498,20 @@ class SchemaRegistryClient(BaseClient):
             None: If schema not found.
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
+
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
         version = schemas_to_version.get(avro_schema)
 
         schemas_to_id = self.subject_to_schema_ids[subject]
         schema_id = schemas_to_id.get(avro_schema)
 
         if all((version, schema_id)):
-            if isinstance(avro_schema, str):
-                avro_schema = AvroSchema(avro_schema)
-
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
@@ -544,8 +549,11 @@ class SchemaRegistryClient(BaseClient):
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
@@ -712,13 +720,17 @@ class AsyncSchemaRegistryClient(BaseClient):
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
+
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
         schema_id = schemas_to_id.get(avro_schema)
 
         if schema_id is not None:
             return schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -959,15 +971,16 @@ class AsyncSchemaRegistryClient(BaseClient):
             None: If schema not found.
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
+
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
         version = schemas_to_version.get(avro_schema)
 
         schemas_to_id = self.subject_to_schema_ids[subject]
         schema_id = schemas_to_id.get(avro_schema)
 
         if all((version, schema_id)):
-            if isinstance(avro_schema, str):
-                avro_schema = AvroSchema(avro_schema)
-
             return utils.SchemaVersion(subject, schema_id, version, avro_schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
@@ -1009,8 +1022,11 @@ class AsyncSchemaRegistryClient(BaseClient):
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
 
+        if isinstance(avro_schema, str):
+            avro_schema = AvroSchema(avro_schema)
+
+        body = {"schema": json.dumps(avro_schema.raw_schema)}
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:

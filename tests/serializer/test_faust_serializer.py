@@ -1,4 +1,5 @@
 import faust
+from dataclasses_avroschema import AvroModel
 
 from schema_registry.client import schema
 from schema_registry.serializers import faust_serializer as serializer
@@ -94,3 +95,27 @@ def test_nested_schema_with_register_codec(client):
 
     message_decoded = Customer.loads(message_encoded)
     assert message_decoded == customer
+
+
+def test_dumps_load_message_dataclasses_avro_schema(client):
+    class AdvanceUserModel(faust.Record, AvroModel):
+        first_name: str
+        last_name: str
+        age: int
+
+    faust_serializer = serializer.FaustSerializer(client, "test-dataclasses-avroschema", AdvanceUserModel.avro_schema())
+
+    record = {
+        "first_name": "Juan",
+        "last_name": "Perez",
+        "age": 20,
+    }
+
+    message_encoded = faust_serializer._dumps(record)
+
+    assert message_encoded
+    assert len(message_encoded) > 5
+    assert isinstance(message_encoded, bytes)
+
+    message_decoded = faust_serializer._loads(message_encoded)
+    assert message_decoded == record
