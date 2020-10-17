@@ -1,4 +1,5 @@
 import io
+import json
 import logging
 import struct
 import sys
@@ -43,12 +44,16 @@ class MessageSerializer:
         self.id_to_decoder_func = {}  # type: typing.Dict
         self.id_to_writers = {}  # type: typing.Dict
         self.reader_schema = reader_schema
-        self.schema_name_to_id = {}  # type: typing.Dict
 
-    def _get_encoder_func(self, avro_schema: schema.AvroSchema) -> typing.Callable:
-        return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)
+    def _get_encoder_func(self, avro_schema: typing.Union[schema.AvroSchema, str]) -> typing.Callable:
+        if isinstance(avro_schema, str):
+            avro_schema = schema.AvroSchema(json.loads(avro_schema))
 
-    def encode_record_with_schema(self, subject: str, avro_schema: schema.AvroSchema, record: dict) -> bytes:
+        return lambda record, fp: schemaless_writer(fp, avro_schema.schema, record)  # type: ignore
+
+    def encode_record_with_schema(
+        self, subject: str, avro_schema: typing.Union[schema.AvroSchema, str], record: dict
+    ) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
@@ -60,22 +65,16 @@ class MessageSerializer:
         Returns:
             bytes: Encoded record with schema ID as bytes
         """
-        schema_id = self.schema_name_to_id.get(avro_schema.name)
+        # Try to register the schema
+        schema_id = self.schemaregistry_client.register(subject, avro_schema)
 
         if not schema_id:
-            # Try to register the schema
-            schema_id = self.schemaregistry_client.register(subject, avro_schema)
+            message = f"Unable to retrieve schema id for subject {subject}"
+            raise SerializerError(message)
 
-            if not schema_id:
-                message = f"Unable to retrieve schema id for subject {subject}"
-                raise SerializerError(message)
-
-            # cache writer
+        # cache writer
+        if not self.id_to_writers.get(schema_id):
             self.id_to_writers[schema_id] = self._get_encoder_func(avro_schema)
-
-            # cache the schema_id using the schema name
-            logging.info(f"Caching Schema {avro_schema.name} with ID: {schema_id}")
-            self.schema_name_to_id[avro_schema.name] = schema_id
 
         return self.encode_record_with_schema_id(schema_id, record)
 
@@ -128,12 +127,12 @@ class MessageSerializer:
 
         return self.id_to_decoder_func[schema_id]
 
-    def decode_message(self, message: typing.Union[None, bytes]) -> typing.Union[None, dict]:
+    def decode_message(self, message: typing.Optional[bytes]) -> typing.Optional[dict]:
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
         Args:
-            message (str|bytes or None): message key or value to be decoded
+            message (bytes or None): message key or value to be decoded
         Returns:
             dict: Decoded message contents.
         """

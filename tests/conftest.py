@@ -79,6 +79,7 @@ def client():
         "test-logical-types-schema",
         "test-schema-version",
         "test-nested-schema",
+        "test-dataclasses-avroschema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.
