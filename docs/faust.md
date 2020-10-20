@@ -9,7 +9,7 @@ Avro is used to define the data schema for a record's value. This schema describ
 
 In order to use `avro schemas` with `Faust`, we need to define a custom codec and a custom serializer able to talk with the `schema-registry`, and to do that, we will use the `MessageSerializer`.
 
-For our demostration, let's imagine that we have the folling `schema`:
+For our demonstration, let's imagine that we have the folling `schema`:
 
 ```json
 {
