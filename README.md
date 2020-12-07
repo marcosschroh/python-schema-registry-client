@@ -23,6 +23,10 @@ If you want the `Faust` functionality:
 pip install python-schema-registry-client[faust]
 ```
 
+Note that this will automatically add a dependency on the [faust-streaming](https://github.com/faust-streaming/faust) fork of faust. If you want to use the
+old faust version, simply install it manually and then install `python-schema-registry-client` without the `faust` extra enabled, the functionality will
+be the same.
+
 ## Client API, Serializer, Faust Integration and Schema Server description
 
 **Documentation**: [https://marcosschroh.github.io/python-schema-registry-client.io](https://marcosschroh.github.io/python-schema-registry-client)

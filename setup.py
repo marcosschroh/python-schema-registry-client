@@ -24,7 +24,7 @@ setup(
     author_email="schrohm@gmail.com",
     install_requires=requires,
     extras_require={
-        "faust": ["faust<2",],
+        "faust": ["faust-streaming",],
         "docs": ["mkdocs", "mkdocs-material",],
         "tests": [
             "black",
