@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "1.7.0"
+__version__ = "1.7.1"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
@@ -24,7 +24,7 @@ setup(
     author_email="schrohm@gmail.com",
     install_requires=requires,
     extras_require={
-        "faust": ["faust<2",],
+        "faust": ["faust-streaming",],
         "docs": ["mkdocs", "mkdocs-material",],
         "tests": [
             "black",
