@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2020-12-22
+
+### Fixed
+
+- Checks if Schema is already registered before trying to register. This allows
+  Schema Registry to be readonly in production environment, with only CI/CD
+  being allowed to make changes.
+
+## [1.7.1] - 2020-12-07
+
+### Fixed
+
+- [faust] extra now depends on [faust-streaming fork](https://github.com/faust-streaming/faust)
+
 ## [1.7.0] - 2020-10-17
 
 ### Added
