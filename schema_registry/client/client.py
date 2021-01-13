@@ -256,6 +256,16 @@ class SchemaRegistryClient(BaseClient):
         if schema_id is not None:
             return schema_id
 
+        # Check if schema is already registered. This should normally work even if
+        # the schema registry we're talking to is readonly, enabling a setup where
+        # only CI/CD can do changes to Schema Registry, and production code has readonly
+        # access
+
+        response = self.check_version(subject, avro_schema, headers=headers, timeout=timeout)
+
+        if response is not None:
+            return response.schema_id
+
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(avro_schema.raw_schema)}
 
@@ -728,6 +738,16 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         if schema_id is not None:
             return schema_id
+
+        # Check if schema is already registered. This should normally work even if
+        # the schema registry we're talking to is readonly, enabling a setup where
+        # only CI/CD can do changes to Schema Registry, and production code has readonly
+        # access
+
+        response = await self.check_version(subject, avro_schema, headers=headers, timeout=timeout)
+
+        if response is not None:
+            return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(avro_schema.raw_schema)}
