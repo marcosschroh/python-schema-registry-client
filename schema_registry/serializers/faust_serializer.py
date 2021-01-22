@@ -12,7 +12,10 @@ except ImportError:
 
 
 def serializer_factory(
-    schema_registry_client: SchemaRegistryClient, schema_subject: str, schema: typing.Union[AvroSchema, typing.Dict]
+    schema_registry_client: SchemaRegistryClient,
+    schema_subject: str,
+    schema: typing.Union[AvroSchema, typing.Dict],
+    return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
 
     assert Codec is not None, "faust must be installed in order to use FaustSerializer"
@@ -30,6 +33,7 @@ def serializer_factory(
 
             message_serializer.MessageSerializer.__init__(self, schema_registry_client)
             Codec.__init__(self)
+            self.return_record_name = return_record_name
 
         def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
 
