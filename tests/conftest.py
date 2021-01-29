@@ -113,6 +113,7 @@ def client():
         "test-schema-version",
         "test-nested-schema",
         "test-dataclasses-avroschema",
+        "test-union-field-avroschema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.

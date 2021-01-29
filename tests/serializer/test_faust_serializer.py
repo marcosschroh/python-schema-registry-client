@@ -1,4 +1,5 @@
 import faust
+import typing
 from dataclasses_avroschema import AvroModel
 
 from schema_registry.client import schema
@@ -116,6 +117,31 @@ def test_dumps_load_message_dataclasses_avro_schema(client):
     assert message_encoded
     assert len(message_encoded) > 5
     assert isinstance(message_encoded, bytes)
+
+    message_decoded = faust_serializer._loads(message_encoded)
+    assert message_decoded == record
+
+
+def test_dumps_load_message_union_avro_schema(client):
+    class FirstMemberRecord(faust.Record, AvroModel):
+        name: str = ""
+
+    class SecondMemberRecord(faust.Record, AvroModel):
+        name: str = ""
+
+    class UnionFieldAvroModel(faust.Record, AvroModel):
+        a_name: typing.Union[FirstMemberRecord, SecondMemberRecord, None]
+
+    avro_name = "test-union-field-avroschema"
+    avro_schema = UnionFieldAvroModel.avro_schema()
+
+    faust_serializer = serializer.FaustSerializer(client, avro_name, avro_schema, return_record_name=True)
+
+    record = {"a_name": ("a_name_secondmemberrecord_record", {"name": "jj"})}
+
+    message_encoded = faust_serializer._dumps(record)
+
+    assert message_encoded
 
     message_decoded = faust_serializer._loads(message_encoded)
     assert message_decoded == record

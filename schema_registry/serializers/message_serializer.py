@@ -38,12 +38,16 @@ class MessageSerializer:
     """
 
     def __init__(
-        self, schemaregistry_client: SchemaRegistryClient, reader_schema: typing.Optional[schema.AvroSchema] = None
+        self,
+        schemaregistry_client: SchemaRegistryClient,
+        reader_schema: typing.Optional[schema.AvroSchema] = None,
+        return_record_name: bool = False,
     ):
         self.schemaregistry_client = schemaregistry_client
         self.id_to_decoder_func = {}  # type: typing.Dict
         self.id_to_writers = {}  # type: typing.Dict
         self.reader_schema = reader_schema
+        self.return_record_name = return_record_name
 
     def _get_encoder_func(self, avro_schema: typing.Union[schema.AvroSchema, str]) -> typing.Callable:
         if isinstance(avro_schema, str):
@@ -122,7 +126,7 @@ class MessageSerializer:
             raise SerializerError(f"unable to fetch schema with id {schema_id}")
 
         self.id_to_decoder_func[schema_id] = lambda payload: schemaless_reader(
-            payload, writer_schema.schema, self.reader_schema
+            payload, writer_schema.schema, self.reader_schema, self.return_record_name
         )
 
         return self.id_to_decoder_func[schema_id]
