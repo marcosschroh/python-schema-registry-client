@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2020-01-29
+
+### Added
+
+- support return_record_name [#89](https://github.com/marcosschroh/python-schema-registry-client/pull/89)
+- Update pinned fastavro version to match dataclasses-avroschema [#91](https://github.com/marcosschroh/python-schema-registry-client/pull/91)
+
 ## [1.7.2] - 2020-12-22
 
 ### Fixed
