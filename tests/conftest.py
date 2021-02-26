@@ -1,12 +1,11 @@
-from collections import namedtuple
 import dataclasses
 import logging
 import os
 import typing
+from collections import namedtuple
 
 import pytest
 from dataclasses_avroschema import AvroModel, types
-
 from httpx._client import UNSET, TimeoutTypes, UnsetType
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils

@@ -1,5 +1,6 @@
-import faust
 import typing
+
+import faust
 from dataclasses_avroschema import AvroModel
 
 from schema_registry.client import schema
