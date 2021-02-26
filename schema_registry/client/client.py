@@ -359,7 +359,7 @@ class SchemaRegistryClient(BaseClient):
 
         result, code = self.request(url, method=method, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Schema not found: {code}")
+            logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
             schema_str = result.get("schema")
@@ -399,13 +399,13 @@ class SchemaRegistryClient(BaseClient):
 
         result, code = self.request(url, method=method, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Schema not found: {code}")
+            logger.info(f"Schema version {version} under subjet {subject } not found: {code}")
             return None
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            logger.error(f"Invalid version: {code}")
+            logger.info(f"Invalid version {version}: {code}")
             return None
         elif not status.is_success(code):
-            logger.error(f"Not success version: {code}")
+            logger.info(f"Not success version {version}: {code}")
             return None
 
         schema_id = result.get("id")
@@ -440,7 +440,7 @@ class SchemaRegistryClient(BaseClient):
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Subject {subject} not found")
+            logger.info(f"Subject {subject} not found")
             return []
 
         raise ClientError(f"Unable to get the versions for subject {subject}", http_code=code, server_traceback=result)
@@ -525,7 +525,7 @@ class SchemaRegistryClient(BaseClient):
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Not found: {code}")
+            logger.info(f"Schema {avro_schema.name} under subject {subject} not found: {code}")
             return None
         elif status.is_success(code):
             schema_id = result.get("id")
@@ -567,11 +567,10 @@ class SchemaRegistryClient(BaseClient):
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Subject or version not found: {code}")
+            logger.info(f"Subject or version not found: {code}")
             return False
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            logger.error(f"Invalid subject or schema: {code}")
-            return False
+            logger.info(f"Unprocessable entity. Invalid subject or schema: {code}")
         elif status.is_success(code):
             return result.get("is_compatible")
 
@@ -842,7 +841,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Schema not found: {code}")
+            logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
             schema_str = result.get("schema")
@@ -881,14 +880,15 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("get_schema", subject=subject, version=version)
 
         result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Schema not found: {code}")
+            logger.info(f"Schema version {version} under subjet {subject } not found: {code}")
             return None
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            logger.error(f"Invalid version: {code}")
+            logger.info(f"Invalid version {version}: {code}")
             return None
         elif not status.is_success(code):
-            logger.error(f"Not success version: {code}")
+            logger.info(f"Not success version {version}: {code}")
             return None
 
         schema_id = result.get("id")
@@ -923,7 +923,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Subject {subject} not found")
+            logger.info(f"Subject {subject} not found")
             return []
 
         raise ClientError(f"Unable to get the versions for subject {subject}", http_code=code, server_traceback=result)
@@ -1008,7 +1008,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Not found: {code}")
+            logger.info(f"Schema {avro_schema.name} under subject {subject} not found: {code}")
             return None
         elif status.is_success(code):
             schema_id = result.get("id")
@@ -1050,10 +1050,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
-            logger.error(f"Subject or version not found: {code}")
+            logger.info(f"Subject or version not found: {code}")
             return False
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            logger.error(f"Invalid subject or schema: {code}")
+            logger.info(f"Unprocessable entity. Invalid subject or schema: {code}")
             return False
         elif status.is_success(code):
             return result.get("is_compatible")
