@@ -6,7 +6,7 @@ import fastavro
 
 
 class AvroSchema:
-    def __init__(self, schema: str) -> None:
+    def __init__(self, schema: typing.Union[str, typing.Dict]) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
         self.raw_schema = schema
