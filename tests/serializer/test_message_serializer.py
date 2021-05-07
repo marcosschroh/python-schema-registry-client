@@ -95,6 +95,6 @@ def test_encode_record_with_schema(client, message_serializer):
 
 
 def test_decode_none(message_serializer):
-    """"null/None messages should decode to None"""
+    """ "null/None messages should decode to None"""
 
     assert message_serializer.decode_message(None) is None
