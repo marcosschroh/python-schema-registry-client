@@ -1,7 +1,14 @@
 #!/bin/sh
 
-pytest --cov=schema_registry ${1} --cov-fail-under=84 && \
-    codecov && codecov --token=$CODECOV_TOKEN && \
-    flake8 schema_registry/ tests/ && \
-    black --check --diff schema_registry tests && \
-    mypy schema_registry
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+set -x
+
+${PREFIX}pytest --cov=schema_registry ${1} --cov-fail-under=84 && \
+    ${PREFIX}codecov && ${PREFIX}codecov --token=$CODECOV_TOKEN && \
+    ${PREFIX}flake8 schema_registry/ tests/ && \
+    ${PREFIX}black --check --diff schema_registry tests && \
+    ${PREFIX}mypy schema_registry

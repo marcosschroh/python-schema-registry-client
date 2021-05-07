@@ -1,30 +1,17 @@
-FROM python:3.7-slim
+FROM python:3.7
     
-RUN echo 'deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends apt-utils git
-
-ENV PIP_FORMAT=legacy
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-
-RUN apt-get install -y netcat && apt-get autoremove -y
+RUN apt-get update && apt-get install -y netcat && apt-get autoremove -y
 
 # Create unprivileged user
 RUN adduser --disabled-password --gecos '' myuser
 
 WORKDIR /schema_registry/
 
-COPY wait_for_services.sh .
-COPY setup.py .
-COPY README.md .
-
-# Code quality
-COPY setup.cfg .
-COPY pyproject.toml .
+COPY wait_for_services.sh setup.py README.md /scripts setup.cfg pyproject.toml ./
 
 # create a file in order to have coverage
 RUN touch .coverage
 
-RUN pip3 install -e ".[docs,tests,faust]"
+RUN ./install
 
 ENTRYPOINT ["./wait_for_services.sh"]
