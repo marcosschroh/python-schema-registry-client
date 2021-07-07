@@ -22,6 +22,7 @@ async def test_avro_schema_load_parse_error():
     with pytest.raises(fastavro.schema.UnknownType):
         await schema.AvroSchema.async_load(data_gen.get_schema_path("invalid_schema.avsc"))
 
+
 def test_json_schema_from_string():
     parsed = schema.JsonSchema(data_gen.AVRO_BASIC_SCHEMA)
 

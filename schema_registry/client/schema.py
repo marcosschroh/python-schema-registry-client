@@ -7,6 +7,7 @@ import typing
 import aiofiles
 import fastavro
 
+
 class BaseSchema(ABC):
     def __init__(self, schema: typing.Union[str, typing.Dict]) -> None:
         if isinstance(schema, str):
@@ -21,13 +22,13 @@ class BaseSchema(ABC):
     @abstractmethod
     def parse_schema(self, schema: typing.Dict) -> typing.Dict[str, str]:
         pass
-    
+
     @staticmethod
     @abstractmethod
     def load(fp: str) -> BaseSchema:
         """Parse a schema from a file path"""
         pass
-    
+
     @staticmethod
     @abstractmethod
     async def async_load(fp: str) -> BaseSchema:
@@ -47,6 +48,7 @@ class BaseSchema(ABC):
         if not isinstance(other, BaseSchema):
             return NotImplemented
         return self.__hash__() == other.__hash__()
+
 
 class AvroSchema(BaseSchema):
     @property
@@ -95,6 +97,7 @@ class AvroSchema(BaseSchema):
             content = await f.read()
             return AvroSchema(content)
 
+
 class JsonSchema(BaseSchema):
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
         return schema
@@ -105,7 +108,7 @@ class JsonSchema(BaseSchema):
         with open(fp, mode="r") as f:
             content = f.read()
             return JsonSchema(content)
-    
+
     @staticmethod
     async def async_load(fp: str) -> BaseSchema:
         """Parse a json schema from a file path"""

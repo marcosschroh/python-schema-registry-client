@@ -23,7 +23,10 @@ def get_schema_path(fname):
     if ext == ".json":
         return os.path.join(JSON_SCHEMAS_DIR, fname)
 
-    raise ValueError(f"File format '{ext}' not supported. Schemas files must have extensions of either avro (.avsc) or json (.json).")
+    raise ValueError(
+        f"File format '{ext}' not supported. Schemas files must have extensions of either avro (.avsc) or json (.json)."
+    )
+
 
 def load_schema_file(fname):
     fname = get_schema_path(fname)

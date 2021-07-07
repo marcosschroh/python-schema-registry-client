@@ -78,6 +78,7 @@ def test_flat_schema(client):
 
     assert schema_version.schema.flat_schema == parsed_schema.schema
 
+
 def test_json_schema_from_string():
     parsed = schema.JsonSchema(data_gen.JSON_BASIC_SCHEMA)
 
