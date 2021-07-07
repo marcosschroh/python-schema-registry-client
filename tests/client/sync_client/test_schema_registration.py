@@ -11,7 +11,7 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 
 
 def test_register(client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     schema_id = client.register("test-basic-schema", parsed)
 
     assert schema_id > 0
@@ -30,7 +30,7 @@ def test_register_with_custom_headers(client, country_schema):
 
 
 def test_register_with_logical_types(client):
-    parsed = schema.AvroSchema(data_gen.LOGICAL_TYPES_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_LOGICAL_TYPES_SCHEMA)
     schema_id = client.register("test-logical-types-schema", parsed)
 
     assert schema_id > 0
@@ -38,7 +38,7 @@ def test_register_with_logical_types(client):
 
 
 def test_multi_subject_register(client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     schema_id = client.register("test-basic-schema", parsed)
     assert schema_id > 0
 
@@ -49,7 +49,7 @@ def test_multi_subject_register(client):
 
 
 def test_dupe_register(client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     subject = "test-basic-schema"
     schema_id = client.register(subject, parsed)
 
@@ -84,8 +84,8 @@ def test_multi_register(client):
     Register two different schemas under the same subject
     with backwards compatibility
     """
-    version_1 = schema.AvroSchema(data_gen.USER_V1)
-    version_2 = schema.AvroSchema(data_gen.USER_V2)
+    version_1 = schema.AvroSchema(data_gen.AVRO_USER_V1)
+    version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
     subject = "test-user-schema"
 
     id1 = client.register(subject, version_1)

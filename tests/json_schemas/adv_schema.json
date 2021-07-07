@@ -1,0 +1,60 @@
+{
+  "definitions" : {
+    "record:python.test.advanced.advanced" : {
+      "description" : "advanced schema for tests",
+      "type" : "object",
+      "required" : [ "number", "name", "friends", "family" ],
+      "additionalProperties" : false,
+      "properties" : {
+        "number" : {
+          "oneOf" : [ {
+            "type" : "integer",
+            "minimum" : -9223372036854775808,
+            "maximum" : 9223372036854775807
+          }, {
+            "type" : "null"
+          } ]
+        },
+        "name" : {
+          "oneOf" : [ {
+            "type" : "string"
+          } ]
+        },
+        "friends" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/record:python.test.advanced.basicPerson"
+          }
+        },
+        "family" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/record:python.test.advanced.basicPerson"
+          }
+        }
+      }
+    },
+    "record:python.test.advanced.basicPerson" : {
+      "type" : "object",
+      "required" : [ "number", "name" ],
+      "additionalProperties" : false,
+      "properties" : {
+        "number" : {
+          "oneOf" : [ {
+            "type" : "integer",
+            "minimum" : -9223372036854775808,
+            "maximum" : 9223372036854775807
+          }, {
+            "type" : "null"
+          } ]
+        },
+        "name" : {
+          "oneOf" : [ {
+            "type" : "string"
+          } ]
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:python.test.advanced.advanced"
+}

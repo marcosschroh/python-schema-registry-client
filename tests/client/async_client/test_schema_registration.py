@@ -14,7 +14,7 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 
 @pytest.mark.asyncio
 async def test_register(async_client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     schema_id = await async_client.register("test-basic-schema", parsed)
 
     assert schema_id > 0
@@ -36,7 +36,7 @@ async def test_register_with_custom_headers(async_client, country_schema):
 
 @pytest.mark.asyncio
 async def test_register_with_logical_types(async_client):
-    parsed = schema.AvroSchema(data_gen.LOGICAL_TYPES_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_LOGICAL_TYPES_SCHEMA)
     schema_id = await async_client.register("test-logical-types-schema", parsed)
 
     assert schema_id > 0
@@ -45,7 +45,7 @@ async def test_register_with_logical_types(async_client):
 
 @pytest.mark.asyncio
 async def test_multi_subject_register(async_client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     schema_id = await async_client.register("test-basic-schema", parsed)
     assert schema_id > 0
 
@@ -57,7 +57,7 @@ async def test_multi_subject_register(async_client):
 
 @pytest.mark.asyncio
 async def test_dupe_register(async_client):
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     subject = "test-basic-schema"
     schema_id = await async_client.register(subject, parsed)
 
@@ -93,8 +93,8 @@ async def test_multi_register(async_client):
     Register two different schemas under the same subject
     with backwards compatibility
     """
-    version_1 = schema.AvroSchema(data_gen.USER_V1)
-    version_2 = schema.AvroSchema(data_gen.USER_V2)
+    version_1 = schema.AvroSchema(data_gen.AVRO_USER_V1)
+    version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
     subject = "test-user-schema"
 
     id1 = await async_client.register(subject, version_1)

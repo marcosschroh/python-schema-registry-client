@@ -11,7 +11,7 @@ async def test_compatibility(async_client, user_schema_v3):
     Test the compatibility of a new User Schema against the User schema version 2.
     """
     subject = "test-user-schema"
-    version_2 = schema.AvroSchema(data_gen.USER_V2)
+    version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
     await async_client.register(subject, version_2)
 
     compatibility = await async_client.test_compatibility(subject, user_schema_v3)

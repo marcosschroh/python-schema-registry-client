@@ -32,7 +32,7 @@ def test_dumps_load_message(client, country_schema):
 
 
 def test_nested_schema(client):
-    nested_schema = schema.AvroSchema(data_gen.NESTED_SCHENA)
+    nested_schema = schema.AvroSchema(data_gen.AVRO_NESTED_SCHENA)
     faust_serializer = serializer.FaustSerializer(client, "test-nested-schema", nested_schema)
 
     record = data_gen.create_nested_schema()
@@ -68,8 +68,8 @@ def test_dumps_load_with_register_codec(client, country_schema):
 
 
 def test_nested_schema_with_register_codec(client):
-    nested_schema = schema.AvroSchema(data_gen.NESTED_SCHENA)
-    order_schema = schema.AvroSchema(data_gen.ORDER_SCHENA)
+    nested_schema = schema.AvroSchema(data_gen.AVRO_NESTED_SCHENA)
+    order_schema = schema.AvroSchema(data_gen.AVRO_ORDER_SCHENA)
 
     customer_serializer = serializer.FaustSerializer(client, "test-nested-schema", nested_schema)
     order_serializer = serializer.FaustSerializer(client, "test-order-schema", order_schema)

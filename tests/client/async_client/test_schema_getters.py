@@ -7,7 +7,7 @@ from tests import data_gen
 @pytest.mark.asyncio
 async def test_getters(async_client):
     subject = "test-basic-schema"
-    parsed_basic = schema_loader.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed_basic = schema_loader.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     await async_client.register(subject, parsed_basic)
     schema = await async_client.get_by_id(1)
     assert schema is not None

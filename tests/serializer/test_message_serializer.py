@@ -20,29 +20,29 @@ def assertMessageIsSame(message, expected, schema_id, message_serializer):
 
 
 def test_encode_with_schema_id(client, message_serializer):
-    basic = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    basic = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     subject = "test-basic-schema"
     schema_id = client.register(subject, basic)
 
-    records = data_gen.BASIC_ITEMS
+    records = data_gen.AVRO_BASIC_ITEMS
     for record in records:
         message = message_serializer.encode_record_with_schema_id(schema_id, record)
         assertMessageIsSame(message, record, schema_id, message_serializer)
 
-    adv = schema.AvroSchema(data_gen.ADVANCED_SCHEMA)
+    adv = schema.AvroSchema(data_gen.AVRO_ADVANCED_SCHEMA)
     subject = "test-advance-schema"
     adv_schema_id = client.register(subject, adv)
 
     assert adv_schema_id != schema_id
 
-    records = data_gen.ADVANCED_ITEMS
+    records = data_gen.AVRO_ADVANCED_ITEMS
     for record in records:
         message = message_serializer.encode_record_with_schema_id(adv_schema_id, record)
         assertMessageIsSame(message, record, adv_schema_id, message_serializer)
 
 
 def test_encode_logical_types(client, message_serializer):
-    logical_types_schema = schema.AvroSchema(data_gen.LOGICAL_TYPES_SCHEMA)
+    logical_types_schema = schema.AvroSchema(data_gen.AVRO_LOGICAL_TYPES_SCHEMA)
     subject = "test-logical-types-schema"
     schema_id = client.register(subject, logical_types_schema)
 
@@ -84,10 +84,10 @@ def test_fail_encode_with_schema(message_serializer, deployment_schema):
 
 def test_encode_record_with_schema(client, message_serializer):
     topic = "test"
-    basic = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    basic = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     subject = "test-value"
     schema_id = client.register(subject, basic)
-    records = data_gen.BASIC_ITEMS
+    records = data_gen.AVRO_BASIC_ITEMS
 
     for record in records:
         message = message_serializer.encode_record_with_schema(topic, basic, record)

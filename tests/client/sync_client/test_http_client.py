@@ -34,7 +34,7 @@ def test_pickelable(client):
 
     # make sure that is possible to do client operations with unpickled_client
     subject = "test-basic-schema"
-    parsed = schema.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     unpickled_client.get_subjects()
     schema_id = unpickled_client.register(subject, parsed)
 

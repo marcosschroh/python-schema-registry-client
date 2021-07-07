@@ -1,26 +1,56 @@
+from __future__ import annotations
+from abc import ABC, abstractmethod
+
 import json
 import typing
 
 import aiofiles
 import fastavro
 
-
-class AvroSchema:
+class BaseSchema(ABC):
     def __init__(self, schema: typing.Union[str, typing.Dict]) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
         self.raw_schema = schema
-        self.schema = fastavro.parse_schema(schema, _force=True)
+        self.schema: typing.Dict[str, typing.Any] = self.parse_schema(typing.cast(typing.Dict[str, typing.Any], schema))
         self.generate_hash()
 
         self._flat_schema: typing.Optional[str] = None
         self._expanded_schema: typing.Optional[str] = None
 
+    @abstractmethod
+    def parse_schema(self, schema: typing.Dict) -> typing.Dict[str, str]:
+        pass
+    
+    @staticmethod
+    @abstractmethod
+    def load(fp: str) -> BaseSchema:
+        """Parse a schema from a file path"""
+        pass
+    
+    @staticmethod
+    @abstractmethod
+    async def async_load(fp: str) -> BaseSchema:
+        """Parse a schema from a file path"""
+        pass
+
     def generate_hash(self) -> None:
         self._hash = hash(json.dumps(self.schema))
 
+    def __hash__(self) -> int:
+        return self._hash
+
+    def __str__(self) -> str:
+        return str(self.schema)
+
+    def __eq__(self, other: typing.Any) -> bool:
+        if not isinstance(other, BaseSchema):
+            return NotImplemented
+        return self.__hash__() == other.__hash__()
+
+class AvroSchema(BaseSchema):
     @property
-    def name(self) -> str:
+    def name(self) -> typing.Optional[str]:
         return self.schema.get("name")
 
     @property
@@ -48,27 +78,37 @@ class AvroSchema:
 
         return self._flat_schema
 
-    def __hash__(self) -> int:
-        return self._hash
+    def parse_schema(self, schema: typing.Dict) -> typing.Dict:
+        return fastavro.parse_schema(schema, _force=True)
 
-    def __str__(self) -> str:
-        return str(self.schema)
+    @staticmethod
+    def load(fp: str) -> AvroSchema:
+        """Parse an avro schema from a file path"""
+        with open(fp, mode="r") as f:
+            content = f.read()
+            return AvroSchema(content)
 
-    def __eq__(self, other: typing.Any) -> bool:
-        if not isinstance(other, AvroSchema):
-            return NotImplemented
-        return self.__hash__() == other.__hash__()
+    @staticmethod
+    async def async_load(fp: str) -> AvroSchema:
+        """Parse an avro schema from a file path"""
+        async with aiofiles.open(fp, mode="r") as f:
+            content = await f.read()
+            return AvroSchema(content)
 
+class JsonSchema(BaseSchema):
+    def parse_schema(self, schema: typing.Dict) -> typing.Dict:
+        return schema
 
-def load(fp: str) -> AvroSchema:
-    """Parse a schema from a file path"""
-    with open(fp, mode="r") as f:
-        content = f.read()
-        return AvroSchema(content)
-
-
-async def async_load(fp: str) -> AvroSchema:
-    """Parse a schema from a file path"""
-    async with aiofiles.open(fp, mode="r") as f:
-        content = await f.read()
-        return AvroSchema(content)
+    @staticmethod
+    def load(fp: str) -> BaseSchema:
+        """Parse a json schema from a file path"""
+        with open(fp, mode="r") as f:
+            content = f.read()
+            return JsonSchema(content)
+    
+    @staticmethod
+    async def async_load(fp: str) -> BaseSchema:
+        """Parse a json schema from a file path"""
+        async with aiofiles.open(fp, mode="r") as f:
+            content = await f.read()
+            return JsonSchema(content)

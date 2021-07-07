@@ -4,7 +4,7 @@ from tests import data_gen
 
 def test_getters(client):
     subject = "test-basic-schema"
-    parsed_basic = schema_loader.AvroSchema(data_gen.BASIC_SCHEMA)
+    parsed_basic = schema_loader.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     client.register(subject, parsed_basic)
     schema = client.get_by_id(1)
     assert schema is not None
