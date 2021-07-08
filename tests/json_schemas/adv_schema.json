@@ -1,6 +1,6 @@
 {
   "definitions" : {
-    "record:python.test.advanced.advanced" : {
+    "record.python.test.advanced.advanced" : {
       "description" : "advanced schema for tests",
       "type" : "object",
       "required" : [ "number", "name", "friends", "family" ],
@@ -23,18 +23,18 @@
         "friends" : {
           "type" : "object",
           "additionalProperties" : {
-            "$ref" : "#/definitions/record:python.test.advanced.basicPerson"
+            "$ref" : "#/definitions/record.python.test.advanced.basicPerson"
           }
         },
         "family" : {
           "type" : "object",
           "additionalProperties" : {
-            "$ref" : "#/definitions/record:python.test.advanced.basicPerson"
+            "$ref" : "#/definitions/record.python.test.advanced.basicPerson"
           }
         }
       }
     },
-    "record:python.test.advanced.basicPerson" : {
+    "record.python.test.advanced.basicPerson" : {
       "type" : "object",
       "required" : [ "number", "name" ],
       "additionalProperties" : false,
@@ -56,5 +56,5 @@
       }
     }
   },
-  "$ref" : "#/definitions/record:python.test.advanced.advanced"
+  "$ref" : "#/definitions/record.python.test.advanced.advanced"
 }

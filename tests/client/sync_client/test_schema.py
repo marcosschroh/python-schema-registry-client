@@ -1,4 +1,5 @@
 import fastavro
+import jsonschema
 import pytest
 
 from schema_registry.client import schema
@@ -88,3 +89,8 @@ def test_json_schema_from_string():
 def test_json_schema_from_file():
     parsed = schema.JsonSchema.load(data_gen.get_schema_path("adv_schema.json"))
     assert isinstance(parsed, schema.JsonSchema)
+
+
+def test_json_schema_load_parse_error():
+    with pytest.raises(jsonschema.exceptions.SchemaError):
+        schema.JsonSchema.load(data_gen.get_schema_path("invalid_schema.json"))

@@ -6,6 +6,7 @@ import typing
 
 import aiofiles
 import fastavro
+import jsonschema
 
 
 class BaseSchema(ABC):
@@ -13,14 +14,14 @@ class BaseSchema(ABC):
         if isinstance(schema, str):
             schema = json.loads(schema)
         self.raw_schema = schema
-        self.schema: typing.Dict[str, typing.Any] = self.parse_schema(typing.cast(typing.Dict[str, typing.Any], schema))
+        self.schema = self.parse_schema(typing.cast(typing.Dict, schema))
         self.generate_hash()
 
         self._flat_schema: typing.Optional[str] = None
         self._expanded_schema: typing.Optional[str] = None
 
     @abstractmethod
-    def parse_schema(self, schema: typing.Dict) -> typing.Dict[str, str]:
+    def parse_schema(self, schema: typing.Dict) -> typing.Dict:
         pass
 
     @staticmethod
@@ -100,6 +101,7 @@ class AvroSchema(BaseSchema):
 
 class JsonSchema(BaseSchema):
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
+        jsonschema.Draft7Validator.check_schema(schema)
         return schema
 
     @staticmethod
