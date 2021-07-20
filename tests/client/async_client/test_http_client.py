@@ -34,7 +34,7 @@ def test_custom_headers():
 
 
 @pytest.mark.asyncio
-async def test_override_headers(deployment_schema, response_klass, async_mock):
+async def test_override_headers(avro_deployment_schema, response_klass, async_mock):
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     async_client = AsyncSchemaRegistryClient(url=os.getenv("SCHEMA_REGISTRY_URL"), extra_headers=extra_headers)
 
@@ -46,7 +46,7 @@ async def test_override_headers(deployment_schema, response_klass, async_mock):
     mock = async_mock(httpx.AsyncClient, "request", returned_value=response_klass(200, content={"id": 1}))
 
     with mock:
-        await async_client.register(subject, deployment_schema, headers=override_header)
+        await async_client.register(subject, avro_deployment_schema, headers=override_header)
 
         prepare_headers = async_client.prepare_headers(body="1")
         prepare_headers["custom-serialization"] = utils.HEADER_AVRO

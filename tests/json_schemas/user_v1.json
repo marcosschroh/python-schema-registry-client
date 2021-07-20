@@ -1,0 +1,15 @@
+{
+  "definitions" : {
+    "record:UserKey" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "additionalProperties" : true,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:UserKey"
+}

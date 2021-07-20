@@ -6,7 +6,7 @@ from tests import data_gen
 
 @pytest.mark.asyncio
 async def test_getters(async_client):
-    subject = "test-basic-schema"
+    subject = "test-avro-basic-schema"
     parsed_basic = schema_loader.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     await async_client.register(subject, parsed_basic)
     schema = await async_client.get_by_id(1)
@@ -24,12 +24,12 @@ async def test_getters(async_client):
 
 
 @pytest.mark.asyncio
-async def test_get_subjects(async_client, user_schema_v3, country_schema):
-    subject_user = "test-user-schema"
-    subject_country = "test-country"
+async def test_get_subjects(async_client, avro_user_schema_v3, avro_country_schema):
+    subject_user = "test-avro-user-schema"
+    subject_country = "test-avro-country"
 
-    await async_client.register("test-user-schema", user_schema_v3)
-    await async_client.register("test-country", country_schema)
+    await async_client.register("test-avro-user-schema", avro_user_schema_v3)
+    await async_client.register("test-avro-country", avro_country_schema)
 
     subjects = await async_client.get_subjects()
 

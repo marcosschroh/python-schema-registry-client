@@ -46,7 +46,7 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://localhost:29092,PLAINTEXT://kafka:9092
       - KAFKA_BROKER_ID=1
   schema-registry-server:
-    image: confluentinc/cp-schema-registry:5.3.1
+    image: confluentinc/cp-schema-registry
     hostname: schema-registry-server
     container_name: schema-registry-server
     depends_on:

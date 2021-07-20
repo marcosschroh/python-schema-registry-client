@@ -15,22 +15,22 @@ def assertLatest(self, meta_tuple, sid, schema, version):
 @pytest.mark.asyncio
 async def test_register(async_client):
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-    schema_id = await async_client.register("test-basic-schema", parsed)
+    schema_id = await async_client.register("test-avro-basic-schema", parsed)
 
     assert schema_id > 0
     assert len(async_client.id_to_schema) == 1
 
 
 @pytest.mark.asyncio
-async def test_register_json_data(async_client, deployment_schema):
-    schema_id = await async_client.register("test-deployment", deployment_schema)
+async def test_register_json_data(async_client, avro_deployment_schema):
+    schema_id = await async_client.register("test-avro-deployment", avro_deployment_schema)
     assert schema_id > 0
 
 
 @pytest.mark.asyncio
-async def test_register_with_custom_headers(async_client, country_schema):
+async def test_register_with_custom_headers(async_client, avro_country_schema):
     headers = {"custom-serialization": "application/x-avro-json"}
-    schema_id = await async_client.register("test-country", country_schema, headers=headers)
+    schema_id = await async_client.register("test-avro-country", avro_country_schema, headers=headers)
     assert schema_id > 0
 
 
@@ -46,11 +46,11 @@ async def test_register_with_logical_types(async_client):
 @pytest.mark.asyncio
 async def test_multi_subject_register(async_client):
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-    schema_id = await async_client.register("test-basic-schema", parsed)
+    schema_id = await async_client.register("test-avro-basic-schema", parsed)
     assert schema_id > 0
 
     # register again under different subject
-    dupe_id = await async_client.register("test-basic-schema-backup", parsed)
+    dupe_id = await async_client.register("test-avro-basic-schema-backup", parsed)
     assert schema_id == dupe_id
     assert len(async_client.id_to_schema) == 1
 
@@ -58,7 +58,7 @@ async def test_multi_subject_register(async_client):
 @pytest.mark.asyncio
 async def test_dupe_register(async_client):
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-    subject = "test-basic-schema"
+    subject = "test-avro-basic-schema"
     schema_id = await async_client.register(subject, parsed)
 
     # Verify we had a check version call
@@ -95,7 +95,7 @@ async def test_multi_register(async_client):
     """
     version_1 = schema.AvroSchema(data_gen.AVRO_USER_V1)
     version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
-    subject = "test-user-schema"
+    subject = "test-avro-user-schema"
 
     id1 = await async_client.register(subject, version_1)
     latest_schema_1 = await async_client.get_schema(subject)

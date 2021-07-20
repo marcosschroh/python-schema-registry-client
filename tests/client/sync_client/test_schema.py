@@ -8,7 +8,6 @@ from tests import data_gen
 
 def test_avro_schema_from_string():
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-
     assert isinstance(parsed, schema.AvroSchema)
 
 
@@ -22,7 +21,12 @@ def test_avro_schema_load_parse_error():
         schema.AvroSchema.load(data_gen.get_schema_path("invalid_schema.avsc"))
 
 
-def test_expended_schema(client):
+def test_avro_schema_type_property():
+    parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
+    assert parsed.schema_type == "AVRO"
+
+
+def test_expanded_schema(client):
     advance_schema = schema.AvroSchema(data_gen.AVRO_ADVANCED_SCHEMA)
     expanded = {
         "type": "record",
@@ -82,7 +86,6 @@ def test_flat_schema(client):
 
 def test_json_schema_from_string():
     parsed = schema.JsonSchema(data_gen.JSON_BASIC_SCHEMA)
-
     assert isinstance(parsed, schema.JsonSchema)
 
 
@@ -94,3 +97,8 @@ def test_json_schema_from_file():
 def test_json_schema_load_parse_error():
     with pytest.raises(jsonschema.exceptions.SchemaError):
         schema.JsonSchema.load(data_gen.get_schema_path("invalid_schema.json"))
+
+
+def test_json_schema_type_property():
+    parsed = schema.JsonSchema(data_gen.JSON_BASIC_SCHEMA)
+    assert parsed.schema_type == "JSON"

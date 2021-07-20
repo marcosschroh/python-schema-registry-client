@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 
 import json
 import typing
@@ -36,6 +37,16 @@ class BaseSchema(ABC):
         """Parse a schema from a file path"""
         pass
 
+    @property
+    @abstractmethod
+    def name(self) -> typing.Optional[str]:
+        pass
+
+    @property
+    @abstractmethod
+    def schema_type(self) -> str:
+        pass
+
     def generate_hash(self) -> None:
         self._hash = hash(json.dumps(self.schema))
 
@@ -55,6 +66,10 @@ class AvroSchema(BaseSchema):
     @property
     def name(self) -> typing.Optional[str]:
         return self.schema.get("name")
+
+    @property
+    def schema_type(self) -> str:
+        return AVRO_SCHEMA_TYPE
 
     @property
     def expanded_schema(self) -> str:
@@ -100,6 +115,14 @@ class AvroSchema(BaseSchema):
 
 
 class JsonSchema(BaseSchema):
+    @property
+    def name(self) -> typing.Optional[str]:
+        return self.schema.get("title", self.schema.get("$id", self.schema.get("$ref")))
+
+    @property
+    def schema_type(self) -> str:
+        return JSON_SCHEMA_TYPE
+
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
         jsonschema.Draft7Validator.check_schema(schema)
         return schema
@@ -117,3 +140,14 @@ class JsonSchema(BaseSchema):
         async with aiofiles.open(fp, mode="r") as f:
             content = await f.read()
             return JsonSchema(content)
+
+
+class SchemaFactory():
+    @staticmethod
+    def create_schema(schema: str, schema_type: str) -> typing.Union[JsonSchema, AvroSchema]:
+        if schema_type == JSON_SCHEMA_TYPE:
+            return JsonSchema(schema)
+        elif schema_type == AVRO_SCHEMA_TYPE:
+            return AvroSchema(schema)
+        else:
+            raise ValueError(f"Unsupported schema type '{schema_type}'. Supported schemas are 'AVRO' and 'JSON'.")

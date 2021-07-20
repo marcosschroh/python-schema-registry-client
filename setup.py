@@ -39,6 +39,7 @@ setup(
             "codecov",
             "pytest-cov",
             "dataclasses-avroschema",
+            "pydantic"
         ],
     },
     url="https://github.com/marcosschroh/python-schema-registry-client",

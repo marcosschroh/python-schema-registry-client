@@ -5,7 +5,7 @@ from tests import data_gen
 
 
 @pytest.mark.asyncio
-async def test_delete_subject(async_client, user_schema_v3):
+async def test_delete_subject(async_client, avro_user_schema_v3):
     subject = "subject-to-delete"
     versions = [schema.AvroSchema(data_gen.AVRO_USER_V1), schema.AvroSchema(data_gen.AVRO_USER_V2)]
 

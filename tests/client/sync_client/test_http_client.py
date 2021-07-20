@@ -33,7 +33,7 @@ def test_pickelable(client):
     assert client == unpickled_client
 
     # make sure that is possible to do client operations with unpickled_client
-    subject = "test-basic-schema"
+    subject = "test-avro-basic-schema"
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     unpickled_client.get_subjects()
     schema_id = unpickled_client.register(subject, parsed)
@@ -66,7 +66,7 @@ def test_custom_httpx_config():
     assert client.pool_limits == pool_limits
 
 
-def test_override_headers(client, deployment_schema, mocker, response_klass):
+def test_override_headers(client, avro_deployment_schema, mocker, response_klass):
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
 
@@ -76,7 +76,7 @@ def test_override_headers(client, deployment_schema, mocker, response_klass):
     override_header = {"custom-serialization": utils.HEADER_AVRO}
 
     request_patch = mocker.patch.object(httpx.Client, "request", return_value=response_klass(200, content={"id": 1}))
-    client.register(subject, deployment_schema, headers=override_header)
+    client.register(subject, avro_deployment_schema, headers=override_header)
 
     prepare_headers = client.prepare_headers(body="1")
     prepare_headers["custom-serialization"] = utils.HEADER_AVRO

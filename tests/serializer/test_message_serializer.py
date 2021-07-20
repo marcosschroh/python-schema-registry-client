@@ -21,7 +21,7 @@ def assertMessageIsSame(message, expected, schema_id, message_serializer):
 
 def test_encode_with_schema_id(client, message_serializer):
     basic = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-    subject = "test-basic-schema"
+    subject = "test-avro-basic-schema"
     schema_id = client.register(subject, basic)
 
     records = data_gen.AVRO_BASIC_ITEMS
@@ -61,10 +61,12 @@ def test_encode_logical_types(client, message_serializer):
     assert total == decoded_total
 
 
-def test_encode_decode_with_schema_from_json(message_serializer, deployment_schema):
+def test_encode_decode_with_schema_from_json(message_serializer, avro_deployment_schema):
     deployment_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": 1, "port": 8080}
 
-    message_encoded = message_serializer.encode_record_with_schema("deployment", deployment_schema, deployment_record)
+    message_encoded = message_serializer.encode_record_with_schema(
+        "deployment", avro_deployment_schema, deployment_record
+    )
 
     assert message_encoded
     assert len(message_encoded) > 5
@@ -75,11 +77,11 @@ def test_encode_decode_with_schema_from_json(message_serializer, deployment_sche
     assert message_decoded == deployment_record
 
 
-def test_fail_encode_with_schema(message_serializer, deployment_schema):
+def test_fail_encode_with_schema(message_serializer, avro_deployment_schema):
     bad_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": "1", "port": "8080"}
 
     with pytest.raises(TypeError):
-        message_serializer.encode_record_with_schema("deployment", deployment_schema, bad_record)
+        message_serializer.encode_record_with_schema("deployment", avro_deployment_schema, bad_record)
 
 
 def test_encode_record_with_schema(client, message_serializer):

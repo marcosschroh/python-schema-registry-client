@@ -8,17 +8,17 @@ from schema_registry.serializers import faust_serializer as serializer
 from tests import data_gen
 
 
-def test_create_faust_serializer(client, country_schema):
-    schema_subject = "test-country"
-    faust_serializer = serializer.FaustSerializer(client, schema_subject, country_schema)
+def test_create_faust_serializer(client, avro_country_schema):
+    schema_subject = "test-avro-country"
+    faust_serializer = serializer.FaustSerializer(client, schema_subject, avro_country_schema)
 
     assert faust_serializer.schema_registry_client == client
     assert faust_serializer.schema_subject == schema_subject
-    assert faust_serializer.schema == country_schema
+    assert faust_serializer.schema == avro_country_schema
 
 
-def test_dumps_load_message(client, country_schema):
-    faust_serializer = serializer.FaustSerializer(client, "test-country", country_schema)
+def test_dumps_load_message(client, avro_country_schema):
+    faust_serializer = serializer.FaustSerializer(client, "test-avro-country", avro_country_schema)
 
     record = {"country": "Argentina"}
     message_encoded = faust_serializer._dumps(record)
@@ -46,9 +46,9 @@ def test_nested_schema(client):
     assert message_decoded == record
 
 
-def test_dumps_load_with_register_codec(client, country_schema):
+def test_dumps_load_with_register_codec(client, avro_country_schema):
     payload = {"country": "Argenntina"}
-    country_serializer = serializer.FaustSerializer(client, "test-country", country_schema)
+    country_serializer = serializer.FaustSerializer(client, "test-avro-country", avro_country_schema)
 
     faust.serializers.codecs.register("country_serializer", country_serializer)
 
