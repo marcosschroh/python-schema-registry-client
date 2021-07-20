@@ -305,7 +305,8 @@ async def async_client():
     subjects = {
         "test-avro-basic-schema",
         "test-json-basic-schema",
-        "test-deployment",
+        "test-avro-deployment",
+        "test-json-deployment",
         "test-avro-country",
         "test-json-country",
         "test-avro-basic-schema-backup",
@@ -317,8 +318,9 @@ async def async_client():
         "test-logical-types-schema",
         "test-avro-schema-version",
         "test-json-schema-version",
-        "dataclasses-avroschema-subject",
-        "dataclasses-jsonschema-subject",
+        "test-nested-schema",
+        "test-dataclasses-avroschema",
+        "test-union-field-avroschema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.

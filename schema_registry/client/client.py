@@ -1054,7 +1054,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         if isinstance(schema, str):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
-        body = {"schema": json.dumps(schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
