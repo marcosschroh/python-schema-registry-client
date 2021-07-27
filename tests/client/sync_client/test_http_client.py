@@ -54,7 +54,7 @@ def test_custom_httpx_config():
     Test the SchemaRegistryClient creation with custom httpx config
     """
     timeout = httpx.Timeout(10.0, connect=60.0)
-    pool_limits = httpx.Limits(max_keepalive=5, max_connections=10)
+    pool_limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
 
     client = SchemaRegistryClient(
         url="https://127.0.0.1:65534",

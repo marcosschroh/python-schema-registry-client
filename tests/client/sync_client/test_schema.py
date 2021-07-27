@@ -73,7 +73,7 @@ def test_expanded_schema(client):
 
 def test_flat_schema(client):
     advance_schema = schema.AvroSchema(data_gen.AVRO_ADVANCED_SCHEMA)
-    subject = "test-advance-schema"
+    subject = "test-avro-advance-schema"
     client.register(subject, advance_schema)
 
     schema_version = client.get_schema(subject)

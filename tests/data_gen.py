@@ -70,9 +70,14 @@ AVRO_ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
 AVRO_NESTED_SCHENA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "nested_schema.avsc"))
 AVRO_ORDER_SCHENA = load_schema_file(os.path.join(AVRO_SCHEMAS_DIR, "order_schema.avsc"))
 
-JSON_BASIC_SCHEMA = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "adv_schema.json"))
+JSON_BASIC_SCHEMA = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "basic_schema.json"))
+JSON_ADVANCED_SCHEMA = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "adv_schema.json"))
+JSON_BASIC_ITEMS = map(create_basic_item, range(1, 20))
 JSON_USER_V1 = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "user_v1.json"))
 JSON_USER_V2 = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "user_v2.json"))
+JSON_ADVANCED_ITEMS = map(create_adv_item, range(1, 20))
+JSON_NESTED_SCHEMA = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "nested_schema.json"))
+JSON_ORDER_SCHEMA = load_schema_file(os.path.join(JSON_SCHEMAS_DIR, "order_schema.json"))
 
 
 def cleanup(files):

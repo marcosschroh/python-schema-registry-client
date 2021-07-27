@@ -1,0 +1,33 @@
+{
+  "definitions" : {
+    "record:com.questanalytics.core.Customer" : {
+      "type" : "object",
+      "required" : [ "uid", "order", "name" ],
+      "properties" : {
+        "uid" : {
+          "default" : "NONE",
+          "type" : "integer"
+        },
+        "order" : {
+          "default" : "NONE",
+          "$ref" : "#/definitions/record:com.questanalytics.core.OrderRecord"
+        },
+        "name" : {
+          "default" : "NONE",
+          "type" : "string"
+        }
+      }
+    },
+    "record:com.questanalytics.core.OrderRecord" : {
+      "type" : "object",
+      "required" : [ "uid" ],
+      "properties" : {
+        "uid" : {
+          "default" : "NONE",
+          "type" : "integer"
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:com.questanalytics.core.Customer"
+}

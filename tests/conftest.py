@@ -10,7 +10,7 @@ from dataclasses_avroschema import AvroModel, types
 from httpx._client import UNSET, TimeoutTypes, UnsetType
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
-from schema_registry.serializers import MessageSerializer
+from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -166,15 +166,18 @@ def client():
         "test-json-country",
         "test-avro-basic-schema-backup",
         "test-json-basic-schema-backup",
-        "test-advance-schema",
+        "test-avro-advance-schema",
+        "test-json-advance-schema",
         "test-avro-user-schema",
         "test-json-user-schema",
         "subject-does-not-exist",
         "test-logical-types-schema",
         "test-avro-schema-version",
         "test-json-schema-version",
-        "test-nested-schema",
+        "test-avro-nested-schema",
+        "test-json-nested-schema",
         "test-dataclasses-avroschema",
+        "test-dataclasses-jsonschema",
         "test-union-field-avroschema",
     }
 
@@ -235,8 +238,13 @@ def json_user_schema_v3():
 
 
 @pytest.fixture
-def message_serializer(client):
-    return MessageSerializer(client)
+def avro_message_serializer(client):
+    return AvroMessageSerializer(client)
+
+
+@pytest.fixture
+def json_message_serializer(client):
+    return JsonMessageSerializer(client)
 
 
 @pytest.fixture
@@ -311,16 +319,20 @@ async def async_client():
         "test-json-country",
         "test-avro-basic-schema-backup",
         "test-json-basic-schema-backup",
-        "test-advance-schema",
+        "test-avro-advance-schema",
+        "test-json-advance-schema",
         "test-avro-user-schema",
         "test-json-user-schema",
         "subject-does-not-exist",
         "test-logical-types-schema",
         "test-avro-schema-version",
         "test-json-schema-version",
-        "test-nested-schema",
+        "test-avro-nested-schema",
+        "test-json-nested-schema",
         "test-dataclasses-avroschema",
+        "test-dataclasses-jsonschema",
         "test-union-field-avroschema",
+        "test-union-field-jsonschema"
     }
 
     # Executing the clean up. Delete all the subjects between tests.
