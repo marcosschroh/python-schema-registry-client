@@ -166,35 +166,49 @@ print(compatibility)
 ```
 
 ### Usage with pydantic for json schemas
-You can also use this funcionality with [dataclasses-pydantic](https://github.com/samuelcolvin/pydantic) and you won't have to provide the json schema.
-The only thing that you need to do is add the `BaseModel` class and use its methods:
+You can generate the json schema directely from a python class using pydantic and use it in the API for register schemas, check versions and test compatibility:
 
 ```python
-# users.models
-import faust
+import typing
+
+from enum import Enum
 
 from pydantic import BaseModel
 
+from schema_registry.client import SchemaRegistryClient
 
-class UserModel(faust.Record, BaseModel, serializer='json_users'):
-    first_name: str
-    last_name: str
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+class ColorEnum(str, Enum):
+  BLUE = "BLUE"
+  YELLOW = "YELLOW"
+  GREEN = "GREEN"
 
 
-# codecs.codec.py
-from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializers import FaustJsonSerializer
+class UserAdvance(BaseModel):
+    name: str
+    age: int
+    pets: typing.List[str] = ["dog", "cat"]
+    accounts: typing.Dict[str, int] = {"key": 1}
+    has_car: bool = False
+    favorite_colors: ColorEnum = ColorEnum.BLUE
+    country: str = "Argentina"
+    address: str = None
 
-from users.models import UserModel
+# register the schema
+schema_id = client.register(subject, UserAdvance.schema_json(), schema_type="JSON")
 
-# create an instance of the `SchemaRegistryClient`
-client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
+print(schema_id)
+# >>> 12
 
-json_user_serializer = FaustJsonSerializer(client, "users", UserModel.schema_json())  # usign the method schema_json to get the json schema representation
+result = client.check_version(subject, UserAdvance.schema_json(), schema_type="JSON")
+print(result)
+# >>> SchemaVersion(subject='pydantic-jsonschema-subject', schema_id=12, schema=1, version=<schema_registry.client.schema.JsonSchema object at 0x7f40354550a0>)
 
-# function used to register the codec
-def json_user_codec():
-    return json_user_serializer
+compatibility = client.test_compatibility(subject, UserAdvance.schema_json(), schema_type="JSON")
+print(compatibility)
+
+# >>> True
 ```
 
 ## When use this library
