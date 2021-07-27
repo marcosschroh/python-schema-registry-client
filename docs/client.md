@@ -1,8 +1,8 @@
 # Client
 
-The `Schema Registry Client` consumes the API exposed by the `schema-registry` to operate resources that are `avro` schemas.
+The `Schema Registry Client` consumes the API exposed by the `schema-registry` to operate resources that are `avro` and `json` schemas.
 
-You probably won't use this but is good to know that exists. The `MessageSerialzer` is whom interact with the `SchemaRegistryClient`
+You probably won't use this but is good to know that exists. The `MessageSerializer` is whom interact with the `SchemaRegistryClient`
 
 ## SchemaRegistryClient
 
@@ -54,7 +54,7 @@ def get_schema(subject: str, version="latest", headers: dict = None, timeout: ty
 ### Get schema by `id`
 
 ```python
-def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> client.schema.AvroSchema:
+def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]:
     """
     Args:
         schema_id (int): Schema Id
@@ -62,20 +62,21 @@ def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[Timeou
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
     Returns:
-        client.schema.AvroSchema: Avro Record schema
+        typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
     """
 ```
 
 ### Register a Schema
 
 ```python
-def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> int:
+def register(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema], headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]) -> int:
     """
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         int: schema_id
@@ -118,20 +119,21 @@ def delete_subject(subject: str, headers: dict = None, timeout: typing.Union[Tim
 ### Check if a schema has already been registered under the specified subject
 
 ```python
-def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> dict:
+def check_version(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema], headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]) -> dict:
     """
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         dict:
             subject (string) -- Name of the subject that this schema is registered under
             id (int) -- Globally unique identifier of the schema
             version (int) -- Version of the returned schema
-            schema (dict) -- The Avro schema
+            schema (dict) -- The Avro or JSON schema
 
         None: If schema not found.
     """
@@ -186,15 +188,16 @@ def delete_version(self, subject: str, version="latest", headers: dict = None, t
 ### Test Compatibility
 
 ```python
-def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET):
+def test_compatibility(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema], version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]):
     """
     By default the latest version is checked against.
 
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         bool: True if schema given compatible, False otherwise
@@ -289,7 +292,7 @@ async def get_schema(subject: str, version="latest", headers: dict = None, timeo
 ### Get schema by `id`
 
 ```python
-async def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> client.schema.AvroSchema:
+async def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]:
     """
     Args:
         schema_id (int): Schema Id
@@ -297,20 +300,21 @@ async def get_by_id(schema_id: int, headers: dict = None, timeout: typing.Union[
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
     Returns:
-        client.schema.AvroSchema: Avro Record schema
+        typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
     """
 ```
 
 ### Register a Schema
 
 ```python
-async def register(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> int:
+async def register(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema] headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]) -> int:
     """
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         int: schema_id
@@ -353,20 +357,21 @@ async def delete_subject(subject: str, headers: dict = None, timeout: typing.Uni
 ### Check if a schema has already been registered under the specified subject
 
 ```python
-async def check_version(subject: str, avro_schema: client.schema.AvroSchema, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> dict:
+async def check_version(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema], headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]) -> dict:
     """
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         dict:
             subject (string) -- Name of the subject that this schema is registered under
             id (int) -- Globally unique identifier of the schema
             version (int) -- Version of the returned schema
-            schema (dict) -- The Avro schema
+            schema (dict) -- The Avro or JSON schema
 
         None: If schema not found.
     """
@@ -421,15 +426,16 @@ async def delete_version(self, subject: str, version="latest", headers: dict = N
 ### Test Compatibility
 
 ```python
-async def test_compatibility(subject: str, avro_schema: client.schema.AvroSchema, version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET):
+async def test_compatibility(subject: str, schema: typing.Union[client.schema.AvroSchema, client.schema.JsonSchema], version="latest", headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET, schema_type: typing.Union["AVRO", "JSON"]):
     """
     By default the latest version is checked against.
 
     Args:
         subject (str): subject name
-        avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
         headers (dict): Extra headers to add on the requests
         timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+        schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
     Returns:
         bool: True if schema given compatible, False otherwise

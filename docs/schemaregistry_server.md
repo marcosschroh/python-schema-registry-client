@@ -2,9 +2,9 @@
 
 This section provides you just an introduction about the `Schema Server`.
 
-Schema Registry provides a serving layer for your metadata. It provides a RESTful interface for storing and retrieving Avro schemas. It stores a versioned history of all schemas, provides multiple compatibility settings and allows evolution of schemas according to the configured compatibility settings and expanded Avro support. It provides serializers that plug into Apache Kafka® clients that handle schema storage and retrieval for Kafka messages that are sent in the Avro format.
+Schema Registry provides a serving layer for your metadata. It provides a RESTful interface for storing and retrieving Avro or JSON schemas. It stores a versioned history of all schemas, provides multiple compatibility settings and allows evolution of schemas according to the configured compatibility settings and expanded Avro or JSON support. It provides serializers that plug into Apache Kafka® clients that handle schema storage and retrieval for Kafka messages that are sent in the Avro or JSON format.
 
-Schema Registry is a distributed storage layer for Avro Schemas which uses Kafka as its underlying storage mechanism. Some key design decisions:
+Schema Registry is a distributed storage layer for Avro or JSON Schemas which uses Kafka as its underlying storage mechanism. Some key design decisions:
 
 1. Assigns globally unique ID to each registered schema. Allocated IDs are guaranteed to be monotonically increasing but not necessarily consecutive.
 2. Kafka provides the durable backend, and functions as a write-ahead changelog for the state of Schema Registry and the schemas it contains.
@@ -20,13 +20,13 @@ Schema Registry is a distributed storage layer for Avro Schemas which uses Kafka
 
 `GET /subjects` - Get a list of registered subjects. *[Missing]*
 
-`GET /subjects/(string: subject)/versions` - Get a list of versions registered under the specified subject *[Missing]* 
+`GET /subjects/(string: subject)/versions` - Get a list of versions registered under the specified subject *[Missing]*
 
 `DELETE /subjects/(string: subject)` - Deletes the specified subject and its associated compatibility level if registered. It is recommended to use this API only when a topic needs to be recycled or in development environment.
 
 `GET /subjects/(string: subject)/versions/(versionId: version)` - Get a specific version of the schema registered under this subject *Check response*
 
-`GET /subjects/(string: subject)/versions/(versionId: version)/schema` - Get the avro schema for the specified version of this subject. The unescaped schema only is returned. *[Missing]*
+`GET /subjects/(string: subject)/versions/(versionId: version)/schema` - Get the avro or json schema for the specified version of this subject. The unescaped schema only is returned. *[Missing]*
 
 `POST /subjects/(string: subject)/versions` - Register a new schema under the specified subject and receive a schema id
 

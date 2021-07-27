@@ -2,7 +2,7 @@ import fastavro
 import jsonschema
 import pytest
 
-from schema_registry.client import schema
+from schema_registry.client import schema, utils
 from tests import data_gen
 
 
@@ -23,7 +23,7 @@ def test_avro_schema_load_parse_error():
 
 def test_avro_schema_type_property():
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
-    assert parsed.schema_type == "AVRO"
+    assert parsed.schema_type == utils.AVRO_SCHEMA_TYPE
 
 
 def test_expanded_schema(client):

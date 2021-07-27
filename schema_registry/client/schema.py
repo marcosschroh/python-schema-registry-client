@@ -18,9 +18,6 @@ class BaseSchema(ABC):
         self.schema = self.parse_schema(typing.cast(typing.Dict, schema))
         self.generate_hash()
 
-        self._flat_schema: typing.Optional[str] = None
-        self._expanded_schema: typing.Optional[str] = None
-
     @abstractmethod
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
         pass
@@ -63,6 +60,12 @@ class BaseSchema(ABC):
 
 
 class AvroSchema(BaseSchema):
+    def __init__(self, *args, **kwargs) -> None:
+        self._expanded_schema: typing.Optional[str] = None
+        self._flat_schema: typing.Optional[str] = None
+
+        super().__init__(*args, **kwargs)
+
     @property
     def name(self) -> typing.Optional[str]:
         return self.schema.get("name")

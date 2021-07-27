@@ -235,14 +235,18 @@ class SchemaRegistryClient(BaseClient):
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
         and receive a schema id.
-        avro_schema must be a parsed schema from the python avro library
+        Schema can be avro or json, and can be presented as a parsed schema or a string.
+        If schema is a string, the `schema_type` kwarg must be used to indicate
+        what type of schema the string is ("AVRO" by default).
+        If the schema is already parsed, the schema_type is inferred directly from the parsed schema.
         Multiple instances of the same schema will result in cache misses.
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             int: schema_id
@@ -351,7 +355,7 @@ class SchemaRegistryClient(BaseClient):
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
         Returns:
-            client.schema.AvroSchema: Avro Record schema
+            typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
@@ -364,7 +368,7 @@ class SchemaRegistryClient(BaseClient):
             return None
         elif status.is_success(code):
             schema_str = result.get("schema")
-            schema_type = result.get("schemaType", "AVRO")
+            schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
 
             schema = SchemaFactory.create_schema(schema_str, schema_type)
 
@@ -503,9 +507,10 @@ class SchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -556,9 +561,10 @@ class SchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             bool: True if schema given compatible, False otherwise
@@ -722,14 +728,19 @@ class AsyncSchemaRegistryClient(BaseClient):
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
         and receive a schema id.
-        avro_schema must be a parsed schema from the python avro library
+        Schema can be avro or json, and can be presented as a parsed schema or a string.
+        If schema is a string, the `schema_type` kwarg must be used to indicate
+        what type of schema the string is ("AVRO" by default).
+        If the schema is already parsed, the schema_type is inferred directly from the parsed schema.
         Multiple instances of the same schema will result in cache misses.
+
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             int: schema_id
@@ -827,7 +838,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
     async def get_by_id(
         self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
-    ) -> typing.Optional[AvroSchema]:
+    ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -838,7 +849,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
         Returns:
-            client.schema.AvroSchema: Avro Record schema
+            typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
@@ -989,9 +1000,10 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -1042,9 +1054,10 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Args:
             subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema
             headers (dict): Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             bool: True if schema given compatible, False otherwise

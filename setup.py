@@ -55,7 +55,7 @@ setup(
     ],
     keywords=(
         """
-        Schema Registry, Python, Avro, Apache, Apache Avro
+        Schema Registry, Python, Avro, Apache, Apache Avro, JSON, JSON Schema
         """
     ),
 )
