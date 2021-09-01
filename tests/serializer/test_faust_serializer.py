@@ -138,7 +138,7 @@ def test_dumps_load_message_union_avro_schema(client):
 
     faust_serializer = serializer.FaustSerializer(client, avro_name, avro_schema, return_record_name=True)
 
-    record = {"a_name": ("a_name_secondmemberrecord_record", {"name": "jj"})}
+    record = {"a_name": ("FirstMemberRecord", {"name": "jj"})}
 
     message_encoded = faust_serializer._dumps(record)
 
