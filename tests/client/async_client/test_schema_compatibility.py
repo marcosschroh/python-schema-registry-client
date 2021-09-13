@@ -20,9 +20,7 @@ async def test_avro_compatibility(async_client, avro_user_schema_v3):
 
 @pytest.mark.asyncio
 async def test_avro_compatibility_dataclasses_avroschema(
-    async_client,
-    dataclass_avro_schema,
-    dataclass_avro_schema_advance
+    async_client, dataclass_avro_schema, dataclass_avro_schema_advance
 ):
     """
     Test the compatibility of a new User Schema against the User schema version 2.
@@ -95,9 +93,7 @@ async def test_json_compatibility(async_client, json_user_schema_v3):
 
 @pytest.mark.asyncio
 async def test_json_compatibility_dataclasses_jsonschema(
-    async_client,
-    dataclass_json_schema,
-    dataclass_json_schema_advance
+    async_client, dataclass_json_schema, dataclass_json_schema_advance
 ):
     """
     Test the compatibility of a new User Schema against the User schema version 2.
@@ -106,9 +102,7 @@ async def test_json_compatibility_dataclasses_jsonschema(
     await async_client.register(subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE)
 
     compatibility = await async_client.test_compatibility(
-        subject,
-        dataclass_json_schema_advance.schema_json(),
-        schema_type=utils.JSON_SCHEMA_TYPE
+        subject, dataclass_json_schema_advance.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE
     )
 
     assert compatibility

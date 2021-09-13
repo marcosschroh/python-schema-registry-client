@@ -45,61 +45,50 @@ flat_schemas = {
         ],
     },
     "json_deployment_schema": {
-        "definitions" : {
-            "record:com.kubertenes.JsonDeployment" : {
-                "type" : "object",
-                "required" : ["image", "replicas", "port"],
-                "additionalProperties" : True,
-                "properties" : {
-                    "image" : {"type" : "string"},
-                    "replicas" : {"type" : "integer"},
-                    "port" : {"type" : "integer"}
-                }
+        "definitions": {
+            "record:com.kubertenes.JsonDeployment": {
+                "type": "object",
+                "required": ["image", "replicas", "port"],
+                "additionalProperties": True,
+                "properties": {
+                    "image": {"type": "string"},
+                    "replicas": {"type": "integer"},
+                    "port": {"type": "integer"},
+                },
             }
         },
-        "$ref" : "#/definitions/record:com.kubertenes.JsonDeployment"
+        "$ref": "#/definitions/record:com.kubertenes.JsonDeployment",
     },
     "json_country_schema": {
-        "definitions" : {
-            "record:com.example.JsonSomeSchema" : {
-                "type" : "object",
-                "required" : ["country"],
-                "additionalProperties" : True,
-                "properties" : {
-                    "country" : {"type" : "string"}
-                }
+        "definitions": {
+            "record:com.example.JsonSomeSchema": {
+                "type": "object",
+                "required": ["country"],
+                "additionalProperties": True,
+                "properties": {"country": {"type": "string"}},
             }
         },
-        "$ref" : "#/definitions/record:com.example.JsonSomeSchema"
+        "$ref": "#/definitions/record:com.example.JsonSomeSchema",
     },
     "json_user_schema_v3": {
-        "definitions" : {
-            "record:User" : {
-                "type" : "object",
-                "required" : ["name", "favorite_number", "favorite_color", "country"],
-                "additionalProperties" : {
-                    "default" : "null",
-                    "oneOf" : [{"type" : "null"},{"type" : "string"}]
+        "definitions": {
+            "record:User": {
+                "type": "object",
+                "required": ["name", "favorite_number", "favorite_color", "country"],
+                "additionalProperties": {"default": "null", "oneOf": [{"type": "null"}, {"type": "string"}]},
+                "properties": {
+                    "name": {"type": "string"},
+                    "favorite_number": {"default": 42, "oneOf": [{"type": "integer"}, {"type": "null"}]},
+                    "favorite_color": {"default": "purple", "oneOf": [{"type": "string"}, {"type": "null"}]},
+                    "country": {
+                        "default": None,
+                        "oneOf": [{"type": "null"}, {"type": "string"}],
+                    },
                 },
-                "properties" : {
-                    "name" : {"type" : "string"},
-                    "favorite_number" : {
-                        "default" : 42,
-                        "oneOf" : [{"type" : "integer"},{"type" : "null"}]
-                    },
-                    "favorite_color" : {
-                        "default" : "purple",
-                        "oneOf" : [{"type" : "string"},{"type" : "null"}]
-                    },
-                    "country" : {
-                        "default" : None,
-                        "oneOf" : [{"type" : "null"},{"type" : "string"}],
-                    }
-                }
             }
         },
-        "$ref" : "#/definitions/record:User"
-    }
+        "$ref": "#/definitions/record:User",
+    },
 }
 
 
@@ -332,7 +321,7 @@ async def async_client():
         "test-dataclasses-avroschema",
         "test-dataclasses-jsonschema",
         "test-union-field-avroschema",
-        "test-union-field-jsonschema"
+        "test-union-field-jsonschema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.
@@ -381,11 +370,7 @@ def dataclass_json_schema():
         has_car: bool = False
 
         class Config:
-            schema_extra = {
-                "additionalProperties": {
-                    "type" : "string"
-                }
-            }
+            schema_extra = {"additionalProperties": {"type": "string"}}
 
     return UserAdvance
 
@@ -401,10 +386,6 @@ def dataclass_json_schema_advance():
         address: str = None
 
         class Config:
-            schema_extra = {
-                "additionalProperties": {
-                    "type" : "string"
-                }
-            }
+            schema_extra = {"additionalProperties": {"type": "string"}}
 
     return UserAdvance

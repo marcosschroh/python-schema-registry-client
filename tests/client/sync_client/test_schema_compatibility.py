@@ -89,9 +89,7 @@ def test_json_compatibility_dataclasses_jsonschema(client, dataclass_json_schema
     client.register(subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE)
 
     compatibility = client.test_compatibility(
-        subject,
-        dataclass_json_schema_advance.schema_json(),
-        schema_type=utils.JSON_SCHEMA_TYPE
+        subject, dataclass_json_schema_advance.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE
     )
 
     assert compatibility

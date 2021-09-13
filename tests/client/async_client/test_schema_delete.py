@@ -18,10 +18,7 @@ async def test_avro_delete_subject(async_client, avro_user_schema_v3):
 @pytest.mark.asyncio
 async def test_json_delete_subject(async_client, json_user_schema_v3):
     subject = "json-subject-to-delete"
-    versions = [
-        schema.JsonSchema(data_gen.JSON_USER_V2),
-        json_user_schema_v3
-    ]
+    versions = [schema.JsonSchema(data_gen.JSON_USER_V2), json_user_schema_v3]
 
     for version in versions:
         await async_client.register(subject, version)

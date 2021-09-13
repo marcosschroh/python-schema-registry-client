@@ -2,7 +2,7 @@ import typing
 from collections.abc import Mapping, Sequence
 
 from schema_registry.client import SchemaRegistryClient
-from schema_registry.client.schema import AvroSchema, JsonSchema
+from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema
 from schema_registry.serializers import MessageSerializer, AvroMessageSerializer, JsonMessageSerializer
 
 try:
@@ -15,7 +15,7 @@ class Serializer(Codec):
     def __init__(
         self,
         schema_subject: str,
-        schema: typing.Union[AvroSchema, JsonSchema, typing.Dict],
+        schema: typing.Union[BaseSchema],
         message_serializer: MessageSerializer,
     ):
         self.schema_subject = schema_subject
@@ -37,9 +37,7 @@ class Serializer(Codec):
         payload = self.clean_payload(payload)
 
         return self.message_serializer.encode_record_with_schema(
-            self.schema_subject,
-            self.schema,
-            payload
+            self.schema_subject, self.schema, payload
         )  # type: ignore
 
     @staticmethod
@@ -75,7 +73,7 @@ class Serializer(Codec):
 def avro_serializer_factory(
     schema_registry_client: SchemaRegistryClient,
     schema_subject: str,
-    schema: typing.Union[AvroSchema, typing.Dict],
+    schema: AvroSchema,
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
 
@@ -85,16 +83,14 @@ def avro_serializer_factory(
         schema = AvroSchema(schema)
 
     return Serializer(
-        schema_subject,
-        schema,
-        AvroMessageSerializer(schema_registry_client, return_record_name=return_record_name)
+        schema_subject, schema, AvroMessageSerializer(schema_registry_client, return_record_name=return_record_name)
     )
 
 
 def json_serializer_factory(
     schema_registry_client: SchemaRegistryClient,
     schema_subject: str,
-    schema: typing.Union[JsonSchema, typing.Dict],
+    schema: JsonSchema,
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
 
@@ -104,9 +100,7 @@ def json_serializer_factory(
         schema = JsonSchema(schema)
 
     return Serializer(
-        schema_subject,
-        schema,
-        JsonMessageSerializer(schema_registry_client, return_record_name=return_record_name)
+        schema_subject, schema, JsonMessageSerializer(schema_registry_client, return_record_name=return_record_name)
     )
 
 

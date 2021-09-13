@@ -11,7 +11,7 @@ from fastavro import schemaless_reader, schemaless_writer
 from jsonschema import validate
 
 from schema_registry.client import SchemaRegistryClient, schema, utils
-from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema
+from schema_registry.client.schema import BaseSchema
 from schema_registry.client.errors import ClientError
 
 from .errors import SerializerError
@@ -58,19 +58,14 @@ class MessageSerializer(ABC):
         ...
 
     @abstractmethod
-    def _get_encoder_func(self, schema: typing.Union[AvroSchema, JsonSchema, str]) -> typing.Callable:
+    def _get_encoder_func(self, schema: BaseSchema) -> typing.Callable:
         ...
 
     @abstractmethod
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         ...
 
-    def encode_record_with_schema(
-        self,
-        subject: str,
-        schema: typing.Union[AvroSchema, JsonSchema, str],
-        record: dict
-    ) -> bytes:
+    def encode_record_with_schema(self, subject: str, schema: BaseSchema, record: dict) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
@@ -169,13 +164,13 @@ class AvroMessageSerializer(MessageSerializer):
     def _serializer_schema_type(self) -> str:
         return utils.AVRO_SCHEMA_TYPE
 
-    def _get_encoder_func(self, schema: typing.Union[AvroSchema, str]) -> typing.Callable:
+    def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
         return lambda record, fp: schemaless_writer(fp, schema.schema, record)  # type: ignore
 
-    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: AvroSchema) -> typing.Callable:
+    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         return lambda payload: schemaless_reader(
             payload, writer_schema.schema, self.reader_schema, self.return_record_name
-        )
+        )  # type: ignore
 
 
 class JsonMessageSerializer(MessageSerializer):
@@ -183,17 +178,17 @@ class JsonMessageSerializer(MessageSerializer):
     def _serializer_schema_type(self) -> str:
         return utils.JSON_SCHEMA_TYPE
 
-    def _get_encoder_func(self, schema: typing.Union[JsonSchema, str]) -> typing.Callable:
-        def json_encoder_func(record, fp):
+    def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
+        def json_encoder_func(record: dict, fp: ContextStringIO) -> typing.Any:
             validate(record, schema.schema)
             fp.write(json.dumps(record).encode())
 
         return json_encoder_func
 
-    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: JsonSchema) -> typing.Callable:
-        def json_decoder_func(payload):
-            obj = json.load(payload)
-            validate(obj, writer_schema.schema)
+    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
+        def json_decoder_func(payload: typing.Union[str, bytes]) -> typing.Any:
+            obj = json.load(payload)  # type: ignore
+            validate(obj, writer_schema.schema)  # type: ignore
             return obj
 
         return json_decoder_func

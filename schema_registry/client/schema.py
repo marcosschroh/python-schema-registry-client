@@ -60,7 +60,7 @@ class BaseSchema(ABC):
 
 
 class AvroSchema(BaseSchema):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         self._expanded_schema: typing.Optional[str] = None
         self._flat_schema: typing.Optional[str] = None
 
@@ -145,7 +145,7 @@ class JsonSchema(BaseSchema):
             return JsonSchema(content)
 
 
-class SchemaFactory():
+class SchemaFactory:
     @staticmethod
     def create_schema(schema: str, schema_type: str) -> typing.Union[JsonSchema, AvroSchema]:
         if schema_type == JSON_SCHEMA_TYPE:

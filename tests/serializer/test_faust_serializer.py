@@ -249,9 +249,7 @@ def test_json_dumps_load_message_dataclasses_json_schema(client):
         age: int
 
     faust_serializer = serializer.FaustJsonSerializer(
-        client,
-        "test-dataclasses-jsonschema",
-        AdvanceUserModel.schema_json()
+        client, "test-dataclasses-jsonschema", AdvanceUserModel.schema_json()
     )
 
     record = {
@@ -283,12 +281,7 @@ def test_json_dumps_load_message_union_json_schema(client):
     json_name = "test-union-field-jsonschema"
     json_schema = UnionFieldJsonModel.schema_json()
 
-    faust_serializer = serializer.FaustJsonSerializer(
-        client,
-        json_name,
-        json_schema,
-        return_record_name=True
-    )
+    faust_serializer = serializer.FaustJsonSerializer(client, json_name, json_schema, return_record_name=True)
 
     record = {"a_name": {"name": "jj"}}
 
