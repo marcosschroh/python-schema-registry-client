@@ -11,6 +11,7 @@ from httpx._client import UNSET, TimeoutTypes, UnsetType
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
 from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer
+from schema_registry.serializers.message_serializer import AsyncMessageSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -234,6 +235,11 @@ def avro_message_serializer(client):
 @pytest.fixture
 def json_message_serializer(client):
     return JsonMessageSerializer(client)
+
+
+@pytest.fixture
+def async_message_serializer(async_client):
+    return AsyncMessageSerializer(async_client)
 
 
 @pytest.fixture
