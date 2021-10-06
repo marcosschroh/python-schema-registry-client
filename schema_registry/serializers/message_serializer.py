@@ -1,3 +1,4 @@
+import abc
 import io
 import json
 import logging
@@ -194,7 +195,7 @@ class JsonMessageSerializer(MessageSerializer):
         return json_decoder_func
 
 
-class AsyncMessageSerializer:
+class AsyncMessageSerializer(MessageSerializer):
     """
     A helper class that can serialize and deserialize messages asynchronously
     Args:
