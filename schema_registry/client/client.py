@@ -11,7 +11,7 @@ from httpx._client import UNSET, TimeoutTypes, UnsetType
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
-from schema_registry.client.schema import AvroSchema
+from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema, SchemaFactory
 from schema_registry.client.urls import UrlManager
 
 logger = logging.getLogger(__name__)
@@ -145,14 +145,14 @@ class BaseClient:
 
     @staticmethod
     def _add_to_cache(
-        cache: dict, subject: str, schema: typing.Union[AvroSchema, str], value: typing.Union[str, int]
+        cache: dict, subject: str, schema: typing.Union[BaseSchema, str], value: typing.Union[str, int]
     ) -> None:
         sub_cache = cache[subject]
         sub_cache[schema] = value
 
     def _cache_schema(
         self,
-        schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[BaseSchema, str],
         schema_id: int,
         subject: str = None,
         version: typing.Union[str, int] = None,
@@ -226,32 +226,42 @@ class SchemaRegistryClient(BaseClient):
     def register(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[BaseSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
         """
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
         and receive a schema id.
-        avro_schema must be a parsed schema from the python avro library
+        Schema can be avro or json, and can be presented as a parsed schema or a string.
+        If schema is a string, the `schema_type` kwarg must be used to indicate
+        what type of schema the string is ("AVRO" by default).
+        If the schema is already parsed, the schema_type is inferred directly from the parsed schema.
         Multiple instances of the same schema will result in cache misses.
 
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema to be registered
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.BaseSchema, str]:
+                Avro or JSON schema to be registered
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        schema_id = schemas_to_id.get(avro_schema)
+        schema_id = schemas_to_id.get(schema)
 
         if schema_id is not None:
             return schema_id
@@ -261,13 +271,13 @@ class SchemaRegistryClient(BaseClient):
         # only CI/CD can do changes to Schema Registry, and production code has readonly
         # access
 
-        response = self.check_version(subject, avro_schema, headers=headers, timeout=timeout)
+        response = self.check_version(subject, schema, headers=headers, timeout=timeout)
 
         if response is not None:
             return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -275,9 +285,9 @@ class SchemaRegistryClient(BaseClient):
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             msg = "Unauthorized access"
         elif code == status.HTTP_409_CONFLICT:
-            msg = "Incompatible Avro schema"
+            msg = "Incompatible schema"
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            msg = "Invalid Avro schema"
+            msg = "Invalid schema"
         elif not status.is_success(code):
             msg = "Unable to register schema"
 
@@ -285,7 +295,7 @@ class SchemaRegistryClient(BaseClient):
             raise ClientError(message=msg, http_code=code, server_traceback=result)
 
         schema_id = result["id"]
-        self._cache_schema(avro_schema, schema_id, subject)
+        self._cache_schema(schema, schema_id, subject)
 
         return schema_id
 
@@ -339,7 +349,7 @@ class SchemaRegistryClient(BaseClient):
 
     def get_by_id(
         self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
-    ) -> typing.Optional[AvroSchema]:
+    ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -350,7 +360,7 @@ class SchemaRegistryClient(BaseClient):
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
         Returns:
-            client.schema.AvroSchema: Avro Record schema
+            typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
@@ -363,10 +373,12 @@ class SchemaRegistryClient(BaseClient):
             return None
         elif status.is_success(code):
             schema_str = result.get("schema")
-            result = AvroSchema(schema_str)
+            schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
 
-            self._cache_schema(result, schema_id)
-            return result
+            schema = SchemaFactory.create_schema(schema_str, schema_type)
+
+            self._cache_schema(schema, schema_id)
+            return schema
 
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
@@ -487,9 +499,10 @@ class SchemaRegistryClient(BaseClient):
     def check_version(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[BaseSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
         POST /subjects/(string: subject)
@@ -498,10 +511,16 @@ class SchemaRegistryClient(BaseClient):
         its version under this subject and the subject name.
 
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.BaseSchema, str]:
+                Avro or JSON schema
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -509,28 +528,28 @@ class SchemaRegistryClient(BaseClient):
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        version = schemas_to_version.get(avro_schema)
+        version = schemas_to_version.get(schema)
 
         schemas_to_id = self.subject_to_schema_ids[subject]
-        schema_id = schemas_to_id.get(avro_schema)
+        schema_id = schemas_to_id.get(schema)
 
         if all((version, schema_id)):
-            return utils.SchemaVersion(subject, schema_id, version, avro_schema)
+            return utils.SchemaVersion(subject, schema_id, version, schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.info(f"Schema {avro_schema.name} under subject {subject} not found: {code}")
+            logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
         elif status.is_success(code):
             schema_id = result.get("id")
             version = result.get("version")
-            self._cache_schema(avro_schema, schema_id, subject, version)
+            self._cache_schema(schema, schema_id, subject, version)
 
             return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
 
@@ -539,10 +558,11 @@ class SchemaRegistryClient(BaseClient):
     def test_compatibility(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
         """
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
@@ -550,20 +570,26 @@ class SchemaRegistryClient(BaseClient):
         By default the latest version is checked against.
 
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]:
+                Avro or JSON schema
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
         result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:
@@ -708,32 +734,43 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def register(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[AvroSchema, JsonSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
         """
         POST /subjects/(string: subject)/versions
         Register a schema with the registry under the given subject
         and receive a schema id.
-        avro_schema must be a parsed schema from the python avro library
+        Schema can be avro or json, and can be presented as a parsed schema or a string.
+        If schema is a string, the `schema_type` kwarg must be used to indicate
+        what type of schema the string is ("AVRO" by default).
+        If the schema is already parsed, the schema_type is inferred directly from the parsed schema.
         Multiple instances of the same schema will result in cache misses.
 
+
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]:
+                Avro or JSON schema
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             int: schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        schema_id = schemas_to_id.get(avro_schema)
+        schema_id = schemas_to_id.get(schema)
 
         if schema_id is not None:
             return schema_id
@@ -743,13 +780,13 @@ class AsyncSchemaRegistryClient(BaseClient):
         # only CI/CD can do changes to Schema Registry, and production code has readonly
         # access
 
-        response = await self.check_version(subject, avro_schema, headers=headers, timeout=timeout)
+        response = await self.check_version(subject, schema, headers=headers, timeout=timeout)
 
         if response is not None:
             return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
@@ -767,7 +804,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             raise ClientError(message=msg, http_code=code, server_traceback=result)
 
         schema_id = result["id"]
-        self._cache_schema(avro_schema, schema_id, subject)
+        self._cache_schema(schema, schema_id, subject)
 
         return schema_id
 
@@ -821,7 +858,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
     async def get_by_id(
         self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
-    ) -> typing.Optional[AvroSchema]:
+    ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
         Retrieve a parsed avro schema by id or None if not found
@@ -832,7 +869,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
 
         Returns:
-            client.schema.AvroSchema: Avro Record schema
+            typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
         """
         if schema_id in self.id_to_schema:
             return self.id_to_schema[schema_id]
@@ -970,9 +1007,10 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def check_version(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[AvroSchema, JsonSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
         POST /subjects/(string: subject)
@@ -981,10 +1019,16 @@ class AsyncSchemaRegistryClient(BaseClient):
         its version under this subject and the subject name.
 
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]:
+                Avro or JSON schema
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -992,28 +1036,28 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         schemas_to_version = self.subject_to_schema_versions[subject]
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        version = schemas_to_version.get(avro_schema)
+        version = schemas_to_version.get(schema)
 
         schemas_to_id = self.subject_to_schema_ids[subject]
-        schema_id = schemas_to_id.get(avro_schema)
+        schema_id = schemas_to_id.get(schema)
 
         if all((version, schema_id)):
-            return utils.SchemaVersion(subject, schema_id, version, avro_schema)
+            return utils.SchemaVersion(subject, schema_id, version, schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(avro_schema.raw_schema) if isinstance(avro_schema, AvroSchema) else avro_schema}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
-            logger.info(f"Schema {avro_schema.name} under subject {subject} not found: {code}")
+            logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
         elif status.is_success(code):
             schema_id = result.get("id")
             version = result.get("version")
-            self._cache_schema(avro_schema, schema_id, subject, version)
+            self._cache_schema(schema, schema_id, subject, version)
 
             return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
 
@@ -1022,10 +1066,11 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def test_compatibility(
         self,
         subject: str,
-        avro_schema: typing.Union[AvroSchema, str],
+        schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
         """
         POST /compatibility/subjects/(string: subject)/versions/(versionId: version)
@@ -1033,20 +1078,26 @@ class AsyncSchemaRegistryClient(BaseClient):
         By default the latest version is checked against.
 
         Args:
-            subject (str): subject name
-            avro_schema typing.Union[avro.schema.AvroSchema, str]: Avro schema
-            headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            subject (str):
+                subject name
+            schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]:
+                Avro or JSON schema
+            headers (dict):
+                Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes):
+                The timeout configuration to use when sending requests. Default UNSET
+            schema_type typing.Union["AVRO", "JSON"]:
+                The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
             bool: True if schema given compatible, False otherwise
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
 
-        if isinstance(avro_schema, str):
-            avro_schema = AvroSchema(avro_schema)
+        if isinstance(schema, str):
+            schema = SchemaFactory.create_schema(schema, schema_type)
 
-        body = {"schema": json.dumps(avro_schema.raw_schema)}
+        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
         result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
 
         if code == status.HTTP_404_NOT_FOUND:

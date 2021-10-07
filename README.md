@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/marcosschroh/python-schema-registry-client/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/python-schema-registry-client)
 [![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
 
-Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) resources.
+Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) and [JSON](https://json-schema.org/) schemas resources.
 
 ## Requirements
 
@@ -31,7 +31,7 @@ be the same.
 
 **Documentation**: [https://marcosschroh.github.io/python-schema-registry-client.io](https://marcosschroh.github.io/python-schema-registry-client)
 
-## Usage
+## Avro Schema Usage
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
@@ -77,7 +77,61 @@ avro_schema = schema.AvroSchema(deployment_schema)
 schema_id = await async_client.register("test-deployment", avro_schema)
 ```
 
-## Usage with dataclasses-avroschema
+## JSON Schema Usage
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+deployment_schema = {
+    "definitions" : {
+        "JsonDeployment" : {
+            "type" : "object",
+            "required" : ["image", "replicas", "port"],
+            "properties" : {
+                "image" :       {"type" : "string"},
+                "replicas" :    {"type" : "integer"},
+                "port" :        {"type" : "integer"}
+            }
+        }
+    },
+    "$ref" : "#/definitions/JsonDeployment"
+}
+
+json_schema = schema.JsonSchema(deployment_schema)
+
+schema_id = client.register("test-deployment", json_schema)
+```
+
+or async
+
+```python
+from schema_registry.client import AsyncSchemaRegistryClient, schema
+
+async_client = AsyncSchemaRegistryClient(url="http://127.0.0.1:8081")
+
+deployment_schema = {
+    "definitions" : {
+        "JsonDeployment" : {
+            "type" : "object",
+            "required" : ["image", "replicas", "port"],
+            "properties" : {
+                "image" :       {"type" : "string"},
+                "replicas" :    {"type" : "integer"},
+                "port" :        {"type" : "integer"}
+            }
+        }
+    },
+    "$ref" : "#/definitions/JsonDeployment"
+}
+
+json_schema = schema.JsonSchema(deployment_schema)
+
+schema_id = await async_client.register("test-deployment", json_schema)
+```
+
+## Usage with dataclasses-avroschema for avro schemas
 
 You can generate the `avro schema` directely from a python class using [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema)
 and use it in the API for `register schemas`, `check versions` and `test compatibility`:
@@ -114,6 +168,52 @@ print(result)
 # >>> SchemaVersion(subject='dataclasses-avroschema-subject-2', schema_id=12, schema=1, version={"type":"record" ...')
 
 compatibility = client.test_compatibility(subject, UserAdvance.avro_schema())
+print(compatibility)
+
+# >>> True
+```
+
+### Usage with pydantic for json schemas
+You can generate the json schema directely from a python class using pydantic and use it in the API for register schemas, check versions and test compatibility:
+
+```python
+import typing
+
+from enum import Enum
+
+from pydantic import BaseModel
+
+from schema_registry.client import SchemaRegistryClient
+
+client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+class ColorEnum(str, Enum):
+  BLUE = "BLUE"
+  YELLOW = "YELLOW"
+  GREEN = "GREEN"
+
+
+class UserAdvance(BaseModel):
+    name: str
+    age: int
+    pets: typing.List[str] = ["dog", "cat"]
+    accounts: typing.Dict[str, int] = {"key": 1}
+    has_car: bool = False
+    favorite_colors: ColorEnum = ColorEnum.BLUE
+    country: str = "Argentina"
+    address: str = None
+
+# register the schema
+schema_id = client.register(subject, UserAdvance.schema_json(), schema_type="JSON")
+
+print(schema_id)
+# >>> 12
+
+result = client.check_version(subject, UserAdvance.schema_json(), schema_type="JSON")
+print(result)
+# >>> SchemaVersion(subject='pydantic-jsonschema-subject', schema_id=12, schema=1, version=<schema_registry.client.schema.JsonSchema object at 0x7f40354550a0>)
+
+compatibility = client.test_compatibility(subject, UserAdvance.schema_json(), schema_type="JSON")
 print(compatibility)
 
 # >>> True

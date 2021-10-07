@@ -5,18 +5,19 @@ import typing
 from collections import namedtuple
 
 import pytest
+import pydantic
 from dataclasses_avroschema import AvroModel, types
 from httpx._client import UNSET, TimeoutTypes, UnsetType
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
-from schema_registry.serializers import MessageSerializer
+from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer
 
 logger = logging.getLogger(__name__)
 
 CERTIFICATES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "certificates")
 
 flat_schemas = {
-    "deployment_schema": {
+    "avro_deployment_schema": {
         "type": "record",
         "namespace": "com.kubertenes",
         "name": "AvroDeployment",
@@ -26,13 +27,13 @@ flat_schemas = {
             {"name": "port", "type": "int"},
         ],
     },
-    "country_schema": {
+    "avro_country_schema": {
         "type": "record",
         "namespace": "com.example",
         "name": "AvroSomeSchema",
         "fields": [{"name": "country", "type": "string"}],
     },
-    "user_schema_v3": {
+    "avro_user_schema_v3": {
         "type": "record",
         "name": "User",
         "aliases": ["UserKey"],
@@ -42,6 +43,51 @@ flat_schemas = {
             {"name": "favorite_color", "type": ["string", "null"], "default": "purple"},
             {"name": "country", "type": ["null", "string"], "default": None},
         ],
+    },
+    "json_deployment_schema": {
+        "definitions": {
+            "record:com.kubertenes.JsonDeployment": {
+                "type": "object",
+                "required": ["image", "replicas", "port"],
+                "additionalProperties": True,
+                "properties": {
+                    "image": {"type": "string"},
+                    "replicas": {"type": "integer"},
+                    "port": {"type": "integer"},
+                },
+            }
+        },
+        "$ref": "#/definitions/record:com.kubertenes.JsonDeployment",
+    },
+    "json_country_schema": {
+        "definitions": {
+            "record:com.example.JsonSomeSchema": {
+                "type": "object",
+                "required": ["country"],
+                "additionalProperties": True,
+                "properties": {"country": {"type": "string"}},
+            }
+        },
+        "$ref": "#/definitions/record:com.example.JsonSomeSchema",
+    },
+    "json_user_schema_v3": {
+        "definitions": {
+            "record:User": {
+                "type": "object",
+                "required": ["name", "favorite_number", "favorite_color", "country"],
+                "additionalProperties": {"default": "null", "oneOf": [{"type": "null"}, {"type": "string"}]},
+                "properties": {
+                    "name": {"type": "string"},
+                    "favorite_number": {"default": 42, "oneOf": [{"type": "integer"}, {"type": "null"}]},
+                    "favorite_color": {"default": "purple", "oneOf": [{"type": "string"}, {"type": "null"}]},
+                    "country": {
+                        "default": None,
+                        "oneOf": [{"type": "null"}, {"type": "string"}],
+                    },
+                },
+            }
+        },
+        "$ref": "#/definitions/record:User",
     },
 }
 
@@ -96,22 +142,31 @@ class RequestLoggingSchemaRegistryClient(SchemaRegistryClient, RequestLoggingAss
 
 @pytest.fixture
 def client():
-    url = os.getenv("SCHEMA_REGISTRY_URL", "http://schema-registry-server:8081")
+    url = os.getenv("SCHEMA_REGISTRY_URL", "http://localhost:8081")
     client = RequestLoggingSchemaRegistryClient(url)
     yield client
 
     subjects = {
-        "test-basic-schema",
-        "test-deployment",
-        "test-country",
-        "test-basic-schema-backup",
-        "test-advance-schema",
-        "test-user-schema",
+        "test-avro-basic-schema",
+        "test-json-basic-schema",
+        "test-avro-deployment",
+        "test-json-deployment",
+        "test-avro-country",
+        "test-json-country",
+        "test-avro-basic-schema-backup",
+        "test-json-basic-schema-backup",
+        "test-avro-advance-schema",
+        "test-json-advance-schema",
+        "test-avro-user-schema",
+        "test-json-user-schema",
         "subject-does-not-exist",
         "test-logical-types-schema",
-        "test-schema-version",
-        "test-nested-schema",
+        "test-avro-schema-version",
+        "test-json-schema-version",
+        "test-avro-nested-schema",
+        "test-json-nested-schema",
         "test-dataclasses-avroschema",
+        "test-dataclasses-jsonschema",
         "test-union-field-avroschema",
     }
 
@@ -129,17 +184,17 @@ def schemas():
 
 
 @pytest.fixture
-def deployment_schema():
-    return schema.AvroSchema(flat_schemas.get("deployment_schema"))
+def avro_deployment_schema():
+    return schema.AvroSchema(flat_schemas.get("avro_deployment_schema"))
 
 
 @pytest.fixture
-def country_schema():
-    return schema.AvroSchema(flat_schemas.get("country_schema"))
+def avro_country_schema():
+    return schema.AvroSchema(flat_schemas.get("avro_country_schema"))
 
 
 @pytest.fixture
-def user_schema_v3():
+def avro_user_schema_v3():
     """
     The user V2 is:
     {
@@ -153,12 +208,32 @@ def user_schema_v3():
         ]
     }
     """
-    return schema.AvroSchema(flat_schemas.get("user_schema_v3"))
+    return schema.AvroSchema(flat_schemas.get("avro_user_schema_v3"))
 
 
 @pytest.fixture
-def message_serializer(client):
-    return MessageSerializer(client)
+def json_deployment_schema():
+    return schema.JsonSchema(flat_schemas.get("json_deployment_schema"))
+
+
+@pytest.fixture
+def json_country_schema():
+    return schema.JsonSchema(flat_schemas.get("json_country_schema"))
+
+
+@pytest.fixture
+def json_user_schema_v3():
+    return schema.JsonSchema(flat_schemas.get("json_user_schema_v3"))
+
+
+@pytest.fixture
+def avro_message_serializer(client):
+    return AvroMessageSerializer(client)
+
+
+@pytest.fixture
+def json_message_serializer(client):
+    return JsonMessageSerializer(client)
 
 
 @pytest.fixture
@@ -225,16 +300,28 @@ async def async_client():
     yield client
 
     subjects = {
-        "test-basic-schema",
-        "test-deployment",
-        "test-country",
-        "test-basic-schema-backup",
-        "test-advance-schema",
-        "test-user-schema",
+        "test-avro-basic-schema",
+        "test-json-basic-schema",
+        "test-avro-deployment",
+        "test-json-deployment",
+        "test-avro-country",
+        "test-json-country",
+        "test-avro-basic-schema-backup",
+        "test-json-basic-schema-backup",
+        "test-avro-advance-schema",
+        "test-json-advance-schema",
+        "test-avro-user-schema",
+        "test-json-user-schema",
         "subject-does-not-exist",
         "test-logical-types-schema",
-        "test-schema-version",
-        "dataclasses-avroschema-subject",
+        "test-avro-schema-version",
+        "test-json-schema-version",
+        "test-avro-nested-schema",
+        "test-json-nested-schema",
+        "test-dataclasses-avroschema",
+        "test-dataclasses-jsonschema",
+        "test-union-field-avroschema",
+        "test-union-field-jsonschema",
     }
 
     # Executing the clean up. Delete all the subjects between tests.
@@ -268,7 +355,37 @@ def dataclass_avro_schema_advance():
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
         favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
-        country: str = "Argentina"
         address: str = None
+
+    return UserAdvance
+
+
+@pytest.fixture
+def dataclass_json_schema():
+    class UserAdvance(pydantic.BaseModel):
+        name: str
+        age: int
+        pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+
+        class Config:
+            schema_extra = {"additionalProperties": {"type": "string"}}
+
+    return UserAdvance
+
+
+@pytest.fixture
+def dataclass_json_schema_advance():
+    class UserAdvance(pydantic.BaseModel):
+        name: str
+        age: int
+        pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        address: str = None
+
+        class Config:
+            schema_extra = {"additionalProperties": {"type": "string"}}
 
     return UserAdvance

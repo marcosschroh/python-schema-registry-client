@@ -1,0 +1,15 @@
+{
+  "definitions" : {
+    "record:Order" : {
+      "type" : "object",
+      "required" : [ "uid" ],
+      "additionalProperties" : false,
+      "properties" : {
+        "uid" : {
+          "type" : "integer"
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:Order"
+}

@@ -10,7 +10,7 @@ __version__ = "1.8.2"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["fastavro>=1.4.4", "httpx>=0.14,<0.15", "aiofiles>=0.7.0",]
+requires = ["fastavro>=1.4.4", "jsonschema>=3.2.0", "httpx>=0.14,<0.15", "aiofiles>=0.7.0",]
 
 description = "Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas"
 
@@ -39,6 +39,7 @@ setup(
             "codecov",
             "pytest-cov",
             "dataclasses-avroschema",
+            "pydantic"
         ],
     },
     url="https://github.com/marcosschroh/python-schema-registry-client",
@@ -54,7 +55,7 @@ setup(
     ],
     keywords=(
         """
-        Schema Registry, Python, Avro, Apache, Apache Avro
+        Schema Registry, Python, Avro, Apache, Apache Avro, JSON, JSON Schema
         """
     ),
 )

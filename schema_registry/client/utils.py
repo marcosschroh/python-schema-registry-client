@@ -25,3 +25,6 @@ SSL_CA_LOCATION = "ssl.ca.location"
 SSL_CERTIFICATE_LOCATION = "ssl.certificate.location"
 SSL_KEY_LOCATION = "ssl.key.location"
 SSL_KEY_PASSWORD = "ssl.key.password"
+
+AVRO_SCHEMA_TYPE = "AVRO"
+JSON_SCHEMA_TYPE = "JSON"

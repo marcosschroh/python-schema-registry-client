@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "invalidType"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["Male", "Female"]
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "weight": {
+      "type": "number"
+    },
+    "height": {
+      "type": "integer"
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [ "firstName", "email" ],
+  "additionalProperties": false
+}

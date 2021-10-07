@@ -2,14 +2,16 @@
 
 This section describe how integrate this library with [Faust](https://faust.readthedocs.io/en/latest/)
 
-## Avro Schemas, Custom Codecs and Serializers
+## Schemas, Custom Codecs and Serializers
 
-Because we want to be sure that the message that we encode are valid, we use [Avro Schemas](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html). Also, [Introduction to Schemas in Apache Kafka with the Confluent Schema Registry](https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321) is a good post to start with `schemas`.
-Avro is used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.
+Because we want to be sure that the message that we encode are valid, we can use [Avro](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) or [JSON](https://json-schema.org/) schemas. Also, [Introduction to Schemas in Apache Kafka with the Confluent Schema Registry](https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321) is a good post to start with `schemas`.
+Avro and JSON can be used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.
 
-In order to use `avro schemas` with `Faust`, we need to define a custom codec and a custom serializer able to talk with the `schema-registry`, and to do that, we will use the `MessageSerializer`.
+In order to use `avro schemas` or `json schemas` with `Faust`, we need to define a custom codec and a custom serializer able to talk with the `schema-registry`, and to do that, we will use the `MessageSerializer`.
 
-For our demonstration, let's imagine that we have the folling `schema`:
+For serializing `avro schemas` we should use the `FaustSerializer`. For serializing `json schemas` we should use the `FaustJsonSerializer`.
+
+For our demonstration, let's imagine that we have the following `avro schema`:
 
 ```json
 {
@@ -33,7 +35,7 @@ from schema_registry.serializers import FaustSerializer
 # create an instance of the `SchemaRegistryClient`
 client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
 
-# schema that we want to use. For this example we 
+# schema that we want to use. For this example we
 # are using a dict, but this schema could be located in a file called avro_user_schema.avsc
 avro_user_schema = schema.AvroSchema({
     "type": "record",
@@ -111,7 +113,7 @@ async def publish_users():
 
 The full example is [here](https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py)
 
-### Usage with dataclasses-avroschema
+### Usage with dataclasses-avroschema for avro schemas
 
 You can also use this funcionality with [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and you won't have to provide the avro schema.
 The only thing that you need to do is add the `AvroModel` class and use its methods:
@@ -123,7 +125,7 @@ import faust
 from dataclasses_avroschema import AvroModel
 
 
-class UserModel(faust.Record, AvroModel, serializer='avro_users'):  
+class UserModel(faust.Record, AvroModel, serializer='avro_users'):
     first_name: str
     last_name: str
 
@@ -142,4 +144,36 @@ avro_user_serializer = FaustSerializer(client, "users", UserModel.avro_schema())
 # function used to register the codec
 def avro_user_codec():
     return avro_user_serializer
+```
+
+### Usage with pydantic for json schemas
+You can also use this funcionality with [dataclasses-pydantic](https://github.com/samuelcolvin/pydantic) and you won't have to provide the json schema.
+The only thing that you need to do is add the `BaseModel` class and use its methods:
+
+```python
+# users.models
+import faust
+
+from pydantic import BaseModel
+
+
+class UserModel(faust.Record, BaseModel, serializer='json_users'):
+    first_name: str
+    last_name: str
+
+
+# codecs.codec.py
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers import FaustJsonSerializer
+
+from users.models import UserModel
+
+# create an instance of the `SchemaRegistryClient`
+client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
+
+json_user_serializer = FaustJsonSerializer(client, "users", UserModel.schema_json())  # usign the method schema_json to get the json schema representation
+
+# function used to register the codec
+def json_user_codec():
+    return json_user_serializer
 ```

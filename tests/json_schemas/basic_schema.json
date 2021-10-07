@@ -1,0 +1,24 @@
+{
+  "definitions" : {
+    "record:python.test.basic.basic" : {
+      "description" : "basic schema for tests",
+      "type" : "object",
+      "required" : [ "number", "name" ],
+      "properties" : {
+        "number" : {
+          "oneOf" : [ {
+            "type" : "integer"
+          }, {
+            "type" : "null"
+          } ]
+        },
+        "name" : {
+          "oneOf" : [ {
+            "type" : "string"
+          } ]
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:python.test.basic.basic"
+}
