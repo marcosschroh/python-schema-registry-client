@@ -7,8 +7,8 @@ from schema_registry.serializers import MessageSerializer, AvroMessageSerializer
 
 try:
     from faust import Codec, Record
-except ImportError:
-    Codec = None  # type: ignore
+except ImportError as ex:
+    raise Exception("Cannot use Faust serializers Faust is not installed.") from ex
 
 
 class Serializer(Codec):
