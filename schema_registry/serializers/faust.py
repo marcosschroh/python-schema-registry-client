@@ -2,8 +2,8 @@ import typing
 from collections.abc import Mapping, Sequence
 
 from schema_registry.client import SchemaRegistryClient
-from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema
-from schema_registry.serializers import MessageSerializer, AvroMessageSerializer, JsonMessageSerializer
+from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema
+from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer, MessageSerializer
 
 try:
     from faust import Codec, Record
