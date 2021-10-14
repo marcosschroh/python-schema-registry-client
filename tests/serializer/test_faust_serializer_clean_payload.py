@@ -2,7 +2,7 @@ import typing
 
 from faust import Record
 
-from schema_registry.serializers.faust import faust_serializer as serializer
+from schema_registry.serializers import faust as serializer
 
 
 class DummyRecord(Record):
