@@ -234,6 +234,7 @@ Run code linting:
 
 ```bash
 ./scripts/lint
+```
 
 To perform tests using the python shell you can execute `docker-compose up` and the `schema registry server` will run on `http://127.0.0.1:8081`, the you can interact against it using the `SchemaRegistryClient`:
 

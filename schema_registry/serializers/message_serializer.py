@@ -65,7 +65,7 @@ class MessageSerializer(ABC):
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         ...
 
-    def encode_record_with_schema(self, subject: str, schema: BaseSchema, record: dict) -> bytes:
+    def encode_record_with_schema(self, subject: str, schema: typing.Union[BaseSchema], record: dict) -> bytes:
         """
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.

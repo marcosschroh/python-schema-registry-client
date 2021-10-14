@@ -30,7 +30,7 @@ Let's register the custom `codec`
 ```python
 # codecs.codec.py
 from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializers import FaustSerializer
+from schema_registry.serializers.faust import FaustSerializer
 
 # create an instance of the `SchemaRegistryClient`
 client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
@@ -132,7 +132,7 @@ class UserModel(faust.Record, AvroModel, serializer='avro_users'):
 
 # codecs.codec.py
 from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializers import FaustSerializer
+from schema_registry.serializers.faust import FaustSerializer
 
 from users.models import UserModel
 
@@ -164,7 +164,7 @@ class UserModel(faust.Record, BaseModel, serializer='json_users'):
 
 # codecs.codec.py
 from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializers import FaustJsonSerializer
+from schema_registry.serializers.faust import FaustJsonSerializer
 
 from users.models import UserModel
 
