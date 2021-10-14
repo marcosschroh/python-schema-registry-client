@@ -5,14 +5,14 @@ import struct
 import sys
 import traceback
 import typing
-
 from abc import ABC, abstractmethod
+
 from fastavro import schemaless_reader, schemaless_writer
 from jsonschema import validate
 
 from schema_registry.client import SchemaRegistryClient, schema, utils
-from schema_registry.client.schema import BaseSchema
 from schema_registry.client.errors import ClientError
+from schema_registry.client.schema import BaseSchema
 
 from .errors import SerializerError
 

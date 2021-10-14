@@ -2,13 +2,13 @@ import typing
 from collections.abc import Mapping, Sequence
 
 from schema_registry.client import SchemaRegistryClient
-from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema
-from schema_registry.serializers import MessageSerializer, AvroMessageSerializer, JsonMessageSerializer
+from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema
+from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer, MessageSerializer
 
 try:
     from faust import Codec, Record
-except ImportError:
-    Codec = None  # type: ignore
+except ImportError as ex:
+    raise Exception("Cannot use Faust serializers Faust is not installed.") from ex
 
 
 class Serializer(Codec):
