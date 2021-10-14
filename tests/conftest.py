@@ -257,7 +257,7 @@ class AsyncMock:
     def __enter__(self):
         setattr(self.module, self.func, self.mock)
 
-    def __exit__(self, exception_type, exception_value, traceback):
+    def __exit__(self, *args):
         setattr(self.module, self.func, self.original_object)
 
     def assert_called_with(self, **kwargs):

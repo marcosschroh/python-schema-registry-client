@@ -219,9 +219,96 @@ print(compatibility)
 # >>> True
 ```
 
+## Serializers
+
+You can use `AvroMessageSerializer` to encode/decode messages in `avro`
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers import AvroMessageSerializer
+
+
+client = SchemaRegistryClient("http://127.0.0.1:8081")
+avro_message_serializer = AvroMessageSerializer(client)
+
+avro_user_schema = schema.AvroSchema({
+    "type": "record",
+    "namespace": "com.example",
+    "name": "AvroUsers",
+    "fields": [
+        {"name": "first_name", "type": "string"},
+        {"name": "last_name", "type": "string"},
+        {"name": "age", "type": "int"},
+
+    ],
+})
+
+# We want to encode the user_record with avro_user_schema
+user_record = {
+    "first_name": "my_first_name",
+    "last_name": "my_last_name",
+    "age": 20,
+}
+
+# Encode the record
+message_encoded = avro_message_serializer.encode_record_with_schema(
+    "user", avro_user_schema, user_record)
+
+print(message_encoded)
+# >>> b'\x00\x00\x00\x00\x01\x1amy_first_name\x18my_last_name('
+```
+
+or with `json schemas`
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers import JsonMessageSerializer
+
+
+client = SchemaRegistryClient("http://127.0.0.1:8081")
+json_message_serializer = JsonMessageSerializer(client)
+
+json_schema = schema.JsonSchema({
+  "definitions" : {
+    "record:python.test.basic.basic" : {
+      "description" : "basic schema for tests",
+      "type" : "object",
+      "required" : [ "number", "name" ],
+      "properties" : {
+        "number" : {
+          "oneOf" : [ {
+            "type" : "integer"
+          }, {
+            "type" : "null"
+          } ]
+        },
+        "name" : {
+          "oneOf" : [ {
+            "type" : "string"
+          } ]
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:python.test.basic.basic"
+})
+
+# Encode the record
+basic_record = {
+    "number": 10,
+    "name": "a_name",
+}
+
+message_encoded = json_message_serializer.encode_record_with_schema(
+    "basic", json_schema, basic_record)
+
+print(message_encoded)
+# >>> b'\x00\x00\x00\x00\x02{"number": 10, "name": "a_name"}'
+```
+
 ## When use this library
 
-Usually, we have a situacion like this:
+Usually, we have a situation like this:
 
 ![Confluent Architecture](docs/img/confluent_architecture.png)
 

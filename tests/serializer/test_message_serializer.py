@@ -78,6 +78,33 @@ def test_avro_encode_decode_with_schema_from_json(avro_message_serializer, avro_
     assert message_decoded == deployment_record
 
 
+# def test_encode_with_schema_string(avro_message_serializer):
+#     deployment_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": 1, "port": 8080}
+#     schema = """{
+#         "type": "record",
+#         "namespace": "com.kubertenes.v2",
+#         "name": "AvroDeploymentV2",
+#         "fields": [
+#             {"name": "image", "type": "string"},
+#             {"name": "replicas", "type": "int"},
+#             {"name": "host", "type": "string", "default": "localhost"},
+#             {"name": "port", "type": "int"}
+#         ]
+#     }"""
+
+#     message_encoded = avro_message_serializer.encode_record_with_schema(
+#         "avro-deployment", schema, deployment_record
+#     )
+
+#     assert message_encoded
+#     assert len(message_encoded) > 5
+#     assert isinstance(message_encoded, bytes)
+
+#     # now decode the message
+#     message_decoded = avro_message_serializer.decode_message(message_encoded)
+#     assert message_decoded == deployment_record
+
+
 def test_avro_fail_encode_with_schema(avro_message_serializer, avro_deployment_schema):
     bad_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": "1", "port": "8080"}
 

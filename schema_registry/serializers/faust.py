@@ -77,8 +77,6 @@ def avro_serializer_factory(
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
 
-    assert Codec is not None, "faust must be installed in order to use FaustSerializer"
-
     if isinstance(schema, str):
         schema = AvroSchema(schema)
 
@@ -93,8 +91,6 @@ def json_serializer_factory(
     schema: JsonSchema,
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
-
-    assert Codec is not None, "faust must be installed in order to use FaustSerializer"
 
     if isinstance(schema, str):
         schema = JsonSchema(schema)

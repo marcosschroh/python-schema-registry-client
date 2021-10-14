@@ -5,32 +5,32 @@
 `BaseSchema` an abstract base class from which `AvroSchema` and `JsonSchema` inherit.
 Requires concrete classes implement the following methods.
 
-```
-    @abstractmethod
-    def parse_schema(self, schema: typing.Dict) -> typing.Dict:
-        pass
+```python
+@abstractmethod
+def parse_schema(self, schema: typing.Dict) -> typing.Dict:
+    pass
 
-    @staticmethod
-    @abstractmethod
-    def load(fp: str) -> BaseSchema:
-        """Parse a schema from a file path"""
-        pass
+@staticmethod
+@abstractmethod
+def load(fp: str) -> BaseSchema:
+    """Parse a schema from a file path"""
+    pass
 
-    @staticmethod
-    @abstractmethod
-    async def async_load(fp: str) -> BaseSchema:
-        """Parse a schema from a file path"""
-        pass
+@staticmethod
+@abstractmethod
+async def async_load(fp: str) -> BaseSchema:
+    """Parse a schema from a file path"""
+    pass
 
-    @property
-    @abstractmethod
-    def name(self) -> typing.Optional[str]:
-        pass
+@property
+@abstractmethod
+def name(self) -> typing.Optional[str]:
+    pass
 
-    @property
-    @abstractmethod
-    def schema_type(self) -> str:
-        pass
+@property
+@abstractmethod
+def schema_type(self) -> str:
+    pass
 ```
 
 ## AvroSchema

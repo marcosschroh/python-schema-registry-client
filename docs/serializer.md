@@ -1,18 +1,18 @@
-# Message Serializer
+# Message Serializers
 
-Class that serialize and deserialize messages. It interacts with the `SchemaRegistryClient` to get `Avro Schemas` in order to process messages. In your application you will intereact with it.
+To serialize and deserialize messages you can use `AvroMessageSerializer` and `JsonMessageSerializer`. They interact with the `SchemaRegistryClient` to get `avro Schemas`  and `json schemas` in order to process messages.
 
-## Usage
+*If you want to run the following examples run `docker-compose up` and the `schema registry server` will run on `http://127.0.0.1:8081`*
+
+## Usage for avro schemas
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
-from schema_registry.serializers import MessageSerializer
+from schema_registry.serializers import AvroMessageSerializer
 
-client = SchemaRegistryClient("http://127.0.0.1:8080")
 
-message_serializer = MessageSerializer(client)
-
-# Let's imagine that we have the foillowing schema.
+client = SchemaRegistryClient("http://127.0.0.1:8081")
+avro_message_serializer = AvroMessageSerializer(client)
 
 avro_user_schema = schema.AvroSchema({
     "type": "record",
@@ -33,15 +33,16 @@ user_record = {
     "age": 20,
 }
 
-message_encoded = message_serializer.encode_record_with_schema(
+# Encode the record
+message_encoded = avro_message_serializer.encode_record_with_schema(
     "user", avro_user_schema, user_record)
 
 # this is because the message encoded reserved 5 bytes for the schema_id
 assert len(message_encoded) > 5
 assert isinstance(message_encoded, bytes)
 
-# now decode the message
-message_decoded = message_serializer.decode_message(message_encoded)
+# Decode the message
+message_decoded = avro_message_serializer.decode_message(message_encoded)
 assert message_decoded == user_record
 
 # Now if we send a bad record
@@ -51,11 +52,68 @@ bad_record = {
     "age": "my_age"
 }
 
-message_serializer.encode_record_with_schema(
+avro_message_serializer.encode_record_with_schema(
     "user", avro_user_schema, bad_record)
-# results in an error:
-#   TypeError: unsupported operand type(s) for <<: 'str' and 'int'
+
+# >>> TypeError: an integer is required on field age
 ```
+
+*(This script is complete, it should run "as is")*
+
+## Usage for json schemas
+
+```python
+from schema_registry.client import SchemaRegistryClient, schema
+from schema_registry.serializers import JsonMessageSerializer
+
+
+client = SchemaRegistryClient("http://127.0.0.1:8081")
+json_message_serializer = JsonMessageSerializer(client)
+
+json_schema = schema.JsonSchema({
+  "definitions" : {
+    "record:python.test.basic.basic" : {
+      "description" : "basic schema for tests",
+      "type" : "object",
+      "required" : [ "number", "name" ],
+      "properties" : {
+        "number" : {
+          "oneOf" : [ {
+            "type" : "integer"
+          }, {
+            "type" : "null"
+          } ]
+        },
+        "name" : {
+          "oneOf" : [ {
+            "type" : "string"
+          } ]
+        }
+      }
+    }
+  },
+  "$ref" : "#/definitions/record:python.test.basic.basic"
+})
+
+# Encode the record
+basic_record = {
+    "number": 10,
+    "name": "a_name",
+}
+
+message_encoded = json_message_serializer.encode_record_with_schema(
+    "basic", json_schema, basic_record)
+
+# this is because the message encoded reserved 5 bytes for the schema_id
+assert len(message_encoded) > 5
+assert isinstance(message_encoded, bytes)
+
+# Decode the message
+message_decoded = json_message_serializer.decode_message(message_encoded)
+assert message_decoded == basic_record
+```
+
+*(This script is complete, it should run "as is")*
 
 ## Class and Methods
 
@@ -65,7 +123,7 @@ MessageSerializer
         schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
 ```
 
-#### Encode record with a `Schema`
+### Encode record with a `Schema`
 
 ```python
 def encode_record_with_schema(subject, schema, record):
@@ -80,7 +138,7 @@ def encode_record_with_schema(subject, schema, record):
     """
 ```
 
-#### Encode a record with a `schema id`
+### Encode a record with a `schema id`
 
 ```python
 def encode_record_with_schema_id(schema_id, record):
@@ -94,7 +152,7 @@ def encode_record_with_schema_id(schema_id, record):
     """
 ```
 
-#### Decode a message encoded previously
+### Decode a message encoded previously
 
 ```python
 def decode_message(message):
