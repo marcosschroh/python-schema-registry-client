@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2021-10-14
+
+### Added
+
+- fix serializers API when faust is not installed [104](https://github.com/marcosschroh/python-schema-registry-client/pull/104)
+
 ## [1.9.0] - 2021-10-07
 
 ### Added
