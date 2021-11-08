@@ -20,6 +20,10 @@ async def test_avro_register(async_client):
     assert schema_id > 0
     assert len(async_client.id_to_schema) == 1
 
+    schema_versions = await async_client.get_schema_subject_versions(schema_id)
+    assert len(schema_versions) == 1
+    assert schema_versions[0].subject == "test-avro-basic-schema"
+
 
 @pytest.mark.asyncio
 async def test_avro_register_json_data(async_client, avro_deployment_schema):
@@ -53,6 +57,17 @@ async def test_avro_multi_subject_register(async_client):
     dupe_id = await async_client.register("test-avro-basic-schema-backup", parsed)
     assert schema_id == dupe_id
     assert len(async_client.id_to_schema) == 1
+
+    schema_versions = await async_client.get_schema_subject_versions(schema_id)
+    assert len(schema_versions) == 2
+    schema_versions.sort(key=lambda x: x.subject)
+    assert schema_versions[0].subject == "test-avro-basic-schema"
+    assert schema_versions[1].subject == "test-avro-basic-schema-backup"
+    # The schema version we get here has a tendency to vary with the
+    # number of times the schema has been soft-deleted, so only verifying
+    # it's an int and > 0
+    assert type(schema_versions[1].version) == int
+    assert schema_versions[1].version > 0
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,6 @@
 from schema_registry.client import schema, utils
 from tests import data_gen
+from tests.conftest import RequestLoggingSchemaRegistryClient
 
 
 def assertLatest(self, meta_tuple, sid, schema, version):
@@ -16,6 +17,10 @@ def test_avro_register(client):
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1
+
+    schema_versions = client.get_schema_subject_versions(schema_id)
+    assert len(schema_versions) == 1
+    assert schema_versions[0].subject == "test-avro-basic-schema"
 
 
 def test_avro_register_json_data(client, avro_deployment_schema):
@@ -37,7 +42,7 @@ def test_avro_register_with_logical_types(client):
     assert len(client.id_to_schema) == 1
 
 
-def test_avro_multi_subject_register(client):
+def test_avro_multi_subject_register(client: RequestLoggingSchemaRegistryClient):
     parsed = schema.AvroSchema(data_gen.AVRO_BASIC_SCHEMA)
     schema_id = client.register("test-avro-basic-schema", parsed)
     assert schema_id > 0
@@ -46,6 +51,17 @@ def test_avro_multi_subject_register(client):
     dupe_id = client.register("test-avro-basic-schema-backup", parsed)
     assert schema_id == dupe_id
     assert len(client.id_to_schema) == 1
+
+    schema_versions = client.get_schema_subject_versions(schema_id)
+    assert len(schema_versions) == 2
+    schema_versions.sort(key=lambda x: x.subject)
+    assert schema_versions[0].subject == "test-avro-basic-schema"
+    assert schema_versions[1].subject == "test-avro-basic-schema-backup"
+    # The schema version we get here has a tendency to vary with the
+    # number of times the schema has been soft-deleted, so only verifying
+    # it's an int and > 0
+    assert type(schema_versions[1].version) == int
+    assert schema_versions[1].version > 0
 
 
 def test_avro_dupe_register(client):
