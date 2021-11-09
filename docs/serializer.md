@@ -115,12 +115,30 @@ assert message_decoded == basic_record
 
 *(This script is complete, it should run "as is")*
 
-## Class and Methods
+## Async implementations
 
-```python
-MessageSerializer
+Please note that `JsonMessageSerializer`, `AvroMessageSerializer` and `SchemaRegistryClient` have their asynchronous
+counterparts `AsyncJsonMessageSerializer`, `AsyncAvroMessageSerializer` and `AsyncSchemaRegistryClient` and all 
+examples above should work if you replace them with their async variations
+
+## Classes and Methods
+
+```
+AvroMessageSerializer
     Args:
         schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
+        
+JsonMessageSerializer
+    Args:
+        schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
+
+AsyncAvroMessageSerializer
+    Args:
+        schemaregistry_client (schema_registry.client.AsyncSchemaRegistryClient): Http Client
+        
+AsyncJsonMessageSerializer
+    Args:
+        schemaregistry_client (schema_registry.client.AsyncSchemaRegistryClient): Http Client
 ```
 
 ### Encode record with a `Schema`
