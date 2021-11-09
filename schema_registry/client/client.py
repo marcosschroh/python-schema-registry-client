@@ -734,7 +734,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def register(
         self,
         subject: str,
-        schema: typing.Union[AvroSchema, JsonSchema, str],
+        schema: typing.Union[BaseSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
@@ -1007,7 +1007,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def check_version(
         self,
         subject: str,
-        schema: typing.Union[AvroSchema, JsonSchema, str],
+        schema: typing.Union[BaseSchema, str],
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
