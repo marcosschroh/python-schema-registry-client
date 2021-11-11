@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
   schema-registry-client:
     tty: true
@@ -23,6 +23,7 @@ services:
       - ./scripts:/schema_registry/scripts
       - ./.git:/schema_registry/.git
       - ./setup.py:/schema_registry/setup.py
+
   zookeeper:
     image: "confluentinc/cp-zookeeper"
     hostname: zookeeper
@@ -30,13 +31,14 @@ services:
       - 32181:32181
     environment:
       - ZOOKEEPER_CLIENT_PORT=32181
+
   kafka:
     image: confluentinc/cp-kafka
     hostname: kafka
     container_name: kafka
     ports:
-    - 127.0.0.1:9092:9092
-    - 127.0.0.1:29092:29092
+    - 9092:9092
+    - 29092:29092
     depends_on:
     - zookeeper
     environment:
@@ -45,6 +47,7 @@ services:
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT_HOST://localhost:29092,PLAINTEXT://kafka:9092
       - KAFKA_BROKER_ID=1
+
   schema-registry-server:
     image: confluentinc/cp-schema-registry
     hostname: schema-registry-server
@@ -53,8 +56,9 @@ services:
       - kafka
       - zookeeper
     ports:
-      - "127.0.0.1:8081:8081"
+      - 8081:8081
     environment:
+      - SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=kafka:9092
       - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:32181
-      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry-server
       - SCHEMA_REGISTRY_DEBUG=true
