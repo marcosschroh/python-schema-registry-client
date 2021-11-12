@@ -11,7 +11,7 @@ from httpx._client import UNSET, TimeoutTypes, UnsetType
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
-from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema, SchemaFactory
+from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema, SchemaFactory, SubjectVersion
 from schema_registry.client.urls import UrlManager
 
 logger = logging.getLogger(__name__)
@@ -379,6 +379,34 @@ class SchemaRegistryClient(BaseClient):
 
             self._cache_schema(schema, schema_id)
             return schema
+
+        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
+
+    def get_schema_subject_versions(
+        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+    ) -> typing.Optional[typing.List[SubjectVersion]]:
+        """
+        GET /schemas/ids/{int: id}/versions
+        Get the subject-version pairs identified by the input ID.
+
+        Args:
+            schema_id (int): Schema Id
+            headers (dict): Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+
+        Returns:
+            typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
+        """
+        url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
+        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        if code == status.HTTP_404_NOT_FOUND:
+            logger.warning(f"Schema {schema_id} not found: {code}")
+            return None
+        elif status.is_success(code):
+            ret = []
+            for entry in result:
+                ret.append(SubjectVersion(entry["subject"], entry["version"]))
+            return ret
 
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
@@ -938,6 +966,35 @@ class AsyncSchemaRegistryClient(BaseClient):
         self._cache_schema(schema, schema_id, subject, version)
 
         return utils.SchemaVersion(subject, schema_id, schema, version)
+
+    async def get_schema_subject_versions(
+        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+    ) -> typing.Optional[typing.List[SubjectVersion]]:
+        """
+        GET /schemas/ids/{int: id}/versions
+        Get the subject-version pairs identified by the input ID.
+
+        Args:
+            schema_id (int): Schema Id
+            headers (dict): Extra headers to add on the requests
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+
+        Returns:
+            typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
+        """
+        url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
+        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+
+        if code == status.HTTP_404_NOT_FOUND:
+            logger.warning(f"Schema {schema_id} not found: {code}")
+            return None
+        elif status.is_success(code):
+            ret = []
+            for entry in result:
+                ret.append(SubjectVersion(entry["subject"], entry["version"]))
+            return ret
+
+        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
     async def get_versions(
         self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET

@@ -2,6 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 
+from dataclasses import dataclass
+
 import json
 import typing
 
@@ -154,3 +156,9 @@ class SchemaFactory:
             return AvroSchema(schema)
         else:
             raise ValueError(f"Unsupported schema type '{schema_type}'. Supported schemas are 'AVRO' and 'JSON'.")
+
+
+@dataclass
+class SubjectVersion(object):
+    subject: str
+    version: int
