@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
@@ -49,9 +49,12 @@ setup(
     include_package_data=True,
     license="MIT",
     classifiers=[
-        "Programming Language :: Python",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development",
     ],
     keywords=(
