@@ -80,10 +80,6 @@ class MessageSerializer(ABC):
         # Try to register the schema
         schema_id = self.schemaregistry_client.register(subject, schema, schema_type=self._serializer_schema_type)
 
-        if not schema_id:
-            message = f"Unable to retrieve schema id for subject {subject}"
-            raise SerializerError(message)
-
         # cache writer
         if not self.id_to_writers.get(schema_id):
             self.id_to_writers[schema_id] = self._get_encoder_func(schema)
@@ -242,10 +238,6 @@ class AsyncMessageSerializer(ABC):
         """
         # Try to register the schema
         schema_id = await self.schemaregistry_client.register(subject, schema, schema_type=self._serializer_schema_type)
-
-        if not schema_id:
-            message = f"Unable to retrieve schema id for subject {subject}"
-            raise SerializerError(message)
 
         # cache writer
         if not self.id_to_writers.get(schema_id):
