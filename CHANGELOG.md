@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Added
+
+## [2.2.0] - 2021-11-24
+
+- `AsyncJsonMessageSerializer`, `AsyncAvroMessageSerializer` and `AsyncSchemaRegistryClient` added [102](https://github.com/marcosschroh/python-schema-registry-client/pull/102)
+
+### Fixed
+
 ## [2.1.1] - 2021-11-15
 
 - `httpx` requirement updated [114](https://github.com/marcosschroh/python-schema-registry-client/pull/114)
