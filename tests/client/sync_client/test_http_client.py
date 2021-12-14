@@ -3,7 +3,7 @@ from base64 import b64encode
 
 import httpx
 import pytest
-from httpx._client import UNSET
+from httpx import USE_CLIENT_DEFAULT
 
 from schema_registry.client import SchemaRegistryClient, schema, utils
 from tests import data_gen
@@ -81,7 +81,9 @@ def test_override_headers(client, avro_deployment_schema, mocker, response_klass
     prepare_headers = client.prepare_headers(body="1")
     prepare_headers["custom-serialization"] = utils.HEADER_AVRO
 
-    request_patch.assert_called_once_with("POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY, timeout=UNSET)
+    request_patch.assert_called_once_with(
+        "POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY, timeout=USE_CLIENT_DEFAULT
+    )
 
 
 def test_cert_path():

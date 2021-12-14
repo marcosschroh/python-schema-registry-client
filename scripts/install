@@ -14,4 +14,4 @@ else
     PIP="pip"
 fi
 
-"$PIP" install -e  ".[docs,tests,faust]" --no-use-pep517
+"$PIP" install --no-cache-dir -e  ".[docs,tests,faust]"

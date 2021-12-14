@@ -6,13 +6,16 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import httpx
-from httpx._client import UNSET, TimeoutTypes, UnsetType
+from httpx import USE_CLIENT_DEFAULT
+from httpx._client import UseClientDefault
+from httpx._types import TimeoutTypes
 
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
 from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema, SchemaFactory, SubjectVersion
 from schema_registry.client.urls import UrlManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +68,7 @@ class BaseClient:
         self.timeout = timeout
         self.pool_limits = pool_limits
 
-        self.session = self._create_session()
+        self._session = self._create_session()
 
         # Cache Schemas: subj => { schema => id }
         self.subject_to_schema_ids: dict = defaultdict(dict)
@@ -77,13 +80,13 @@ class BaseClient:
     def __getstate__(self) -> typing.Dict:
         state = self.__dict__.copy()
         # Remove the unpicklable session.
-        del state["session"]
+        del state["_session"]
 
         return state
 
     def __setstate__(self, state: typing.Dict) -> None:
         self.__dict__.update(state)
-        self.session = self._create_session()
+        self._session = self._create_session()
 
     def __eq__(self, obj: typing.Any) -> bool:
         return self.conf == obj.conf and self.extra_headers == obj.extra_headers
@@ -167,6 +170,12 @@ class BaseClient:
             if version:
                 self._add_to_cache(self.subject_to_schema_versions, subject, schema, version)
 
+    @property
+    def session(self):  # type: ignore
+        if self._session.is_closed:
+            self._session = self._create_session()
+        return self._session
+
     @abc.abstractmethod
     def _create_session(self):  # type: ignore
         ...
@@ -208,7 +217,7 @@ class SchemaRegistryClient(BaseClient):
         method: str = "GET",
         body: dict = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
@@ -228,7 +237,7 @@ class SchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[BaseSchema, str],
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
         """
@@ -299,7 +308,9 @@ class SchemaRegistryClient(BaseClient):
 
         return schema_id
 
-    def get_subjects(self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> list:
+    def get_subjects(
+        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+    ) -> list:
         """
         GET /subjects/(string: subject)
         Get list of all registered subjects in your Schema Registry.
@@ -321,7 +332,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError("Unable to get subjects", http_code=code, server_traceback=result)
 
     def delete_subject(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         DELETE /subjects/(string: subject)
@@ -348,7 +362,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError("Unable to delete subject", http_code=code, server_traceback=result)
 
     def get_by_id(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
@@ -383,7 +400,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
     def get_schema_subject_versions(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
         GET /schemas/ids/{int: id}/versions
@@ -415,7 +435,7 @@ class SchemaRegistryClient(BaseClient):
         subject: str,
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
@@ -460,7 +480,10 @@ class SchemaRegistryClient(BaseClient):
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
     def get_versions(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET subjects/{subject}/versions
@@ -490,7 +513,7 @@ class SchemaRegistryClient(BaseClient):
         subject: str,
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[int]:
         """
         DELETE /subjects/(string: subject)/versions/(versionId: version)
@@ -529,7 +552,7 @@ class SchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[BaseSchema, str],
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
@@ -589,7 +612,7 @@ class SchemaRegistryClient(BaseClient):
         schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
         """
@@ -635,7 +658,7 @@ class SchemaRegistryClient(BaseClient):
         level: str,
         subject: str = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> bool:
         """
         PUT /config/(string: subject)
@@ -669,7 +692,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError(f"Unable to update level: {level}.", http_code=code, server_traceback=result)
 
     def get_compatibility(
-        self, subject: str = None, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str = None,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """
         Get the current compatibility level for a subject.
@@ -744,7 +770,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         method: str = "GET",
         body: dict = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
@@ -764,7 +790,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[BaseSchema, str],
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
         """
@@ -836,7 +862,9 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         return schema_id
 
-    async def get_subjects(self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET) -> list:
+    async def get_subjects(
+        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+    ) -> list:
         """
         GET /subjects/(string: subject)
         Get list of all registered subjects in your Schema Registry.
@@ -858,7 +886,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError("Unable to get subjects", http_code=code, server_traceback=result)
 
     async def delete_subject(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         DELETE /subjects/(string: subject)
@@ -885,7 +916,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError("Unable to delete subject", http_code=code, server_traceback=result)
 
     async def get_by_id(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
@@ -922,7 +956,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
         GET /subjects/(string: subject)/versions/(versionId: version)
@@ -968,7 +1002,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
     async def get_schema_subject_versions(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
         GET /schemas/ids/{int: id}/versions
@@ -997,7 +1034,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
     async def get_versions(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET subjects/{subject}/versions
@@ -1027,7 +1067,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[int]:
         """
         DELETE /subjects/(string: subject)/versions/(versionId: version)
@@ -1066,7 +1106,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[BaseSchema, str],
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
@@ -1126,7 +1166,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
         """
@@ -1173,7 +1213,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         level: str,
         subject: str = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> bool:
         """
         PUT /config/(string: subject)
@@ -1207,7 +1247,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError(f"Unable to update level: {level}.", http_code=code, server_traceback=result)
 
     async def get_compatibility(
-        self, subject: str = None, headers: dict = None, timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET
+        self,
+        subject: str = None,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """
         Get the current compatibility level for a subject.

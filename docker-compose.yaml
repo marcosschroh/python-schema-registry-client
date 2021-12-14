@@ -33,7 +33,8 @@ services:
       - ZOOKEEPER_CLIENT_PORT=32181
 
   kafka:
-    image: confluentinc/cp-kafka
+    # pinned due to https://github.com/confluentinc/kafka-images/issues/127
+    image: confluentinc/cp-kafka:7.0.0
     hostname: kafka
     container_name: kafka
     ports:
