@@ -7,7 +7,7 @@ from collections import namedtuple
 import pydantic
 import pytest
 from dataclasses_avroschema import AvroModel, types
-from httpx._client import USE_CLIENT_DEFAULT as UNSET, TimeoutTypes, UseClientDefault as UnsetType
+from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
 from schema_registry.serializers import (
@@ -139,7 +139,7 @@ class RequestLoggingSchemaRegistryClient(SchemaRegistryClient, RequestLoggingAss
         method: str = "GET",
         body: dict = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
         self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
         return super().request(url, method, body, headers=headers, timeout=timeout)
@@ -302,7 +302,7 @@ class RequestLoggingAsyncSchemaRegistryClient(AsyncSchemaRegistryClient, Request
         method: str = "GET",
         body: dict = None,
         headers: dict = None,
-        timeout: typing.Union[TimeoutTypes, UnsetType] = UNSET,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
         self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
         return await super().request(url, method, body, headers=headers, timeout=timeout)
