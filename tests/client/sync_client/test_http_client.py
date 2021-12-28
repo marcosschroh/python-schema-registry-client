@@ -3,15 +3,16 @@ from base64 import b64encode
 
 import httpx
 import pytest
-from httpx._client import UNSET
+from httpx._client import USE_CLIENT_DEFAULT as UNSET
 
 from schema_registry.client import SchemaRegistryClient, schema, utils
 from tests import data_gen
 
 
 def test_invalid_cert():
+    client = SchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
     with pytest.raises(FileNotFoundError):
-        SchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
+        client.request("https://example.com")
 
 
 def test_cert_with_key(certificates):
@@ -70,7 +71,8 @@ def test_override_headers(client, avro_deployment_schema, mocker, response_klass
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
 
-    assert client.session.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
+    *_, response = client.request("https://example.com")
+    assert response.request.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
 
     subject = "test"
     override_header = {"custom-serialization": utils.HEADER_AVRO}
@@ -128,8 +130,8 @@ def test_basic_auth_url():
     client = SchemaRegistryClient({"url": f"https://{username}:{password}@127.0.0.1:65534"})
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
 def test_basic_auth_user_info():
@@ -145,8 +147,8 @@ def test_basic_auth_user_info():
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
 def test_basic_auth_sasl_inherit():
@@ -164,8 +166,8 @@ def test_basic_auth_sasl_inherit():
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
 def test_basic_auth_invalid():

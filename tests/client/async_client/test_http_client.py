@@ -8,9 +8,11 @@ import pytest
 from schema_registry.client import AsyncSchemaRegistryClient, utils
 
 
-def test_invalid_cert():
+@pytest.mark.asyncio
+async def test_invalid_cert():
+    client = AsyncSchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
     with pytest.raises(FileNotFoundError):
-        AsyncSchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
+        await client.request("https://example.com")
 
 
 def test_cert_with_key(certificates):
@@ -38,7 +40,8 @@ async def test_override_headers(avro_deployment_schema, response_klass, async_mo
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     async_client = AsyncSchemaRegistryClient(url=os.getenv("SCHEMA_REGISTRY_URL"), extra_headers=extra_headers)
 
-    assert async_client.session.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
+    *_, response = await async_client.request("https://example.com")
+    assert response.request.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
 
     subject = "test"
     override_header = {"custom-serialization": utils.HEADER_AVRO}
@@ -87,17 +90,20 @@ def test_invalid_type_url_dict():
         AsyncSchemaRegistryClient({"url": 1})
 
 
-def test_basic_auth_url():
+@pytest.mark.asyncio
+async def test_basic_auth_url():
     username = "secret-user"
     password = "secret"
     client = AsyncSchemaRegistryClient({"url": f"https://{username}:{password}@127.0.0.1:65534"})
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = await client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
-def test_basic_auth_user_info():
+@pytest.mark.asyncio
+async def test_basic_auth_user_info():
     username = "secret-user"
     password = "secret"
     client = AsyncSchemaRegistryClient(
@@ -111,10 +117,12 @@ def test_basic_auth_user_info():
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = await client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
-def test_basic_auth_sasl_inherit():
+@pytest.mark.asyncio
+async def test_basic_auth_sasl_inherit():
     username = "secret-user-sasl"
     password = "secret-sasl"
     client = AsyncSchemaRegistryClient(
@@ -130,7 +138,8 @@ def test_basic_auth_sasl_inherit():
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    assert client.session.auth._auth_header == f"Basic {token}"
+    *_, response = await client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
 def test_basic_auth_invalid():

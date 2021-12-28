@@ -7,7 +7,9 @@ class UrlManager:
     def __init__(self, base_url: str, paths: list) -> None:
         parsed_url = urllib.parse.urlparse(base_url)
 
-        assert parsed_url.scheme, f"The url does not have a schema, add one. For example http://{base_url}"
+        assert all(
+            [parsed_url.scheme, parsed_url.netloc]
+        ), f"The url does not have a schema, add one. For example http://{base_url}"
 
         # this is the absolute url to the server
         # make sure that url ends with /
