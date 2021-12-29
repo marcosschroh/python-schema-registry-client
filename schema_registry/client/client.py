@@ -15,7 +15,6 @@ from schema_registry.client.paths import paths
 from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
 from schema_registry.client.urls import UrlManager
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -170,7 +169,6 @@ class BaseClient:
         with httpx.Client(**self.client_kwargs) as client:
             response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
         return response
-
 
     def _get_client_kwargs(self) -> typing.Dict:
         verify = self.conf.get(utils.SSL_CA_LOCATION, False)

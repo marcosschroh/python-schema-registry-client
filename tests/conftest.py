@@ -7,6 +7,7 @@ from collections import namedtuple
 import pydantic
 import pytest
 from dataclasses_avroschema import AvroModel, types
+from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
 from schema_registry.serializers import (
@@ -15,8 +16,6 @@ from schema_registry.serializers import (
     AvroMessageSerializer,
     JsonMessageSerializer,
 )
-
-from httpx._client import TimeoutTypes, UseClientDefault, USE_CLIENT_DEFAULT
 
 logger = logging.getLogger(__name__)
 
