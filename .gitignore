@@ -119,3 +119,6 @@ tags
 .pytest_cache/
 
 .ipython/
+
+# PyCharm
+.idea

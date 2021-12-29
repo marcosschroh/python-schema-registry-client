@@ -2,9 +2,35 @@
 
 set -o errexit
 
-docker-compose build
+PYTHON_VERSION="3.10"
+
+ARGS=""
+while (( "$#" )); do
+  case "$1" in
+    --python-version)
+      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+        PYTHON_VERSION=$2
+        shift 2
+      else
+        echo "Error: Argument for $1 is missing" >&2
+        exit 1
+      fi
+      ;;
+    *) # preserve other arguments
+      ARGS="$ARGS $1"
+      shift
+      ;;
+  esac
+done
+
+# set positional arguments in their proper place
+eval set -- "$ARGS"
+
+echo "Run tests using python" $PYTHON_VERSION
+docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION
 
 # run tests against schema registry server
 docker-compose run --rm \
     -e CODECOV_TOKEN=${CODECOV_TOKEN} \
-    schema-registry-client ./scripts/run_test ${1-"./tests"}
+    schema-registry-client ./scripts/run_test ${1-"./tests"} \
+|| docker-compose down
