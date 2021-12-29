@@ -1,4 +1,3 @@
-import abc
 import json
 import logging
 import typing
@@ -163,7 +162,7 @@ class BaseClient:
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> httpx.Response:
+    ) -> typing.Union[tuple, httpx.Response, typing.Coroutine[typing.Any, typing.Any, typing.Any]]:
         _headers = self.prepare_headers(body=body, headers=headers)
         with httpx.Client(**self.client_kwargs) as client:
             response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
@@ -263,7 +262,6 @@ class SchemaRegistryClient(BaseClient):
         # access
 
         response = self.check_version(subject, schema, headers=headers, timeout=timeout)
-
         if response is not None:
             return response.schema_id
 
@@ -271,7 +269,6 @@ class SchemaRegistryClient(BaseClient):
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
         result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
-
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             msg = "Unauthorized access"
@@ -290,7 +287,9 @@ class SchemaRegistryClient(BaseClient):
 
         return schema_id
 
-    def get_subjects(self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT) -> list:
+    def get_subjects(
+        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+    ) -> list:
         """
         GET /subjects/(string: subject)
         Get list of all registered subjects in your Schema Registry.
@@ -298,7 +297,9 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
+
 
         Returns:
             list [str]: list of registered subjects.
@@ -312,7 +313,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError("Unable to get subjects", http_code=code, server_traceback=result)
 
     def delete_subject(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         DELETE /subjects/(string: subject)
@@ -323,7 +327,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+             Default USE_CLIENT_DEFAULT
 
         Returns:
             list (int): version of the schema deleted under this subject
@@ -339,7 +344,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError("Unable to delete subject", http_code=code, server_traceback=result)
 
     def get_by_id(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
@@ -348,7 +356,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+            Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
@@ -374,7 +383,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
     def get_schema_subject_versions(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
         GET /schemas/ids/{int: id}/versions
@@ -383,7 +395,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
@@ -416,7 +429,8 @@ class SchemaRegistryClient(BaseClient):
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+             Default USE_CLIENT_DEFAULT
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -451,7 +465,10 @@ class SchemaRegistryClient(BaseClient):
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
     def get_versions(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET subjects/{subject}/versions
@@ -460,7 +477,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             list (str): version of the schema registered under this subject
@@ -498,7 +516,8 @@ class SchemaRegistryClient(BaseClient):
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             int: version of the schema deleted
@@ -560,7 +579,6 @@ class SchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-
         result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
@@ -638,7 +656,8 @@ class SchemaRegistryClient(BaseClient):
                 FULL, FULL_TRANSITIVE, NONE
             subject (str): Option subject
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             bool: True if compatibility was updated
@@ -660,7 +679,10 @@ class SchemaRegistryClient(BaseClient):
         raise ClientError(f"Unable to update level: {level}.", http_code=code, server_traceback=result)
 
     def get_compatibility(
-        self, subject: str = None, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str = None,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """
         Get the current compatibility level for a subject.
@@ -668,7 +690,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
@@ -797,7 +820,9 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         return schema_id
 
-    async def get_subjects(self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT) -> list:
+    async def get_subjects(
+        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+    ) -> list:
         """
         GET /subjects/(string: subject)
         Get list of all registered subjects in your Schema Registry.
@@ -805,7 +830,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             list [str]: list of registered subjects.
@@ -819,7 +845,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError("Unable to get subjects", http_code=code, server_traceback=result)
 
     async def delete_subject(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         DELETE /subjects/(string: subject)
@@ -830,7 +859,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             list (int): version of the schema deleted under this subject
@@ -846,7 +876,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError("Unable to delete subject", http_code=code, server_traceback=result)
 
     async def get_by_id(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
         GET /schemas/ids/{int: id}
@@ -855,7 +888,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
@@ -893,7 +927,8 @@ class AsyncSchemaRegistryClient(BaseClient):
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -929,7 +964,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         return utils.SchemaVersion(subject, schema_id, schema, version)
 
     async def get_schema_subject_versions(
-        self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        schema_id: int,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
         GET /schemas/ids/{int: id}/versions
@@ -938,7 +976,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
@@ -958,7 +997,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
     async def get_versions(
-        self, subject: str, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET subjects/{subject}/versions
@@ -967,7 +1009,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             list (str): version of the schema registered under this subject
@@ -1005,7 +1048,8 @@ class AsyncSchemaRegistryClient(BaseClient):
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             int: version of the schema deleted
@@ -1146,7 +1190,8 @@ class AsyncSchemaRegistryClient(BaseClient):
                 FULL, FULL_TRANSITIVE, NONE
             subject (str): Option subject
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+            Default USE_CLIENT_DEFAULT
 
         Returns:
             bool: True if compatibility was updated
@@ -1168,7 +1213,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         raise ClientError(f"Unable to update level: {level}.", http_code=code, server_traceback=result)
 
     async def get_compatibility(
-        self, subject: str = None, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        subject: str = None,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """
         Get the current compatibility level for a subject.
@@ -1176,7 +1224,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
