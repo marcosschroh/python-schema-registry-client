@@ -3,7 +3,7 @@ from base64 import b64encode
 
 import httpx
 import pytest
-from httpx._client import USE_CLIENT_DEFAULT
+from httpx import USE_CLIENT_DEFAULT
 
 from schema_registry.client import SchemaRegistryClient, schema, utils
 from tests import data_gen

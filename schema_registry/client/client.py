@@ -5,13 +5,16 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import httpx
-from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
+from httpx import USE_CLIENT_DEFAULT
+from httpx._client import UseClientDefault
+from httpx._types import TimeoutTypes
 
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
 from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
 from schema_registry.client.urls import UrlManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +170,7 @@ class BaseClient:
         with httpx.Client(**self.client_kwargs) as client:
             response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
         return response
+
 
     def _get_client_kwargs(self) -> typing.Dict:
         verify = self.conf.get(utils.SSL_CA_LOCATION, False)

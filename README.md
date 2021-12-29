@@ -3,13 +3,13 @@
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmarcosschroh%2Fpython-schema-registry-client%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/marcosschroh/python-schema-registry-client/goto?ref=master)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/python-schema-registry-client.svg)](https://github.com/marcosschroh/python-schema-registry-client/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/python-schema-registry-client/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/python-schema-registry-client)
-[![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
+[![Python Version](https://img.shields.io/badge/python-3.7+-blue.svg)](https://img.shields.io/badge/python-3.7+-blue.svg)
 
 Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) and [JSON](https://json-schema.org/) schemas resources.
 
 ## Requirements
 
-python 3.6+
+python 3.7+
 
 ## Installation
 
@@ -321,7 +321,7 @@ Also, could be a use case that we would like to have an Application only to admi
 Install the project and development utilities in edit mode:
 
 ```bash
-pip3 install -e ".[tests,docs,faust]
+pip3 install -e ".[tests,docs,faust]"
 ```
 
 The tests are run against the `Schema Server` using `docker compose`, so you will need
@@ -331,13 +331,26 @@ The tests are run against the `Schema Server` using `docker compose`, so you wil
 ./scripts/test
 ```
 
+You can run tests with arbitrary python version by:
+
+```bash
+./scripts/test --python-version 3.x
+```
+
+All additional args will be passed to pytest, for example:
+
+```bash
+./scripts/test ./tests/client/ --maxfail=1 
+```
+
 Run code linting:
 
 ```bash
 ./scripts/lint
 ```
 
-To perform tests using the python shell you can execute `docker-compose up` and the `schema registry server` will run on `http://127.0.0.1:8081`, the you can interact against it using the `SchemaRegistryClient`:
+To perform tests using the python shell you can execute `docker-compose up` and the `schema registry server` 
+will run on `http://127.0.0.1:8081`, then you can interact against it using the `SchemaRegistryClient`:
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema

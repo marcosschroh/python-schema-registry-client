@@ -5,13 +5,18 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
 
-requires = ["fastavro>=1.4.4", "jsonschema>=3.2.0", "httpx>=0.19.0,<0.21.0", "aiofiles>=0.7.0", "dataclasses>=0.8; python_version < '3.7'"]
+requires = [
+    "fastavro>=1.4.4",
+    "jsonschema>=3.2.0",
+    "httpx>=0.18.2",
+    "aiofiles>=0.7.0",
+]
 
 description = "Python Rest Client to interact against Schema Registry Confluent Server to manage Avro Schemas"
 
@@ -25,8 +30,13 @@ setup(
     author_email="schrohm@gmail.com",
     install_requires=requires,
     extras_require={
-        "faust": ["faust-streaming",],
-        "docs": ["mkdocs", "mkdocs-material",],
+        "faust": [
+            "faust-streaming",
+        ],
+        "docs": [
+            "mkdocs",
+            "mkdocs-material",
+        ],
         "tests": [
             "black",
             "autoflake",
@@ -40,19 +50,23 @@ setup(
             "codecov",
             "pytest-cov",
             "dataclasses-avroschema",
-            "pydantic"
+            "pydantic",
         ],
     },
     url="https://github.com/marcosschroh/python-schema-registry-client",
     download_url="https://pypi.org/project/python-schema-registry-client/#files",
-    packages=find_packages(exclude=("tests", "docs",)),
+    packages=find_packages(
+        exclude=(
+            "tests",
+            "docs",
+        )
+    ),
     include_package_data=True,
     license="MIT",
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development",
