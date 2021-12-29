@@ -71,7 +71,7 @@ def test_override_headers(client, avro_deployment_schema, mocker, response_klass
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     client = SchemaRegistryClient("https://127.0.0.1:65534", extra_headers=extra_headers)
 
-    *_, response = client.request("https://example.com")
+    response = client.request("https://example.com")
     assert response.request.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
 
     subject = "test"
@@ -132,7 +132,7 @@ def test_basic_auth_url():
     client = SchemaRegistryClient({"url": f"https://{username}:{password}@127.0.0.1:65534"})
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-    *_, response = client.request("https://example.com")
+    response = client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
@@ -149,7 +149,7 @@ def test_basic_auth_user_info():
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-    *_, response = client.request("https://example.com")
+    response = client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
@@ -168,7 +168,7 @@ def test_basic_auth_sasl_inherit():
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-    *_, response = client.request("https://example.com")
+    response = client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 

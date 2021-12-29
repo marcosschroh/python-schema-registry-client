@@ -18,6 +18,23 @@ from schema_registry.client.urls import UrlManager
 logger = logging.getLogger(__name__)
 
 
+def get_response_and_status_code(response: httpx.Response) -> tuple:
+    """
+    Returns a tuple containing response json and status code
+
+    Args:
+        response (httpx.Response): Http response object
+
+    Returns:
+       tuple(dict, int)
+    """
+
+    return (
+        response.json(),
+        response.status_code,
+    )
+
+
 class BaseClient:
     """
     A client that talks to a Schema Registry over HTTP
@@ -202,18 +219,14 @@ class SchemaRegistryClient(BaseClient):
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
 
         _headers = self.prepare_headers(body=body, headers=headers)
         with httpx.Client(**self.client_kwargs) as client:
             response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
-
-        try:
-            return response.json(), response.status_code, response
-        except ValueError:
-            return response.content, response.status_code, response
+        return response
 
     def register(
         self,
@@ -270,7 +283,10 @@ class SchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        (
+            result,
+            code,
+        ) = get_response_and_status_code(self.request(url, method=method, body=body, headers=headers, timeout=timeout))
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             msg = "Unauthorized access"
@@ -307,7 +323,7 @@ class SchemaRegistryClient(BaseClient):
             list [str]: list of registered subjects.
         """
         url, method = self.url_manager.url_for("get_subjects")
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -336,7 +352,7 @@ class SchemaRegistryClient(BaseClient):
             list (int): version of the schema deleted under this subject
         """
         url, method = self.url_manager.url_for("delete_subject", subject=subject)
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -369,7 +385,7 @@ class SchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("get_by_id", schema_id=schema_id)
 
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
@@ -404,7 +420,7 @@ class SchemaRegistryClient(BaseClient):
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
         """
         url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
             logger.warning(f"Schema {schema_id} not found: {code}")
             return None
@@ -444,7 +460,7 @@ class SchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_schema", subject=subject, version=version)
 
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema version {version} under subjet {subject} not found: {code}")
             return None
@@ -487,7 +503,7 @@ class SchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_versions", subject=subject)
 
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
@@ -527,7 +543,7 @@ class SchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("delete_version", subject=subject, version=version)
 
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -581,7 +597,9 @@ class SchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-        result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
@@ -629,7 +647,9 @@ class SchemaRegistryClient(BaseClient):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-        result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Subject or version not found: {code}")
@@ -673,7 +693,9 @@ class SchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("update_compatibility", subject=subject)
         body = {"compatibility": level}
 
-        result, code, *_ = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return True
@@ -704,7 +726,7 @@ class SchemaRegistryClient(BaseClient):
             compatibility level was returned
         """
         url, method = self.url_manager.url_for("get_compatibility", subject=subject)
-        result, code, *_ = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             compatibility = result.get("compatibilityLevel")
@@ -732,7 +754,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
 
@@ -740,10 +762,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         async with httpx.AsyncClient(**self.client_kwargs) as client:
             response = await client.request(method, url, headers=_headers, json=body, timeout=timeout)
 
-        try:
-            return response.json(), response.status_code, response
-        except ValueError:
-            return response.content, response.status_code, response
+        return response
 
     async def register(
         self,
@@ -802,7 +821,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code, *_ = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
@@ -839,7 +860,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             list [str]: list of registered subjects.
         """
         url, method = self.url_manager.url_for("get_subjects")
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -868,7 +891,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             list (int): version of the schema deleted under this subject
         """
         url, method = self.url_manager.url_for("delete_subject", subject=subject)
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -901,7 +926,9 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("get_by_id", schema_id=schema_id)
 
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
@@ -942,7 +969,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_schema", subject=subject, version=version)
 
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema version {version} under subjet {subject} not found: {code}")
@@ -985,7 +1014,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
         """
         url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.warning(f"Schema {schema_id} not found: {code}")
@@ -1019,7 +1050,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_versions", subject=subject)
 
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
@@ -1059,7 +1092,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("delete_version", subject=subject, version=version)
 
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -1114,7 +1149,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code, *_ = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
@@ -1162,7 +1199,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-        result, code, *_ = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Subject or version not found: {code}")
@@ -1207,7 +1246,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("update_compatibility", subject=subject)
         body = {"compatibility": level}
 
-        result, code, *_ = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return True
@@ -1238,7 +1279,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             compatibility level was returned
         """
         url, method = self.url_manager.url_for("get_compatibility", subject=subject)
-        result, code, *_ = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             compatibility = result.get("compatibilityLevel")

@@ -40,7 +40,7 @@ async def test_override_headers(avro_deployment_schema, response_klass, async_mo
     extra_headers = {"custom-serialization": utils.HEADER_AVRO_JSON}
     async_client = AsyncSchemaRegistryClient(url=os.getenv("SCHEMA_REGISTRY_URL"), extra_headers=extra_headers)
 
-    *_, response = await async_client.request("https://example.com")
+    response = await async_client.request("https://example.com")
     assert response.request.headers.get("custom-serialization") == utils.HEADER_AVRO_JSON
 
     subject = "test"
@@ -98,7 +98,7 @@ async def test_basic_auth_url():
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    *_, response = await client.request("https://example.com")
+    response = await client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
@@ -117,7 +117,7 @@ async def test_basic_auth_user_info():
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    *_, response = await client.request("https://example.com")
+    response = await client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
@@ -138,7 +138,7 @@ async def test_basic_auth_sasl_inherit():
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
 
-    *_, response = await client.request("https://example.com")
+    response = await client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 

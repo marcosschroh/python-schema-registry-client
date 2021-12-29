@@ -28,13 +28,11 @@ class BaseSchema(ABC):
     @abstractmethod
     def load(fp: str) -> BaseSchema:
         """Parse a schema from a file path"""
-        pass
 
     @staticmethod
     @abstractmethod
     async def async_load(fp: str) -> BaseSchema:
         """Parse a schema from a file path"""
-        pass
 
     @property
     @abstractmethod
