@@ -14,7 +14,7 @@ with open("README.md") as readme_file:
 requires = [
     "fastavro>=1.4.4",
     "jsonschema>=3.2.0",
-    "httpx>=0.18.2",
+    "httpx>=0.19.0",
     "aiofiles>=0.7.0",
 ]
 
