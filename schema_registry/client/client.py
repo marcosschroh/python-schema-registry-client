@@ -1,6 +1,7 @@
 import json
 import logging
 import typing
+from abc import abstractmethod
 from collections import defaultdict
 from urllib.parse import urlparse
 
@@ -174,6 +175,7 @@ class BaseClient:
             if version:
                 self._add_to_cache(self.subject_to_schema_versions, subject, schema, version)
 
+    @abstractmethod
     def request(
         self,
         url: str,
