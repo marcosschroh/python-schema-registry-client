@@ -1,15 +1,15 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
-
-from dataclasses import dataclass
 
 import json
 import typing
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 import aiofiles
 import fastavro
 import jsonschema
+
+from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 
 
 class BaseSchema(ABC):
@@ -28,13 +28,11 @@ class BaseSchema(ABC):
     @abstractmethod
     def load(fp: str) -> BaseSchema:
         """Parse a schema from a file path"""
-        pass
 
     @staticmethod
     @abstractmethod
     async def async_load(fp: str) -> BaseSchema:
         """Parse a schema from a file path"""
-        pass
 
     @property
     @abstractmethod

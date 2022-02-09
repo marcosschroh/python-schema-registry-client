@@ -1,7 +1,7 @@
-import abc
 import json
 import logging
 import typing
+from abc import abstractmethod
 from collections import defaultdict
 from urllib.parse import urlparse
 
@@ -13,11 +13,27 @@ from httpx._types import TimeoutTypes
 from schema_registry.client import status, utils
 from schema_registry.client.errors import ClientError
 from schema_registry.client.paths import paths
-from schema_registry.client.schema import BaseSchema, AvroSchema, JsonSchema, SchemaFactory, SubjectVersion
+from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
 from schema_registry.client.urls import UrlManager
 
-
 logger = logging.getLogger(__name__)
+
+
+def get_response_and_status_code(response: httpx.Response) -> tuple:
+    """
+    Returns a tuple containing response json and status code
+
+    Args:
+        response (httpx.Response): Http response object
+
+    Returns:
+       tuple(dict, int)
+    """
+
+    return (
+        response.json(),
+        response.status_code,
+    )
 
 
 class BaseClient:
@@ -68,7 +84,7 @@ class BaseClient:
         self.timeout = timeout
         self.pool_limits = pool_limits
 
-        self._session = self._create_session()
+        self.client_kwargs = self._get_client_kwargs()
 
         # Cache Schemas: subj => { schema => id }
         self.subject_to_schema_ids: dict = defaultdict(dict)
@@ -76,17 +92,6 @@ class BaseClient:
         self.id_to_schema: dict = defaultdict(dict)
         # Cache Schemas: subj => { schema => version }
         self.subject_to_schema_versions: dict = defaultdict(dict)
-
-    def __getstate__(self) -> typing.Dict:
-        state = self.__dict__.copy()
-        # Remove the unpicklable session.
-        del state["_session"]
-
-        return state
-
-    def __setstate__(self, state: typing.Dict) -> None:
-        self.__dict__.update(state)
-        self._session = self._create_session()
 
     def __eq__(self, obj: typing.Any) -> bool:
         return self.conf == obj.conf and self.extra_headers == obj.extra_headers
@@ -170,24 +175,21 @@ class BaseClient:
             if version:
                 self._add_to_cache(self.subject_to_schema_versions, subject, schema, version)
 
-    @property
-    def session(self):  # type: ignore
-        if self._session.is_closed:
-            self._session = self._create_session()
-        return self._session
+    @abstractmethod
+    def request(
+        self,
+        url: str,
+        method: str = "GET",
+        body: dict = None,
+        headers: dict = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+    ) -> typing.Union[tuple, httpx.Response, typing.Coroutine[typing.Any, typing.Any, typing.Any]]:
+        _headers = self.prepare_headers(body=body, headers=headers)
+        with httpx.Client(**self.client_kwargs) as client:
+            response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
+        return response
 
-    @abc.abstractmethod
-    def _create_session(self):  # type: ignore
-        ...
-
-
-class SchemaRegistryClient(BaseClient):
-    def _create_session(self) -> httpx.Client:
-        """
-        Create a httpx Client session
-        Returns:
-            httpx.Client
-        """
+    def _get_client_kwargs(self) -> typing.Dict:
         verify = self.conf.get(utils.SSL_CA_LOCATION, False)
         certificate = self._configure_client_tls(self.conf)
         auth = self._configure_basic_auth(self.conf)
@@ -208,9 +210,10 @@ class SchemaRegistryClient(BaseClient):
 
         if self.pool_limits is not None:
             client_kwargs["limits"] = self.pool_limits  # type:ignore
+        return client_kwargs
 
-        return httpx.Client(**client_kwargs)  # type: ignore
 
+class SchemaRegistryClient(BaseClient):
     def request(
         self,
         url: str,
@@ -218,19 +221,14 @@ class SchemaRegistryClient(BaseClient):
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
 
         _headers = self.prepare_headers(body=body, headers=headers)
-
-        with self.session as session:
-            response = session.request(method, url, headers=_headers, json=body, timeout=timeout)
-
-        try:
-            return response.json(), response.status_code
-        except ValueError:
-            return response.content, response.status_code
+        with httpx.Client(**self.client_kwargs) as client:
+            response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
+        return response
 
     def register(
         self,
@@ -258,7 +256,7 @@ class SchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -281,15 +279,16 @@ class SchemaRegistryClient(BaseClient):
         # access
 
         response = self.check_version(subject, schema, headers=headers, timeout=timeout)
-
         if response is not None:
             return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
-
+        (
+            result,
+            code,
+        ) = get_response_and_status_code(self.request(url, method=method, body=body, headers=headers, timeout=timeout))
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
             msg = "Unauthorized access"
@@ -318,13 +317,15 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
+
 
         Returns:
             list [str]: list of registered subjects.
         """
         url, method = self.url_manager.url_for("get_subjects")
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -346,13 +347,14 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+             Default USE_CLIENT_DEFAULT
 
         Returns:
             list (int): version of the schema deleted under this subject
         """
         url, method = self.url_manager.url_for("delete_subject", subject=subject)
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -374,7 +376,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+            Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
@@ -384,7 +387,7 @@ class SchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("get_by_id", schema_id=schema_id)
 
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
@@ -412,13 +415,14 @@ class SchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
         """
         url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
             logger.warning(f"Schema {schema_id} not found: {code}")
             return None
@@ -445,7 +449,8 @@ class SchemaRegistryClient(BaseClient):
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+             Default USE_CLIENT_DEFAULT
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -457,9 +462,9 @@ class SchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_schema", subject=subject, version=version)
 
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if code == status.HTTP_404_NOT_FOUND:
-            logger.info(f"Schema version {version} under subjet {subject } not found: {code}")
+            logger.info(f"Schema version {version} under subjet {subject} not found: {code}")
             return None
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             logger.info(f"Invalid version {version}: {code}")
@@ -492,14 +497,15 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             list (str): version of the schema registered under this subject
         """
         url, method = self.url_manager.url_for("get_versions", subject=subject)
 
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
@@ -530,7 +536,8 @@ class SchemaRegistryClient(BaseClient):
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             int: version of the schema deleted
@@ -538,7 +545,7 @@ class SchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("delete_version", subject=subject, version=version)
 
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             return result
@@ -569,7 +576,7 @@ class SchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -592,8 +599,9 @@ class SchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-
-        result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
@@ -628,7 +636,7 @@ class SchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -641,7 +649,9 @@ class SchemaRegistryClient(BaseClient):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-        result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Subject or version not found: {code}")
@@ -670,7 +680,8 @@ class SchemaRegistryClient(BaseClient):
                 FULL, FULL_TRANSITIVE, NONE
             subject (str): Option subject
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             bool: True if compatibility was updated
@@ -684,7 +695,9 @@ class SchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("update_compatibility", subject=subject)
         body = {"compatibility": level}
 
-        result, code = self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return True
@@ -703,7 +716,8 @@ class SchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
@@ -714,7 +728,7 @@ class SchemaRegistryClient(BaseClient):
             compatibility level was returned
         """
         url, method = self.url_manager.url_for("get_compatibility", subject=subject)
-        result, code = self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(self.request(url, method=method, headers=headers, timeout=timeout))
 
         if status.is_success(code):
             compatibility = result.get("compatibilityLevel")
@@ -735,35 +749,6 @@ class SchemaRegistryClient(BaseClient):
 
 
 class AsyncSchemaRegistryClient(BaseClient):
-    def _create_session(self) -> httpx.AsyncClient:
-        """
-        Create a httpx Client session
-        Returns:
-            httpx.AsyncClient
-        """
-        verify = self.conf.get(utils.SSL_CA_LOCATION, False)
-        certificate = self._configure_client_tls(self.conf)
-        auth = self._configure_basic_auth(self.conf)
-
-        client_kwargs = {
-            "cert": certificate,
-            "verify": verify,  # type: ignore
-            "auth": auth,
-        }
-
-        # If these values haven't been explicitly defined let httpx sort out
-        # the default values.
-        if self.extra_headers is not None:
-            client_kwargs["headers"] = self.extra_headers  # type:ignore
-
-        if self.timeout is not None:
-            client_kwargs["timeout"] = self.timeout  # type:ignore
-
-        if self.pool_limits is not None:
-            client_kwargs["limits"] = self.pool_limits  # type:ignore
-
-        return httpx.AsyncClient(**client_kwargs)  # type: ignore
-
     async def request(
         self,
         url: str,
@@ -771,19 +756,15 @@ class AsyncSchemaRegistryClient(BaseClient):
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
             raise ClientError(f"Method {method} is invalid; valid methods include {utils.VALID_METHODS}")
 
         _headers = self.prepare_headers(body=body, headers=headers)
+        async with httpx.AsyncClient(**self.client_kwargs) as client:
+            response = await client.request(method, url, headers=_headers, json=body, timeout=timeout)
 
-        async with self.session as session:
-            response = await session.request(method, url, headers=_headers, json=body, timeout=timeout)
-
-        try:
-            return response.json(), response.status_code
-        except ValueError:
-            return response.content, response.status_code
+        return response
 
     async def register(
         self,
@@ -812,7 +793,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -842,7 +823,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("register", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         msg = None
         if code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
@@ -872,13 +855,16 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             list [str]: list of registered subjects.
         """
         url, method = self.url_manager.url_for("get_subjects")
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -900,13 +886,16 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             list (int): version of the schema deleted under this subject
         """
         url, method = self.url_manager.url_for("delete_subject", subject=subject)
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -928,7 +917,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema
@@ -938,7 +928,9 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         url, method = self.url_manager.url_for("get_by_id", schema_id=schema_id)
 
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
@@ -966,7 +958,8 @@ class AsyncSchemaRegistryClient(BaseClient):
             subject (str): subject name
             version (int, optional): version id. If is None, the latest schema is returned
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
 
         Returns:
             SchemaVersion (nametupled): (subject, schema_id, schema, version)
@@ -978,10 +971,12 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("get_schema", subject=subject, version=version)
 
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
-            logger.info(f"Schema version {version} under subjet {subject } not found: {code}")
+            logger.info(f"Schema version {version} under subjet {subject} not found: {code}")
             return None
         elif code == status.HTTP_422_UNPROCESSABLE_ENTITY:
             logger.info(f"Invalid version {version}: {code}")
@@ -1014,13 +1009,16 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             schema_id (int): Schema Id
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
         """
         url, method = self.url_manager.url_for("get_schema_subject_versions", schema_id=schema_id)
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.warning(f"Schema {schema_id} not found: {code}")
@@ -1046,14 +1044,17 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             list (str): version of the schema registered under this subject
         """
         url, method = self.url_manager.url_for("get_versions", subject=subject)
 
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
         if status.is_success(code):
             return result
         elif code == status.HTTP_404_NOT_FOUND:
@@ -1084,7 +1085,8 @@ class AsyncSchemaRegistryClient(BaseClient):
                 Valid values for versionId are between [1,2^31-1] or the string "latest".
                 "latest" deletes the last registered schema under the specified subject.
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             int: version of the schema deleted
@@ -1092,7 +1094,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         """
         url, method = self.url_manager.url_for("delete_version", subject=subject, version=version)
 
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return result
@@ -1123,7 +1127,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -1147,7 +1151,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
 
-        result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Schema {schema.name} under subject {subject} not found: {code}")
             return None
@@ -1182,7 +1188,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             headers (dict):
                 Extra headers to add on the requests
             timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default UNSET
+                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type typing.Union["AVRO", "JSON"]:
                 The type of schema to parse if `schema` is a string. Default "AVRO"
 
@@ -1195,7 +1201,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
-        result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if code == status.HTTP_404_NOT_FOUND:
             logger.info(f"Subject or version not found: {code}")
@@ -1225,7 +1233,8 @@ class AsyncSchemaRegistryClient(BaseClient):
                 FULL, FULL_TRANSITIVE, NONE
             subject (str): Option subject
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+            Default USE_CLIENT_DEFAULT
 
         Returns:
             bool: True if compatibility was updated
@@ -1239,7 +1248,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         url, method = self.url_manager.url_for("update_compatibility", subject=subject)
         body = {"compatibility": level}
 
-        result, code = await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             return True
@@ -1258,7 +1269,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject (str): subject name
             headers (dict): Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default UNSET
+            timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                    Default USE_CLIENT_DEFAULT
 
         Returns:
             str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
@@ -1269,7 +1281,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             compatibility level was returned
         """
         url, method = self.url_manager.url_for("get_compatibility", subject=subject)
-        result, code = await self.request(url, method=method, headers=headers, timeout=timeout)
+        result, code = get_response_and_status_code(
+            await self.request(url, method=method, headers=headers, timeout=timeout)
+        )
 
         if status.is_success(code):
             compatibility = result.get("compatibilityLevel")
