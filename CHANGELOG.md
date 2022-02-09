@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [2.2.2] - 2022-02-09
+
+- Support latest httpx version [117](https://github.com/marcosschroh/python-schema-registry-client/pull/117)
+
+### Fixed
+
 ## [2.2.1] - 2021-12-29
 
 - Support for python 3.7+ and latest httpx added [116](https://github.com/marcosschroh/python-schema-registry-client/pull/116)
