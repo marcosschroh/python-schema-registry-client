@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 set -o errexit
 
@@ -32,5 +32,5 @@ docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION
 # run tests against schema registry server
 docker-compose run --rm \
     -e CODECOV_TOKEN=${CODECOV_TOKEN} \
-    schema-registry-client ./scripts/run_test ${1-"./tests"} \
+    schema-registry-client ./scripts/run-tests ${1-"./tests"} \
 || docker-compose down
