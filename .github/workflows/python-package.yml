@@ -6,15 +6,47 @@ name: Python package
 on:
   push:
     branches: ["master"]
+    tags: "*"
   pull_request:
     branches: ["*"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2
     - name: Build and test
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        PYTHON_VERSION: ${{ matrix.python-version }}
       run: ./scripts/test
+
+  docs:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        pip install mkdocs mkdocs-material
+        mkdocs gh-deploy --force
+    
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build]
+    env:
+      TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+      TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        pip install twine
+        ./scripts/publish
