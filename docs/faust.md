@@ -54,7 +54,7 @@ def avro_user_codec():
     return avro_user_serializer
 ```
 
-and ddd in `setup.py` the folloing code in order to tell faust where to find the custom codecs.
+and ddd in `setup.py` the following code in order to tell faust where to find the custom codecs.
 
 ```python
 # setup.py
