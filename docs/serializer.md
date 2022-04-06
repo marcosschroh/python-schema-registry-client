@@ -4,9 +4,17 @@ To serialize and deserialize messages you can use `AvroMessageSerializer` and `J
 
 *If you want to run the following examples run `docker-compose up` and the `schema registry server` will run on `http://127.0.0.1:8081`*
 
+!!! warning
+    The `AvroMessageSerializer` uses the same `protocol` as confluent, meaning that the event will contain the schema id in the payload.
+    If you produce an event with the `AvroMessageSerializer` you have to consume it with the `AvroMessageSerializer` as well, otherwise you have to
+    implement the parser on the consumer side.
+
+::: schema_registry.serializers.AvroMessageSerializer
+    :docstring:
+
 ## Usage for avro schemas
 
-```python
+```python title="Trivial Usage with avro"
 from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.serializers import AvroMessageSerializer
 
@@ -62,7 +70,10 @@ avro_message_serializer.encode_record_with_schema(
 
 ## Usage for json schemas
 
-```python
+::: schema_registry.serializers.JsonMessageSerializer
+    :docstring:
+
+```python title="Trivial Usage with json schemas"
 from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.serializers import JsonMessageSerializer
 
@@ -120,6 +131,12 @@ assert message_decoded == basic_record
 Please note that `JsonMessageSerializer`, `AvroMessageSerializer` and `SchemaRegistryClient` have their asynchronous
 counterparts `AsyncJsonMessageSerializer`, `AsyncAvroMessageSerializer` and `AsyncSchemaRegistryClient` and all 
 examples above should work if you replace them with their async variations
+
+::: schema_registry.serializers.AsyncAvroMessageSerializer
+    :docstring:
+
+::: schema_registry.serializers.AsyncJsonMessageSerializer
+    :docstring:
 
 ## Classes and Methods
 

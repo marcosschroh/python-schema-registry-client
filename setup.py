@@ -36,6 +36,7 @@ setup(
         "docs": [
             "mkdocs",
             "mkdocs-material",
+            "mkautodoc",
         ],
         "tests": [
             "black",

@@ -6,25 +6,8 @@ You probably won't use this but is good to know that exists. The `MessageSeriali
 
 ## SchemaRegistryClient
 
-```python
-SchemaRegistryClient
-    A client that talks to a Schema Registry over HTTP
-
-    def __init__(
-        self, url, ca_location=None, cert_location=None, key_location=None, key_password=None, extra_headers=None,
-        timeout=httpx._config.DEFAULT_TIMEOUT_CONFIG, pool_limits=httpx._config.DEFAULT_POOL_LIMITS
-
-    Args:
-        url (str|dict) url: Url to schema registry or dictionary containing client configuration.
-        ca_location (str): File or directory path to CA certificate(s) for verifying the Schema Registry key.
-        cert_location (str): Path to public key used for authentication.
-        key_location (str): Path to private key used for authentication.
-        key_password (str): Key password
-        extra_headers (dict): Extra headers to add on every requests.
-        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
-        pool_limits (httpx.Limits): The connection pool configuration to use when
-            determining the maximum number of concurrently open HTTP connections.
-```
+::: schema_registry.client.SchemaRegistryClient
+    :docstring:
 
 ## Methods
 
@@ -250,19 +233,8 @@ def update_compatibility(level: str, subject: str, headers: dict = None, timeout
 
 ## AsyncSchemaRegistryClient
 
-```python
-AsyncSchemaRegistryClient
-    A client that talks to a Schema Registry over HTTP
-
-    def __init__(self, url, ca_location=None, cert_location=None, key_location=None, extra_headers=None)
-
-    Args:
-        url (str|dict) url: Url to schema registry or dictionary containing client configuration.
-        ca_location (str): File or directory path to CA certificate(s) for verifying the Schema Registry key.
-        cert_location (str): Path to public key used for authentication.
-        key_location (str): Path to private key used for authentication.
-        extra_headers (dict): Extra headers to add on every requests.
-```
+::: schema_registry.client.AsyncSchemaRegistryClient
+    :docstring:
 
 ## Methods
 
