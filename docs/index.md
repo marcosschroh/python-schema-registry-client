@@ -23,9 +23,9 @@ If you want the `Faust` functionality:
 pip install python-schema-registry-client[faust]
 ```
 
-## Avro Schema Usage
+## Usage
 
-```python
+```python title="Trival Usage with avro"
 from schema_registry.client import SchemaRegistryClient, schema
 
 client = SchemaRegistryClient(url="http://127.0.0.1:8081")
@@ -46,9 +46,7 @@ avro_schema = schema.AvroSchema(deployment_schema)
 schema_id = client.register("test-deployment", avro_schema)
 ```
 
-or async
-
-```python
+```python title="Trival Usage Async with avro"
 from schema_registry.client import AsyncSchemaRegistryClient, schema
 
 async_client = AsyncSchemaRegistryClient(url="http://127.0.0.1:8081")
@@ -69,9 +67,7 @@ avro_schema = schema.AvroSchema(deployment_schema)
 schema_id = await async_client.register("test-deployment", avro_schema)
 ```
 
-## JSON Schema Usage
-
-```python
+```python title="Trival Usage with json schemas"
 from schema_registry.client import SchemaRegistryClient, schema
 
 client = SchemaRegistryClient(url="http://127.0.0.1:8081")
@@ -96,9 +92,7 @@ json_schema = schema.JsonSchema(deployment_schema)
 schema_id = client.register("test-deployment", json_schema)
 ```
 
-or async
-
-```python
+```python title="Trival Usage Asynv with json schemas"
 from schema_registry.client import AsyncSchemaRegistryClient, schema
 
 async_client = AsyncSchemaRegistryClient(url="http://127.0.0.1:8081")
@@ -123,12 +117,12 @@ json_schema = schema.JsonSchema(deployment_schema)
 schema_id = await async_client.register("test-deployment", json_schema)
 ```
 
-## Usage with dataclasses-avroschema for avro schemas
+## Usage with dataclasses-avroschema
 
-You can generate the `avro schema` directely from a python class using [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema)
+You can generate the `avro schema` and `json schemas` directely from a python class using [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema)
 and use it in the API for `register schemas`, `check versions` and `test compatibility`:
 
-```python
+```python title="Trival Usage with dataclasses-avroschema"
 import dataclasses
 
 from dataclasses_avroschema import AvroModel, types
@@ -165,10 +159,13 @@ print(compatibility)
 # >>> True
 ```
 
+!!! note
+    You can generate json schemas with `dataclasses-avroschema` adding the *[pydantic batteries](https://marcosschroh.github.io/dataclasses-avroschema/pydantic/)*
+
 ### Usage with pydantic for json schemas
 You can generate the json schema directely from a python class using pydantic and use it in the API for register schemas, check versions and test compatibility:
 
-```python
+```python title="Trival Usage with pydantic"
 import typing
 
 from enum import Enum

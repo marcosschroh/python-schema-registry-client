@@ -35,11 +35,14 @@ class ContextStringIO(io.BytesIO):
 
 class MessageSerializer(ABC):
     """
-    A helper class that can serialize and deserialize messages
-    Args:
-        schemaregistry_client (schema_registry.client.SchemaRegistryClient): Http Client
-    """
+    A helper class that can serialize and deserialize messages asynchronously
 
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
+    """
     def __init__(
         self,
         schemaregistry_client: SchemaRegistryClient,
@@ -156,6 +159,15 @@ class MessageSerializer(ABC):
 
 
 class AvroMessageSerializer(MessageSerializer):
+    """
+    AvroMessageSerializer to serialize and deserialize messages
+
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
+    """
     @property
     def _serializer_schema_type(self) -> str:
         return utils.AVRO_SCHEMA_TYPE
@@ -170,6 +182,15 @@ class AvroMessageSerializer(MessageSerializer):
 
 
 class JsonMessageSerializer(MessageSerializer):
+    """
+    JsonMessageSerializer to serialize and deserialize messages
+
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
+    """
     @property
     def _serializer_schema_type(self) -> str:
         return utils.JSON_SCHEMA_TYPE
@@ -192,11 +213,13 @@ class JsonMessageSerializer(MessageSerializer):
 
 class AsyncMessageSerializer(ABC):
     """
-    A helper class that can serialize and deserialize messages asynchronously
-    Args:
-        schemaregistry_client (schema_registry.client.AsyncSchemaRegistryClient): Http Client
-        reader_schema (schema_registry.schema.AvroSchema): Specify a schema to decode the message
-        return_record_name (bool): If the record name should be returned
+    AsyncMessageSerializer to serialize and deserialize messages asynchronously
+
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
     """
 
     def __init__(
@@ -315,6 +338,15 @@ class AsyncMessageSerializer(ABC):
 
 
 class AsyncAvroMessageSerializer(AsyncMessageSerializer):
+    """
+    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously
+
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
+    """
     @property
     def _serializer_schema_type(self) -> str:
         return utils.AVRO_SCHEMA_TYPE
@@ -329,6 +361,15 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
 
 
 class AsyncJsonMessageSerializer(AsyncMessageSerializer):
+    """
+    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously
+
+    **Parameters:**
+
+    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
+    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
+    * **return_record_name** - bool: If the record name should be returned
+    """
     @property
     def _serializer_schema_type(self) -> str:
         return utils.JSON_SCHEMA_TYPE

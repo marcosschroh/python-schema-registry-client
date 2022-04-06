@@ -2,23 +2,52 @@ site_name: Python Schema Registry Client
 site_description: avro, kafka, client, faust, schema
 
 theme:
-    name: 'material'
+  name: 'material'
+  palette:
+  - scheme: default
+    primary: blue grey
+    accent: indigo
+    toggle:
+      icon: material/lightbulb
+      name: Switch to dark mode
+  - scheme: slate
+    primary: blue grey
+    accent: indigo
+    toggle:
+      icon: material/lightbulb-outline
+      name: Switch to light mode
+  features:
+  - search.suggest
+  - search.highlight
+  - content.tabs.link
+  - content.code.annotate
 
 repo_name: marcosschroh/python-schema-registry-client
 repo_url: https://github.com/marcosschroh/python-schema-registry-client
 
 nav:
-    - Introduction: 'index.md'
-    - SchemaRegistryClient Api: 'client.md'
-    - Message Serializer: 'serializer.md'
-    - Faust integration: 'faust.md'
-    - Schemas: 'schemas.md'
-    - Exceptions: 'exceptions.md'
-    - Schema Registry Server: 'schemaregistry_server.md'
+  - Introduction: 'index.md'
+  - SchemaRegistryClient Api: 'client.md'
+  - Message Serializer: 'serializer.md'
+  - Faust integration: 'faust.md'
+  - Schemas: 'schemas.md'
+  - Exceptions: 'exceptions.md'
+  - Schema Registry Server: 'schemaregistry_server.md'
 
 markdown_extensions:
-  - markdown.extensions.codehilite:
-      guess_lang: false
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
   - admonition
   - codehilite
-  - extra
+  - mkautodoc

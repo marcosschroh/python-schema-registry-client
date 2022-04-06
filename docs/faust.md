@@ -27,7 +27,7 @@ For our demonstration, let's imagine that we have the following `avro schema`:
 
 Let's register the custom `codec`
 
-```python
+```python title="Trivial Usage"
 # codecs.codec.py
 from schema_registry.client import SchemaRegistryClient, schema
 from schema_registry.serializers.faust import FaustSerializer
@@ -56,8 +56,7 @@ def avro_user_codec():
 
 and add in `setup.py` the following code in order to tell faust where to find the custom codecs.
 
-```python
-# setup.py
+```python title="setup.py"
 setup(
     ...
     entry_points={
@@ -73,8 +72,7 @@ setup(
 
 Now the final step is to integrate the faust model with the AvroSerializer.
 
-```python
-# users.models
+```python title="user.models.py"
 import faust
 
 
@@ -85,7 +83,7 @@ class UserModel(faust.Record, serializer='avro_users'):
 
 Now our application is able to send and receive message using arvo schemas!!!! :-)
 
-```python
+```python title="application"
 import logging
 
 from your_project.app import app
@@ -118,8 +116,7 @@ The full example is [here](https://github.com/marcosschroh/faust-docker-compose-
 You can also use this funcionality with [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and you won't have to provide the avro schema.
 The only thing that you need to do is add the `AvroModel` class and use its methods:
 
-```python
-# users.models
+```python title="user.models.py"
 import faust
 
 from dataclasses_avroschema import AvroModel
@@ -150,8 +147,7 @@ def avro_user_codec():
 You can also use this funcionality with [dataclasses-pydantic](https://github.com/samuelcolvin/pydantic) and you won't have to provide the json schema.
 The only thing that you need to do is add the `BaseModel` class and use its methods:
 
-```python
-# users.models
+```python title="users.models.py"
 import faust
 
 from pydantic import BaseModel

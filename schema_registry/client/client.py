@@ -40,17 +40,17 @@ class BaseClient:
     """
     A client that talks to a Schema Registry over HTTP
 
-    Args:
-        url (str|dict) url: Url to schema registry or dictionary containing client configuration.
-        ca_location (str): File or directory path to CA certificate(s)
-            for verifying the Schema Registry key.
-        cert_location (str): Path to public key used for authentication.
-        key_location (str): Path to ./vate key used for authentication.
-        key_password (str): Key password
-        extra_headers (dict): Dictionary of HTTP headers to include when sending requests.
-        timeout (httpx._client.TimeoutTypes): Optional. The timeout configuration to use when sending requests.
-        pool_limits (httpx.Limits): Optional. The connection pool configuration to use when
-            determining the maximum number of concurrently open HTTP connections.
+    **Parameters:**
+
+    * **url** - (str|dict) url: Url to schema registry or dictionary containing client configuration.
+    * **ca_location** - *(optional str)* File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **cert_location** - *(optional str)* Path to public key used for authentication.
+    * **key_location** - *(optional str)* Path to private key used for authentication.
+    * **key_password** - *(optional str)* Key password
+    * **extra_headers** - *(optional dict)* Extra headers to add on every requests.
+    * **timeout** - *(optional)* (httpx._client.TimeoutTypes) The timeout configuration to use when sending requests.
+    * **pool_limits** - *(optional)* (httpx.Limits) The connection pool configuration to use when
+        determining the maximum number of concurrently open HTTP connections.
     """
 
     def __init__(
@@ -214,6 +214,21 @@ class BaseClient:
 
 
 class SchemaRegistryClient(BaseClient):
+    """
+    A client that talks to a Schema Registry over HTTP
+
+    **Parameters:**
+
+    * **url** - *(Union[str, Dict]*: Url to schema registry or dictionary containing client configuration.
+    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **cert_location** - *Optional[str]*: Path to public key used for authentication.
+    * **key_location** - *Optional[str]*: Path to private key used for authentication.
+    * **key_password** - *Optional[str]*: Key password
+    * **extra_headers** - *Optional[Dict[str, str]]*: Extra headers to add on every requests.
+    * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
+    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when 
+        determining the maximum number of concurrently open HTTP connections.
+    """
     def request(
         self,
         url: str,
@@ -239,29 +254,25 @@ class SchemaRegistryClient(BaseClient):
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
         """
-        POST /subjects/(string: subject)/versions
-        Register a schema with the registry under the given subject
-        and receive a schema id.
+        Register a schema for a subject
+
         Schema can be avro or json, and can be presented as a parsed schema or a string.
         If schema is a string, the `schema_type` kwarg must be used to indicate
         what type of schema the string is ("AVRO" by default).
         If the schema is already parsed, the schema_type is inferred directly from the parsed schema.
         Multiple instances of the same schema will result in cache misses.
 
-        Args:
-            subject (str):
-                subject name
-            schema typing.Union[client.schema.BaseSchema, str]:
-                Avro or JSON schema to be registered
-            headers (dict):
-                Extra headers to add on the requests
-            timeout (httpx._client.TimeoutTypes):
-                The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
-            schema_type typing.Union["AVRO", "JSON"]:
-                The type of schema to parse if `schema` is a string. Default "AVRO"
+        **Parameters:**
 
-        Returns:
-            int: schema_id
+        * **subject** - str: subject name
+        * **schema** - typing.Union[client.schema.BaseSchema, str]: Avro or JSON schema to be registered
+        * **headers** - Dict: Extra headers to add on the requests
+        * **timeout** - Union[TimeoutTypes, UseClientDefault]: The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
+        * **schema_type** - typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
+
+        **Returns:**
+
+        * **int** - schema_id
         """
         schemas_to_id = self.subject_to_schema_ids[subject]
 
@@ -749,6 +760,21 @@ class SchemaRegistryClient(BaseClient):
 
 
 class AsyncSchemaRegistryClient(BaseClient):
+    """
+    A client that talks to a Schema Registry over HTTP
+
+    **Parameters:**
+
+    * **url** - *(Union[str, Dict]*: Url to schema registry or dictionary containing client configuration.
+    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **cert_location** - *Optional[str]*: Path to public key used for authentication.
+    * **key_location** - *Optional[str]*: Path to private key used for authentication.
+    * **key_password** - *Optional[str]*: Key password
+    * **extra_headers** - *Optional[Dict[str, str]]*: Extra headers to add on every requests.
+    * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
+    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when 
+        determining the maximum number of concurrently open HTTP connections.
+    """
     async def request(
         self,
         url: str,
