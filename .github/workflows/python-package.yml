@@ -33,7 +33,7 @@ jobs:
     - run: |
         python -m venv .venv
         . .venv/bin/activate
-        pip install mkdocs mkdocs-material
+        pip3 install -e ".[tests,docs,faust]"
         mkdocs gh-deploy --force
     
   publish:
