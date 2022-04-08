@@ -43,7 +43,8 @@ class BaseClient:
     **Parameters:**
 
     * **url** - (str|dict) url: Url to schema registry or dictionary containing client configuration.
-    * **ca_location** - *(optional str)* File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **ca_location** - *(optional str)* File or directory path to CA certificate(s)
+        for verifying the Schema Registry key.
     * **cert_location** - *(optional str)* Path to public key used for authentication.
     * **key_location** - *(optional str)* Path to private key used for authentication.
     * **key_password** - *(optional str)* Key password
@@ -220,15 +221,17 @@ class SchemaRegistryClient(BaseClient):
     **Parameters:**
 
     * **url** - *(Union[str, Dict]*: Url to schema registry or dictionary containing client configuration.
-    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s) for
+        verifying the Schema Registry key.
     * **cert_location** - *Optional[str]*: Path to public key used for authentication.
     * **key_location** - *Optional[str]*: Path to private key used for authentication.
-    * **key_password** - *Optional[str]*: Key password
+    * **key_password** - *Optional[str]*: Key password.
     * **extra_headers** - *Optional[Dict[str, str]]*: Extra headers to add on every requests.
     * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
-    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when 
+    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when
         determining the maximum number of concurrently open HTTP connections.
     """
+
     def request(
         self,
         url: str,
@@ -265,10 +268,13 @@ class SchemaRegistryClient(BaseClient):
         **Parameters:**
 
         * **subject** - str: subject name
-        * **schema** - typing.Union[client.schema.BaseSchema, str]: Avro or JSON schema to be registered
+        * **schema** - typing.Union[client.schema.BaseSchema, str]: Avro or JSON
+            schema to be registered
         * **headers** - Dict: Extra headers to add on the requests
-        * **timeout** - Union[TimeoutTypes, UseClientDefault]: The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
-        * **schema_type** - typing.Union["AVRO", "JSON"]: The type of schema to parse if `schema` is a string. Default "AVRO"
+        * **timeout** - Union[TimeoutTypes, UseClientDefault]: The timeout configuration
+            to use when sending requests. Default USE_CLIENT_DEFAULT
+        * **schema_type** - typing.Union["AVRO", "JSON"]: The type of schema to
+            parse if `schema` is a string. Default "AVRO"
 
         **Returns:**
 
@@ -766,15 +772,17 @@ class AsyncSchemaRegistryClient(BaseClient):
     **Parameters:**
 
     * **url** - *(Union[str, Dict]*: Url to schema registry or dictionary containing client configuration.
-    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s) for verifying the Schema Registry key.
+    * **ca_location** - *Optional[str]*: File or directory path to CA certificate(s)
+        for verifying the Schema Registry key.
     * **cert_location** - *Optional[str]*: Path to public key used for authentication.
     * **key_location** - *Optional[str]*: Path to private key used for authentication.
     * **key_password** - *Optional[str]*: Key password
     * **extra_headers** - *Optional[Dict[str, str]]*: Extra headers to add on every requests.
     * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
-    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when 
+    * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when
         determining the maximum number of concurrently open HTTP connections.
     """
+
     async def request(
         self,
         url: str,

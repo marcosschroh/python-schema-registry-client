@@ -43,6 +43,7 @@ class MessageSerializer(ABC):
     * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
     * **return_record_name** - bool: If the record name should be returned
     """
+
     def __init__(
         self,
         schemaregistry_client: SchemaRegistryClient,
@@ -168,6 +169,7 @@ class AvroMessageSerializer(MessageSerializer):
     * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
     * **return_record_name** - bool: If the record name should be returned
     """
+
     @property
     def _serializer_schema_type(self) -> str:
         return utils.AVRO_SCHEMA_TYPE
@@ -191,6 +193,7 @@ class JsonMessageSerializer(MessageSerializer):
     * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
     * **return_record_name** - bool: If the record name should be returned
     """
+
     @property
     def _serializer_schema_type(self) -> str:
         return utils.JSON_SCHEMA_TYPE
@@ -347,6 +350,7 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
     * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
     * **return_record_name** - bool: If the record name should be returned
     """
+
     @property
     def _serializer_schema_type(self) -> str:
         return utils.AVRO_SCHEMA_TYPE
@@ -370,6 +374,7 @@ class AsyncJsonMessageSerializer(AsyncMessageSerializer):
     * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
     * **return_record_name** - bool: If the record name should be returned
     """
+
     @property
     def _serializer_schema_type(self) -> str:
         return utils.JSON_SCHEMA_TYPE

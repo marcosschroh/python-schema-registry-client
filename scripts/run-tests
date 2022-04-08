@@ -1,8 +1,8 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 export PREFIX=""
-if [ -d 'venv' ] ; then
-    export PREFIX="venv/bin/"
+if [ -d '.venv' ] ; then
+    export PREFIX=".venv/bin/"
 fi
 
 set -x

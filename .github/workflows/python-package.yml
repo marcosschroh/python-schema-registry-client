@@ -17,12 +17,18 @@ jobs:
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Setup python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+
     - name: Build and test
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         PYTHON_VERSION: ${{ matrix.python-version }}
-      run: ./scripts/test
+      run: ./scripts/test --python-version ${{ matrix.python-version }}
 
   docs:
     runs-on: ubuntu-latest

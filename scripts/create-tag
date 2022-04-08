@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 VERSION=`cat setup.py | grep '__version__ =' | sed 's/__version__ = //' | sed 's/"//g'`
 
