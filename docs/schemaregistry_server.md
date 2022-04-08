@@ -18,9 +18,11 @@ Schema Registry is a distributed storage layer for Avro or JSON Schemas which us
 
 ### Subjects
 
-`GET /subjects` - Get a list of registered subjects. *[Missing]*
+`GET /subjects` - Get a list of registered subjects.
 
-`GET /subjects/(string: subject)/versions` - Get a list of versions registered under the specified subject *[Missing]*
+`GET /subjects/(string: subject)/versions` - Get a list of versions registered under the specified subject
+
+`GET /schemas/ids/{int: id}/versions` - Get the subject-version pairs identified by the input ID.
 
 `DELETE /subjects/(string: subject)` - Deletes the specified subject and its associated compatibility level if registered. It is recommended to use this API only when a topic needs to be recycled or in development environment.
 

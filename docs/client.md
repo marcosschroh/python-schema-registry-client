@@ -84,6 +84,25 @@ def get_subjects(self, headers: dict = None, timeout: typing.Union[TimeoutTypes,
     """
 ```
 
+### Get Subjects Versions
+
+```python
+async def get_schema_subject_versions(self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,) -> typing.Optional[typing.List[SubjectVersion]]:
+    """
+    GET /schemas/ids/{int: id}/versions
+    Get the subject-version pairs identified by the input ID.
+
+    Args:
+        schema_id (int): Schema Id
+        headers (dict): Extra headers to add on the requests
+        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
+
+    Returns:
+        typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
+    """
+```
+
 ### Delete Schema
 
 ```python
@@ -308,6 +327,25 @@ async def get_subjects(self, headers: dict = None, timeout: typing.Union[Timeout
 
     Returns:
         list [str]: list of registered subjects.
+    """
+```
+
+### Get Subjects Versions
+
+```python
+async def get_schema_subject_versions(self, schema_id: int, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,) -> typing.Optional[typing.List[SubjectVersion]]:
+    """
+    GET /schemas/ids/{int: id}/versions
+    Get the subject-version pairs identified by the input ID.
+
+    Args:
+        schema_id (int): Schema Id
+        headers (dict): Extra headers to add on the requests
+        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.
+                Default USE_CLIENT_DEFAULT
+
+    Returns:
+        typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered
     """
 ```
 
