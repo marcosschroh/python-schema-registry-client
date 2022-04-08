@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import logging
 import os
 import typing
@@ -6,7 +7,7 @@ from collections import namedtuple
 
 import pydantic
 import pytest
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
@@ -116,6 +117,12 @@ def response_klass():
 
 
 RequestArgs = namedtuple("RequestArgs", ["url", "method", "body", "headers", "timeout"])
+
+
+class Color(str, enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
 class RequestLoggingAssertMixin(object):
@@ -369,7 +376,7 @@ def dataclass_avro_schema_advance():
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+        favorite_colors: Color = Color.BLUE
         address: str = None
 
     return UserAdvance

@@ -1,11 +1,11 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 set -o errexit
 
 PYTHON_VERSION="3.10"
 
 ARGS=""
-while (( "$#" )); do
+if [[ $# -eq 2 ]]; then
   case "$1" in
     --python-version)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
@@ -21,7 +21,7 @@ while (( "$#" )); do
       shift
       ;;
   esac
-done
+fi
 
 # set positional arguments in their proper place
 eval set -- "$ARGS"
