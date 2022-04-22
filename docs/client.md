@@ -9,6 +9,32 @@ You probably won't use this but is good to know that exists. The `MessageSeriali
 ::: schema_registry.client.SchemaRegistryClient
     :docstring:
 
+## Auth
+
+Credentials can be supplied in `two` different ways: using the `url` or the `schema_registry.client.Auth`.
+
+
+```python title="Credentials using Auth"
+from schema_registry.client import SchemaRegistryClient, Auth
+
+SchemaRegistryClient(
+    url="https://user_url:secret_url@127.0.0.1:65534",
+    auth=Auth(username="secret-user", password="secret"),
+)
+```
+
+```python title="Credentials using the url"
+from schema_registry.client import SchemaRegistryClient
+
+username="secret-username"
+password="secret"
+
+SchemaRegistryClient({"url": f"https://{username}:{password}@127.0.0.1:65534"})
+```
+
+!!! note
+    This auth methods are the same for `AsyncSchemaRegistryClient`
+
 ## Methods
 
 ### Get Schema

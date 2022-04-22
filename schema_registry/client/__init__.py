@@ -1,4 +1,5 @@
-from schema_registry.client import errors, schema  # noqa
-from schema_registry.client.client import AsyncSchemaRegistryClient, SchemaRegistryClient  # noqa
+from . import errors, schema  # noqa
+from .auth_utils import Auth  # noqa
+from .client import AsyncSchemaRegistryClient, SchemaRegistryClient  # noqa
 
 __all__ = ["SchemaRegistryClient", "AsyncSchemaRegistryClient"]

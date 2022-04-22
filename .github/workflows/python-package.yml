@@ -54,5 +54,5 @@ jobs:
     - run: |
         python -m venv .venv
         . .venv/bin/activate
-        pip install twine
+        pip install twine wheel
         ./scripts/publish

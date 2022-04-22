@@ -10,11 +10,11 @@ from httpx import USE_CLIENT_DEFAULT
 from httpx._client import UseClientDefault
 from httpx._types import TimeoutTypes
 
-from schema_registry.client import status, utils
-from schema_registry.client.errors import ClientError
-from schema_registry.client.paths import paths
-from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
-from schema_registry.client.urls import UrlManager
+from . import auth_utils, status, utils
+from .errors import ClientError
+from .paths import paths
+from .schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
+from .urls import UrlManager
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ class BaseClient:
     * **timeout** - *(optional)* (httpx._client.TimeoutTypes) The timeout configuration to use when sending requests.
     * **pool_limits** - *(optional)* (httpx.Limits) The connection pool configuration to use when
         determining the maximum number of concurrently open HTTP connections.
+    * **auth** - *(optional)* (schema_registry.client.Auth) Auth credentials.
     """
 
     def __init__(
@@ -64,6 +65,7 @@ class BaseClient:
         extra_headers: dict = None,
         timeout: typing.Optional[httpx.Timeout] = None,
         pool_limits: typing.Optional[httpx.Limits] = None,
+        auth: typing.Optional[auth_utils.Auth] = None,
     ) -> None:
 
         if isinstance(url, str):
@@ -84,6 +86,7 @@ class BaseClient:
         self.extra_headers = extra_headers
         self.timeout = timeout
         self.pool_limits = pool_limits
+        self.auth = auth
 
         self.client_kwargs = self._get_client_kwargs()
 
@@ -97,10 +100,17 @@ class BaseClient:
     def __eq__(self, obj: typing.Any) -> bool:
         return self.conf == obj.conf and self.extra_headers == obj.extra_headers
 
-    @staticmethod
-    def _configure_basic_auth(conf: typing.Dict[str, typing.Any]) -> typing.Tuple[str, str]:
-        url = conf["url"]
-        auth_provider = conf.pop("basic.auth.credentials.source", "URL").upper()
+    def _configure_auth(self) -> typing.Tuple[str, str]:
+        # Check first if the credentials are sent in Auth
+        if self.auth is not None:
+            return (
+                self.auth.username,
+                self.auth.password,
+            )
+
+        # This part should be deprecated with a new mayor version. Url should be only a string
+        url = self.conf["url"]
+        auth_provider = self.conf.pop("basic.auth.credentials.source", "URL").upper()  # type: ignore
 
         if auth_provider not in utils.VALID_AUTH_PROVIDERS:
             raise ValueError(
@@ -111,12 +121,12 @@ class BaseClient:
             )
 
         if auth_provider == "USER_INFO":
-            auth = tuple(conf.pop("basic.auth.user.info", "").split(":"))
-        elif auth_provider == "SASL_INHERIT":
-            if conf.pop("sasl.mechanism", "").upper() is ["GSSAPI"]:
-                raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
-            auth = (conf.pop("sasl.username", ""), conf.pop("sasl.password", ""))
+            logger.warning(
+                "Deprecation warning: This will be deprecated in future versions. Use auth_utils.Auth instead"
+            )
+            auth = tuple(self.conf.pop("basic.auth.user.info", "").split(":"))  # type: ignore
         else:
+            # Credentials might be in the url.
             parsed_url = urlparse(url)
             auth = (parsed_url.username or "", parsed_url.password or "")
 
@@ -129,17 +139,43 @@ class BaseClient:
     ) -> typing.Optional[typing.Union[str, typing.Tuple[str, str], typing.Tuple[str, str, str]]]:
         certificate = conf.get(utils.SSL_CERTIFICATE_LOCATION)
 
-        if certificate:
+        if certificate is not None:
             key_path = conf.get(utils.SSL_KEY_LOCATION)
             key_password = conf.get(utils.SSL_KEY_PASSWORD)
 
-            if key_path:
-                certificate = (certificate, key_path)
+            if key_path is not None:
+                certificate = (
+                    certificate,
+                    key_path,
+                )
 
-                if key_password:
+                if key_password is not None:
                     certificate += (key_password,)
 
         return certificate
+
+    def _get_client_kwargs(self) -> typing.Dict:
+        verify = self.conf.get(utils.SSL_CA_LOCATION, False)
+        certificate = self._configure_client_tls(self.conf)
+        auth = self._configure_auth()
+
+        client_kwargs = {
+            "cert": certificate,
+            "verify": verify,  # type: ignore
+            "auth": auth,
+        }
+
+        # If these values haven't been explicitly defined let httpx sort out
+        # the default values.
+        if self.extra_headers is not None:
+            client_kwargs["headers"] = self.extra_headers  # type:ignore
+
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout  # type:ignore
+
+        if self.pool_limits is not None:
+            client_kwargs["limits"] = self.pool_limits  # type:ignore
+        return client_kwargs
 
     def prepare_headers(self, body: dict = None, headers: dict = None) -> dict:
         _headers = {"Accept": utils.ACCEPT_HEADERS}
@@ -190,29 +226,6 @@ class BaseClient:
             response = client.request(method, url, headers=_headers, json=body, timeout=timeout)
         return response
 
-    def _get_client_kwargs(self) -> typing.Dict:
-        verify = self.conf.get(utils.SSL_CA_LOCATION, False)
-        certificate = self._configure_client_tls(self.conf)
-        auth = self._configure_basic_auth(self.conf)
-
-        client_kwargs = {
-            "cert": certificate,
-            "verify": verify,  # type: ignore
-            "auth": auth,
-        }
-
-        # If these values haven't been explicitly defined let httpx sort out
-        # the default values.
-        if self.extra_headers is not None:
-            client_kwargs["headers"] = self.extra_headers  # type:ignore
-
-        if self.timeout is not None:
-            client_kwargs["timeout"] = self.timeout  # type:ignore
-
-        if self.pool_limits is not None:
-            client_kwargs["limits"] = self.pool_limits  # type:ignore
-        return client_kwargs
-
 
 class SchemaRegistryClient(BaseClient):
     """
@@ -230,6 +243,7 @@ class SchemaRegistryClient(BaseClient):
     * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
     * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when
         determining the maximum number of concurrently open HTTP connections.
+    * **auth** - *(optional)* (schema_registry.client.Auth) Auth credentials.
     """
 
     def request(
@@ -781,6 +795,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     * **timeout** - *Optional[httpx._client.TimeoutTypes]*  The timeout configuration to use when sending requests.
     * **pool_limits** - *Optional[httpx.Limits])* The connection pool configuration to use when
         determining the maximum number of concurrently open HTTP connections.
+    * **auth** - *(optional)* (schema_registry.client.Auth) Auth credentials.
     """
 
     async def request(

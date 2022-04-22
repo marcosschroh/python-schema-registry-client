@@ -5,7 +5,7 @@ from base64 import b64encode
 import httpx
 import pytest
 
-from schema_registry.client import AsyncSchemaRegistryClient, utils
+from schema_registry.client import AsyncSchemaRegistryClient, Auth, utils
 
 
 @pytest.mark.asyncio
@@ -122,22 +122,16 @@ async def test_basic_auth_user_info():
 
 
 @pytest.mark.asyncio
-async def test_basic_auth_sasl_inherit():
-    username = "secret-user-sasl"
-    password = "secret-sasl"
+async def test_auth():
+    username = "secret-user"
+    password = "secret"
     client = AsyncSchemaRegistryClient(
-        {
-            "url": "https://user_url:secret_url@127.0.0.1:65534",
-            "basic.auth.credentials.source": "SASL_INHERIT",
-            "sasl.mechanism": "PLAIN",
-            "sasl.username": username,
-            "sasl.password": password,
-        }
+        url="https://user_url:secret_url@127.0.0.1:65534",
+        auth=Auth(username=username, password=password),
     )
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
-
     response = await client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
