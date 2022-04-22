@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [2.4.0] - 2022-04-22
+
+- `Auth` parameter added to simplify [auth credentials](https://marcosschroh.github.io/python-schema-registry-client/client/#auth) (`username` and `password`) [127](https://github.com/marcosschroh/python-schema-registry-client/pull/127)
+
+### Fixed
+
 ## [2.2.2] - 2022-02-09
 
 - Support latest httpx version [117](https://github.com/marcosschroh/python-schema-registry-client/pull/117)
