@@ -124,12 +124,19 @@ and use it in the API for `register schemas`, `check versions` and `test compati
 
 ```python title="Trival Usage with dataclasses-avroschema"
 import dataclasses
+from enum import Enum
+import typing
 
-from dataclasses_avroschema import AvroModel, types
-
+from dataclasses_avroschema import AvroModel
 from schema_registry.client import SchemaRegistryClient
 
 client = SchemaRegistryClient(url="http://127.0.0.1:8081")
+
+
+class ColorEnum(str, Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
 @dataclasses.dataclass
@@ -139,9 +146,11 @@ class UserAdvance(AvroModel):
     pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
     accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
     has_car: bool = False
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: ColorEnum = ColorEnum.BLUE
     country: str = "Argentina"
     address: str = None
+
+subject = "subject"
 
 # register the schema
 schema_id = client.register(subject, UserAdvance.avro_schema())
@@ -153,9 +162,8 @@ result = client.check_version(subject, UserAdvance.avro_schema())
 print(result)
 # >>> SchemaVersion(subject='dataclasses-avroschema-subject-2', schema_id=12, schema=1, version={"type":"record" ...')
 
-compatibility = client.test_compatibility(subject, UserAdvance.avro_schema())
-print(compatibility)
-
+compatible = client.test_compatibility(subject, UserAdvance.avro_schema())
+print(compatible)
 # >>> True
 ```
 
@@ -167,11 +175,9 @@ You can generate the json schema directely from a python class using pydantic an
 
 ```python title="Trival Usage with pydantic"
 import typing
-
 from enum import Enum
 
 from pydantic import BaseModel
-
 from schema_registry.client import SchemaRegistryClient
 
 client = SchemaRegistryClient(url="http://127.0.0.1:8081")
@@ -192,6 +198,8 @@ class UserAdvance(BaseModel):
     country: str = "Argentina"
     address: str = None
 
+subject = "subject"
+
 # register the schema
 schema_id = client.register(subject, UserAdvance.schema_json(), schema_type="JSON")
 
@@ -202,9 +210,8 @@ result = client.check_version(subject, UserAdvance.schema_json(), schema_type="J
 print(result)
 # >>> SchemaVersion(subject='pydantic-jsonschema-subject', schema_id=12, schema=1, version=<schema_registry.client.schema.JsonSchema object at 0x7f40354550a0>)
 
-compatibility = client.test_compatibility(subject, UserAdvance.schema_json(), schema_type="JSON")
-print(compatibility)
-
+compatible = client.test_compatibility(subject, UserAdvance.schema_json(), schema_type="JSON")
+print(compatible)
 # >>> True
 ```
 
