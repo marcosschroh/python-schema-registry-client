@@ -70,6 +70,16 @@ setup(
 )
 ```
 
+or if you are using `poetry` an a [`pyproject.toml`](https://python-poetry.org/docs/pyproject/) you can add in `pyproject.toml` the following code to tell faust where to find the custom codecs:
+
+```toml title="pyproject.toml"
+[tool.poetry.scripts]
+example = "example.app:main"
+
+[tool.poetry.plugins."faust.codecs"]
+avro_users = "example.codecs.avro:avro_user_codec"
+```
+
 Now the final step is to integrate the faust model with the AvroSerializer.
 
 ```python title="user.models.py"
