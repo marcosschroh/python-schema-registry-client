@@ -100,6 +100,12 @@ class BaseClient:
     def __eq__(self, obj: typing.Any) -> bool:
         return self.conf == obj.conf and self.extra_headers == obj.extra_headers
 
+
+    @staticmethod
+    def _schema_from_result(result: dict) -> typing.Union[JsonSchema, AvroSchema]:
+        schema = result.get("schema")
+        schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
+
     def _configure_auth(self) -> typing.Tuple[str, str]:
         # Check first if the credentials are sent in Auth
         if self.auth is not None:
@@ -423,11 +429,7 @@ class SchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
-            schema_str = result.get("schema")
-            schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
-
-            schema = SchemaFactory.create_schema(schema_str, schema_type)
-
+            schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
             return schema
 
@@ -508,7 +510,7 @@ class SchemaRegistryClient(BaseClient):
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
         else:
-            schema = AvroSchema(result["schema"])
+            schema = self._schema_from_result(result)
 
         version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)
@@ -984,10 +986,8 @@ class AsyncSchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
-            schema_str = result.get("schema")
-            result = AvroSchema(schema_str)
-
-            self._cache_schema(result, schema_id)
+            schema = self._schema_from_result(result)
+            self._cache_schema(schema, schema_id)
             return result
 
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
@@ -1038,7 +1038,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
         else:
-            schema = AvroSchema(result["schema"])
+            schema_str = result.get("schema")
+            schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
+            schema = SchemaFactory.create_schema(schema_str, schema_type)
 
         version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)
