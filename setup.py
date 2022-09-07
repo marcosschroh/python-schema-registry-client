@@ -46,7 +46,7 @@ setup(
             "isort",
             "pytest",
             "pytest-mock",
-            "pytest-asyncio",
+            "pytest-asyncio<0.19.0",
             "faker",
             "codecov",
             "pytest-cov",

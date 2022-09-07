@@ -105,6 +105,7 @@ class BaseClient:
     def _schema_from_result(result: dict) -> typing.Union[JsonSchema, AvroSchema]:
         schema = result.get("schema")
         schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
+        return SchemaFactory.create_schema(schema, schema_type)
 
     def _configure_auth(self) -> typing.Tuple[str, str]:
         # Check first if the credentials are sent in Auth
@@ -429,6 +430,7 @@ class SchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
+            print(result)
             schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
             return schema
@@ -986,6 +988,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
+            print(result)
             schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
             return result
