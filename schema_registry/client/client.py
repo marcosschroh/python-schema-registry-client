@@ -989,7 +989,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         elif status.is_success(code):
             schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
-            return result
+            return schema
 
         raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
 
