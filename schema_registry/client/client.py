@@ -430,7 +430,6 @@ class SchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
-            print(result)
             schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
             return schema
@@ -988,7 +987,6 @@ class AsyncSchemaRegistryClient(BaseClient):
             logger.info(f"Schema {schema_id} not found: {code}")
             return None
         elif status.is_success(code):
-            print(result)
             schema = self._schema_from_result(result)
             self._cache_schema(schema, schema_id)
             return result
