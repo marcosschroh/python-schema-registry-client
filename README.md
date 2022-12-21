@@ -349,8 +349,12 @@ Run code linting:
 ./scripts/lint
 ```
 
-To perform tests using the python shell you can execute `docker-compose up` and the `schema registry server` 
-will run on `http://127.0.0.1:8081`, then you can interact against it using the `SchemaRegistryClient`:
+To perform tests using the python shell you can run the project using `docker-compose`.
+
+1. Build: `docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION`
+2. Execute `docker-compose up`. Then, the `schema registry server` will run on `http://127.0.0.1:8081`, then you can interact against it using the `SchemaRegistryClient`:
+3. Use the python interpreter (get a python shell typing `python` in your command line)
+4. Play with the `schema server`
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
@@ -358,4 +362,20 @@ from schema_registry.client import SchemaRegistryClient, schema
 client = SchemaRegistryClient(url="http://127.0.0.1:8081")
 
 # do some operations with the client...
+deployment_schema = {
+    "type": "record",
+    "namespace": "com.kubertenes",
+    "name": "AvroDeployment",
+    "fields": [
+        {"name": "image", "type": "string"},
+        {"name": "replicas", "type": "int"},
+        {"name": "port", "type": "int"},
+    ],
+}
+
+avro_schema = schema.AvroSchema(deployment_schema)
+client.register("test-deployment", avro_schema)
+# >>>> Out[5]: 1
 ```
+
+Then, you can check the schema using your browser going to the url `http://127.0.0.1:8081/schemas/ids/1`
