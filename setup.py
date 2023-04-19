@@ -28,6 +28,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
+    package_data={"schema_registry":["py.typed"]},
     install_requires=requires,
     extras_require={
         "faust": [
