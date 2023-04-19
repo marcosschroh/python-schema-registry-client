@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [2.4.3] - 2023-04-19
+
+- include properly `py.typed` marker file
+
+### Fixed
+
 ## [2.4.2] - 2023-04-18
 
 - `py.typed` marker file added [142](https://github.com/marcosschroh/python-schema-registry-client/pull/142)
