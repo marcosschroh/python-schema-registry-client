@@ -15,7 +15,7 @@ class Serializer(Codec):
     def __init__(
         self,
         schema_subject: str,
-        schema: typing.Union[BaseSchema],
+        schema: BaseSchema,
         message_serializer: MessageSerializer,
     ):
         self.schema_subject = schema_subject
@@ -26,7 +26,7 @@ class Serializer(Codec):
 
     def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
 
-        return self.message_serializer.decode_message(event)
+        return self.message_serializer.deserialize(event)
 
     def _dumps(self, payload: typing.Dict[str, typing.Any]) -> bytes:
         """
@@ -36,8 +36,8 @@ class Serializer(Codec):
         """
         payload = self.clean_payload(payload)
 
-        return self.message_serializer.encode_record_with_schema(
-            self.schema_subject, self.schema, payload
+        return self.message_serializer.serialize(
+            self.schema, payload, self.schema_subject
         )  # type: ignore
 
     @staticmethod

@@ -221,7 +221,7 @@ print(compatibility)
 
 ## Serializers
 
-You can use `AvroMessageSerializer` to encode/decode messages in `avro`
+You can use `AvroMessageSerializer` to serialize/deserialize messages in `avro`
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema
@@ -243,7 +243,7 @@ avro_user_schema = schema.AvroSchema({
     ],
 })
 
-# We want to encode the user_record with avro_user_schema
+# We want to serialize the user_record with avro_user_schema
 user_record = {
     "first_name": "my_first_name",
     "last_name": "my_last_name",
@@ -251,10 +251,10 @@ user_record = {
 }
 
 # Encode the record
-message_encoded = avro_message_serializer.encode_record_with_schema(
-    "user", avro_user_schema, user_record)
+message_serialized= avro_message_serializer.serialize(
+    avro_user_schema, user_record, "user")
 
-print(message_encoded)
+print(message_serialized)
 # >>> b'\x00\x00\x00\x00\x01\x1amy_first_name\x18my_last_name('
 ```
 
@@ -299,8 +299,8 @@ basic_record = {
     "name": "a_name",
 }
 
-message_encoded = json_message_serializer.encode_record_with_schema(
-    "basic", json_schema, basic_record)
+message_encoded = json_message_serializer.serialize(
+    json_schema, basic_record, "basic")
 
 print(message_encoded)
 # >>> b'\x00\x00\x00\x00\x02{"number": 10, "name": "a_name"}'
@@ -312,7 +312,7 @@ Usually, we have a situation like this:
 
 ![Confluent Architecture](docs/img/confluent_architecture.png)
 
-So, our producers/consumers have to serialize/deserialize messages every time that they send/receive from Kafka topics. In this picture, we can imagine a `Faust` application receiving messages (encoded with an Avro schema) and we want to deserialize them, so we can ask the `schema server` to do that for us. In this scenario, the `MessageSerializer` is perfect.
+So, our producers/consumers have to serialize/deserialize messages every time that they send/receive from Kafka topics. In this picture, we can imagine a `Faust` application receiving messages (serialized with an Avro schema) and we want to deserialize them, so we can ask the `schema server` to do that for us. In this scenario, the `MessageSerializer` is perfect.
 
 Also, could be a use case that we would like to have an Application only to administrate `Avro Schemas` (register, update compatibilities, delete old schemas, etc.), so the `SchemaRegistryClient` is perfect.
 

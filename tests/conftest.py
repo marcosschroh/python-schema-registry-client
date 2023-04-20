@@ -5,8 +5,10 @@ import os
 import typing
 from collections import namedtuple
 
+import httpx
 import pydantic
 import pytest
+import pytest_asyncio
 from dataclasses_avroschema import AvroModel
 from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
@@ -147,18 +149,18 @@ class RequestLoggingSchemaRegistryClient(SchemaRegistryClient, RequestLoggingAss
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
         return super().request(url, method, body, headers=headers, timeout=timeout)
 
-
 @pytest.fixture
-def client():
-    url = os.getenv("SCHEMA_REGISTRY_URL", "http://localhost:8081")
-    client = RequestLoggingSchemaRegistryClient(url)
-    yield client
-
-    subjects = {
+def test_subjects() -> typing.List[str]:
+    return [
+        'dataclasses-avroschema-subject',
+        'dataclasses-jsonschema-subject',
+        'json-deployment',
+        'test-avro-value',
+        'test-json-value',
         "test-avro-basic-schema",
         "test-json-basic-schema",
         "test-avro-deployment",
@@ -180,10 +182,17 @@ def client():
         "test-dataclasses-avroschema",
         "test-dataclasses-jsonschema",
         "test-union-field-avroschema",
-    }
+    ]
+
+
+@pytest.fixture
+def client(test_subjects):
+    url = os.getenv("SCHEMA_REGISTRY_URL")
+    client = RequestLoggingSchemaRegistryClient(url)
+    yield client
 
     # Executing the clean up. Delete all the subjects between tests.
-    for subject in subjects:
+    for subject in test_subjects:
         try:
             client.delete_subject(subject)
         except errors.ClientError as exc:
@@ -310,46 +319,24 @@ class RequestLoggingAsyncSchemaRegistryClient(AsyncSchemaRegistryClient, Request
         body: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> tuple:
+    ) -> httpx.Response:
         self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
         return await super().request(url, method, body, headers=headers, timeout=timeout)
 
 
-@pytest.fixture
-async def async_client():
+
+@pytest_asyncio.fixture
+async def async_client(test_subjects):
     url = os.getenv("SCHEMA_REGISTRY_URL")
     client = RequestLoggingAsyncSchemaRegistryClient(url)
+
     yield client
 
-    subjects = {
-        "test-avro-basic-schema",
-        "test-json-basic-schema",
-        "test-avro-deployment",
-        "test-json-deployment",
-        "test-avro-country",
-        "test-json-country",
-        "test-avro-basic-schema-backup",
-        "test-json-basic-schema-backup",
-        "test-avro-advance-schema",
-        "test-json-advance-schema",
-        "test-avro-user-schema",
-        "test-json-user-schema",
-        "subject-does-not-exist",
-        "test-logical-types-schema",
-        "test-avro-schema-version",
-        "test-json-schema-version",
-        "test-avro-nested-schema",
-        "test-json-nested-schema",
-        "test-dataclasses-avroschema",
-        "test-dataclasses-jsonschema",
-        "test-union-field-avroschema",
-        "test-union-field-jsonschema",
-    }
-
     # Executing the clean up. Delete all the subjects between tests.
-    for subject in subjects:
+    for subject in test_subjects:
         try:
-            await client.delete_subject(subject)
+            result = await client.delete_subject(subject)
+            logger.info(result)
         except errors.ClientError as exc:
             logger.info(exc.message)
 

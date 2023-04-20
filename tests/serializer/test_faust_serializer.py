@@ -23,14 +23,14 @@ def test_avro_dumps_load_message(client, avro_country_schema):
     faust_serializer = serializer.FaustSerializer(client, "test-avro-country", avro_country_schema)
 
     record = {"country": "Argentina"}
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_avro_nested_schema(client):
@@ -38,14 +38,14 @@ def test_avro_nested_schema(client):
     faust_serializer = serializer.FaustSerializer(client, "test-avro-nested-schema", nested_schema)
 
     record = data_gen.create_nested_schema()
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_avro_dumps_load_with_register_codec(client, avro_country_schema):
@@ -58,15 +58,15 @@ def test_avro_dumps_load_with_register_codec(client, avro_country_schema):
         country: str
 
     country_record = CountryRecord(**payload)
-    message_encoded = country_record.dumps()
+    message_serialized = country_record.dumps()
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = CountryRecord.loads(message_encoded)
+    message_deserialized = CountryRecord.loads(message_serialized)
 
-    assert message_decoded == country_record
+    assert message_deserialized == country_record
 
 
 def test_avro_nested_schema_with_register_codec(client):
@@ -91,14 +91,14 @@ def test_avro_nested_schema_with_register_codec(client):
 
     customer = Customer(**payload)
 
-    message_encoded = customer.dumps()
+    message_serialized = customer.dumps()
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = Customer.loads(message_encoded)
-    assert message_decoded == customer
+    message_deserialized = Customer.loads(message_serialized)
+    assert message_deserialized == customer
 
 
 def test_avro_dumps_load_message_dataclasses_avro_schema(client):
@@ -115,14 +115,14 @@ def test_avro_dumps_load_message_dataclasses_avro_schema(client):
         "age": 20,
     }
 
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_avro_dumps_load_message_union_avro_schema(client):
@@ -142,12 +142,12 @@ def test_avro_dumps_load_message_union_avro_schema(client):
 
     record = {"a_name": ("FirstMemberRecord", {"name": "jj"})}
 
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
+    assert message_serialized
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_create_json_faust_serializer(client, json_country_schema):
@@ -164,14 +164,14 @@ def test_json_dumps_load_message(client, json_country_schema):
     faust_serializer = serializer.FaustJsonSerializer(client, "test-json-country", json_country_schema)
 
     record = {"country": "Argentina"}
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_json_nested_schema(client):
@@ -179,14 +179,14 @@ def test_json_nested_schema(client):
     faust_serializer = serializer.FaustJsonSerializer(client, "test-json-nested-schema", nested_schema)
 
     record = data_gen.create_nested_schema()
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_json_dumps_load_with_register_codec(client, json_country_schema):
@@ -199,15 +199,15 @@ def test_json_dumps_load_with_register_codec(client, json_country_schema):
         country: str
 
     country_record = CountryRecord(**payload)
-    message_encoded = country_record.dumps()
+    message_serialized = country_record.dumps()
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = CountryRecord.loads(message_encoded)
+    message_deserialized = CountryRecord.loads(message_serialized)
 
-    assert message_decoded == country_record
+    assert message_deserialized == country_record
 
 
 def test_json_nested_schema_with_register_codec(client):
@@ -232,14 +232,14 @@ def test_json_nested_schema_with_register_codec(client):
 
     customer = Customer(**payload)
 
-    message_encoded = customer.dumps()
+    message_serialized = customer.dumps()
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = Customer.loads(message_encoded)
-    assert message_decoded == customer
+    message_deserialized = Customer.loads(message_serialized)
+    assert message_deserialized == customer
 
 
 def test_json_dumps_load_message_dataclasses_json_schema(client):
@@ -258,14 +258,14 @@ def test_json_dumps_load_message_dataclasses_json_schema(client):
         "age": 20,
     }
 
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
-    assert len(message_encoded) > 5
-    assert isinstance(message_encoded, bytes)
+    assert message_serialized
+    assert len(message_serialized) > 5
+    assert isinstance(message_serialized, bytes)
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record
 
 
 def test_json_dumps_load_message_union_json_schema(client):
@@ -285,9 +285,9 @@ def test_json_dumps_load_message_union_json_schema(client):
 
     record = {"a_name": {"name": "jj"}}
 
-    message_encoded = faust_serializer._dumps(record)
+    message_serialized = faust_serializer._dumps(record)
 
-    assert message_encoded
+    assert message_serialized
 
-    message_decoded = faust_serializer._loads(message_encoded)
-    assert message_decoded == record
+    message_deserialized = faust_serializer._loads(message_serialized)
+    assert message_deserialized == record

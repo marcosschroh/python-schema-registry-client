@@ -34,7 +34,7 @@ avro_user_schema = schema.AvroSchema({
     ],
 })
 
-# We want to encode the user_record with avro_user_schema
+# We want to serialize the user_record with avro_user_schema
 user_record = {
     "first_name": "my_first_name",
     "last_name": "my_last_name",
@@ -42,16 +42,16 @@ user_record = {
 }
 
 # Encode the record
-message_encoded = avro_message_serializer.encode_record_with_schema(
-    "user", avro_user_schema, user_record)
+message_serialized = avro_message_serializer.serialize(
+    avro_user_schema, user_record, "user")
 
-# this is because the message encoded reserved 5 bytes for the schema_id
-assert len(message_encoded) > 5
-assert isinstance(message_encoded, bytes)
+# this is because the message serialized reserved 5 bytes for the schema_id
+assert len(message_serialized) > 5
+assert isinstance(message_serialized, bytes)
 
 # Decode the message
-message_decoded = avro_message_serializer.decode_message(message_encoded)
-assert message_decoded == user_record
+message_deserialized = avro_message_serializer.deserialize(message_serialized)
+assert message_deserialized == user_record
 
 # Now if we send a bad record
 bad_record = {
@@ -60,8 +60,8 @@ bad_record = {
     "age": "my_age"
 }
 
-avro_message_serializer.encode_record_with_schema(
-    "user", avro_user_schema, bad_record)
+avro_message_serializer.serialize(
+     avro_user_schema, bad_record, "user")
 
 # >>> TypeError: an integer is required on field age
 ```
@@ -112,16 +112,16 @@ basic_record = {
     "name": "a_name",
 }
 
-message_encoded = json_message_serializer.encode_record_with_schema(
-    "basic", json_schema, basic_record)
+message_serialized = json_message_serializer.serialize(
+    json_schema, basic_record, "basic")
 
 # this is because the message encoded reserved 5 bytes for the schema_id
-assert len(message_encoded) > 5
-assert isinstance(message_encoded, bytes)
+assert len(message_serialized) > 5
+assert isinstance(message_serialized, bytes)
 
 # Decode the message
-message_decoded = json_message_serializer.decode_message(message_encoded)
-assert message_decoded == basic_record
+message_deserialized = json_message_serializer.deserialize(message_encoded)
+assert message_deserialized == basic_record
 ```
 
 *(This script is complete, it should run "as is")*
@@ -158,25 +158,25 @@ AsyncJsonMessageSerializer
         schemaregistry_client (schema_registry.client.AsyncSchemaRegistryClient): Http Client
 ```
 
-### Encode record with a `Schema`
+### Serialize a record with a `Schema`
 
 ```python
-def encode_record_with_schema(subject, schema, record):
+def serialize(schema, record, subject):
     """
     Args:
-        subject (str): Subject name
         schema (avro.schema.RecordSchema): Avro Schema
         record (dict): An object to serialize
+        subject (str): Subject name
 
     Returns:
         bytes: Encoded record with schema ID as bytes
     """
 ```
 
-### Encode a record with a `schema id`
+### Serialize a record with a `schema id`
 
 ```python
-def encode_record_with_schema_id(schema_id, record):
+def serialize(schema_id, record):
     """
     Args:
         schema_id (int): integer ID
@@ -190,7 +190,7 @@ def encode_record_with_schema_id(schema_id, record):
 ### Decode a message encoded previously
 
 ```python
-def decode_message(message):
+def deserialize(message):
     """
     Args:
         message (str|bytes or None): message key or value to be decoded

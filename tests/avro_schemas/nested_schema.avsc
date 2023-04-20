@@ -5,8 +5,8 @@
     "fields": [
         {
             "name": "uid",
-            "type": "int",
-            "default": "NONE"
+            "type": ["null", "int"],
+            "default": null
         },
         {
             "name": "order",
@@ -16,16 +16,15 @@
                 "type": "record",
                 "fields": [{
                     "name": "uid",
-                    "type": "int",
-                    "default": "NONE"
+                    "type": ["null", "int"],
+                    "default": null
                 }]
-            },
-            "default": "NONE"
+            }
         },
         {
             "name": "name",
-            "type": "string",
-            "default": "NONE"
+            "type": ["null", "string"],
+            "default": null
         }
     ]
 }
