@@ -8,7 +8,7 @@ on:
     branches: ["master"]
     tags: "*"
   pull_request:
-    branches: ["*"]
+    branches: ["master", "release/v3"]
 
 jobs:
   build:
