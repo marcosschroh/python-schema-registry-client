@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+set -x
+
+poetry run black schema_registry tests
+poetry run ruff schema_registry tests --fix

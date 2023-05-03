@@ -2,6 +2,4 @@
 
 ./scripts/clean
 
-# # uploading to pypi
-python setup.py sdist
-twine upload dist/*
+poetry publish --build -u $TWINE_USERNAME -p $TWINE_PASSWORD

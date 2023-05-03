@@ -58,16 +58,15 @@ class BaseClient:
     def __init__(
         self,
         url: typing.Union[str, dict],
-        ca_location: str = None,
-        cert_location: str = None,
-        key_location: str = None,
-        key_password: str = None,
-        extra_headers: dict = None,
+        ca_location: typing.Optional[str] = None,
+        cert_location: typing.Optional[str] = None,
+        key_location: typing.Optional[str] = None,
+        key_password: typing.Optional[str] = None,
+        extra_headers: typing.Optional[dict] = None,
         timeout: typing.Optional[httpx.Timeout] = None,
         pool_limits: typing.Optional[httpx.Limits] = None,
         auth: typing.Optional[auth_utils.Auth] = None,
     ) -> None:
-
         if isinstance(url, str):
             conf = {
                 utils.URL: url,
@@ -100,10 +99,9 @@ class BaseClient:
     def __eq__(self, obj: typing.Any) -> bool:
         return self.conf == obj.conf and self.extra_headers == obj.extra_headers
 
-
     @staticmethod
-    def _schema_from_result(result: dict) -> typing.Union[JsonSchema, AvroSchema]:
-        schema = result.get("schema")
+    def _schema_from_result(result: typing.Dict) -> typing.Union[JsonSchema, AvroSchema]:
+        schema: str = result["schema"]
         schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
         return SchemaFactory.create_schema(schema, schema_type)
 
@@ -184,7 +182,9 @@ class BaseClient:
             client_kwargs["limits"] = self.pool_limits  # type:ignore
         return client_kwargs
 
-    def prepare_headers(self, body: dict = None, headers: dict = None) -> dict:
+    def prepare_headers(
+        self, body: typing.Optional[typing.Dict] = None, headers: typing.Optional[typing.Dict] = None
+    ) -> dict:
         _headers = {"Accept": utils.ACCEPT_HEADERS}
 
         if body:
@@ -206,8 +206,8 @@ class BaseClient:
         self,
         schema: typing.Union[BaseSchema, str],
         schema_id: int,
-        subject: str = None,
-        version: typing.Union[str, int] = None,
+        subject: typing.Optional[str] = None,
+        version: typing.Union[str, int, None] = None,
     ) -> None:
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
@@ -224,8 +224,8 @@ class BaseClient:
         self,
         url: str,
         method: str = "GET",
-        body: dict = None,
-        headers: dict = None,
+        body: typing.Optional[typing.Dict] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Union[tuple, httpx.Response, typing.Coroutine[typing.Any, typing.Any, typing.Any]]:
         _headers = self.prepare_headers(body=body, headers=headers)
@@ -257,8 +257,8 @@ class SchemaRegistryClient(BaseClient):
         self,
         url: str,
         method: str = "GET",
-        body: dict = None,
-        headers: dict = None,
+        body: typing.Optional[typing.Dict] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
@@ -273,7 +273,7 @@ class SchemaRegistryClient(BaseClient):
         self,
         subject: str,
         schema: typing.Union[BaseSchema, str],
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
@@ -346,7 +346,9 @@ class SchemaRegistryClient(BaseClient):
         return schema_id
 
     def get_subjects(
-        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        headers: typing.Optional[typing.Dict] = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET /subjects/(string: subject)
@@ -373,7 +375,7 @@ class SchemaRegistryClient(BaseClient):
     def delete_subject(
         self,
         subject: str,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
@@ -404,7 +406,7 @@ class SchemaRegistryClient(BaseClient):
     def get_by_id(
         self,
         schema_id: int,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
@@ -439,7 +441,7 @@ class SchemaRegistryClient(BaseClient):
     def get_schema_subject_versions(
         self,
         schema_id: int,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
@@ -472,7 +474,7 @@ class SchemaRegistryClient(BaseClient):
         self,
         subject: str,
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
@@ -521,7 +523,7 @@ class SchemaRegistryClient(BaseClient):
     def get_versions(
         self,
         subject: str,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
@@ -552,7 +554,7 @@ class SchemaRegistryClient(BaseClient):
         self,
         subject: str,
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[int]:
         """
@@ -592,7 +594,7 @@ class SchemaRegistryClient(BaseClient):
         self,
         subject: str,
         schema: typing.Union[BaseSchema, str],
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
@@ -653,7 +655,7 @@ class SchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
@@ -700,8 +702,8 @@ class SchemaRegistryClient(BaseClient):
     def update_compatibility(
         self,
         level: str,
-        subject: str = None,
-        headers: dict = None,
+        subject: typing.Optional[str] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> bool:
         """
@@ -740,8 +742,8 @@ class SchemaRegistryClient(BaseClient):
 
     def get_compatibility(
         self,
-        subject: str = None,
-        headers: dict = None,
+        subject: typing.Optional[str] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """
@@ -805,8 +807,8 @@ class AsyncSchemaRegistryClient(BaseClient):
         self,
         url: str,
         method: str = "GET",
-        body: dict = None,
-        headers: dict = None,
+        body: typing.Optional[typing.Dict] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> httpx.Response:
         if method not in utils.VALID_METHODS:
@@ -822,7 +824,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         self,
         subject: str,
         schema: typing.Union[BaseSchema, str],
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> int:
@@ -898,7 +900,9 @@ class AsyncSchemaRegistryClient(BaseClient):
         return schema_id
 
     async def get_subjects(
-        self, headers: dict = None, timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT
+        self,
+        headers: typing.Optional[typing.Dict] = None,
+        timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
         GET /subjects/(string: subject)
@@ -926,7 +930,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def delete_subject(
         self,
         subject: str,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
@@ -959,7 +963,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def get_by_id(
         self,
         schema_id: int,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.Union[AvroSchema, JsonSchema]]:
         """
@@ -997,7 +1001,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         self,
         subject: str,
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[utils.SchemaVersion]:
         """
@@ -1049,7 +1053,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def get_schema_subject_versions(
         self,
         schema_id: int,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[typing.List[SubjectVersion]]:
         """
@@ -1084,7 +1088,7 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def get_versions(
         self,
         subject: str,
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> list:
         """
@@ -1117,7 +1121,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         self,
         subject: str,
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Optional[int]:
         """
@@ -1159,7 +1163,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         self,
         subject: str,
         schema: typing.Union[BaseSchema, str],
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> typing.Optional[utils.SchemaVersion]:
@@ -1221,7 +1225,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[AvroSchema, JsonSchema, str],
         version: typing.Union[int, str] = "latest",
-        headers: dict = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: str = utils.AVRO_SCHEMA_TYPE,
     ) -> bool:
@@ -1269,8 +1273,8 @@ class AsyncSchemaRegistryClient(BaseClient):
     async def update_compatibility(
         self,
         level: str,
-        subject: str = None,
-        headers: dict = None,
+        subject: typing.Optional[str] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> bool:
         """
@@ -1309,8 +1313,8 @@ class AsyncSchemaRegistryClient(BaseClient):
 
     async def get_compatibility(
         self,
-        subject: str = None,
-        headers: dict = None,
+        subject: typing.Optional[str] = None,
+        headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> str:
         """

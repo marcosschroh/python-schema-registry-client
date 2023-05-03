@@ -33,4 +33,5 @@ docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION
 docker-compose run --rm \
     -e CODECOV_TOKEN=${CODECOV_TOKEN} \
     schema-registry-client ./scripts/run-tests ${1-"./tests"} \
-|| docker-compose down
+
+docker-compose down

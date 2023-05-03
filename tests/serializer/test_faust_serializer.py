@@ -5,7 +5,8 @@ import pydantic
 from dataclasses_avroschema import AvroModel
 
 from schema_registry.client import schema
-from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer, faust as serializer
+from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer
+from schema_registry.serializers import faust as serializer
 from tests import data_gen
 
 

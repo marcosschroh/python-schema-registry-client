@@ -6,7 +6,7 @@
         {
             "name": "uid",
             "type": "int",
-            "default": "NONE"
+            "default": 10
         },
         {
             "name": "order",
@@ -17,15 +17,14 @@
                 "fields": [{
                     "name": "uid",
                     "type": "int",
-                    "default": "NONE"
+                    "default": 10
                 }]
-            },
-            "default": "NONE"
+            }
         },
         {
             "name": "name",
             "type": "string",
-            "default": "NONE"
+            "default": "bond"
         }
     ]
 }
