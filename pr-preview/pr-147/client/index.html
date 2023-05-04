@@ -1,0 +1,1367 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="avro, kafka, client, faust, schema">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../serializer/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
+    
+    
+      
+        <title>SchemaRegistryClient Api - Python Schema Registry Client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ded33207.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#client" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Python Schema Registry Client" class="md-header__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Python Schema Registry Client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SchemaRegistryClient Api
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+              </label>
+            
+          
+        </form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Python Schema Registry Client" class="md-nav__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Python Schema Registry Client
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SchemaRegistryClient Api
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        SchemaRegistryClient Api
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schemaregistryclient" class="md-nav__link">
+    SchemaRegistryClient
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth" class="md-nav__link">
+    Auth
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-schema" class="md-nav__link">
+    Get Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-by-id" class="md-nav__link">
+    Get schema by id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-a-schema" class="md-nav__link">
+    Register a Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects" class="md-nav__link">
+    Get Subjects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects-versions" class="md-nav__link">
+    Get Subjects Versions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-schema" class="md-nav__link">
+    Delete Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-if-a-schema-has-already-been-registered-under-the-specified-subject" class="md-nav__link">
+    Check if a schema has already been registered under the specified subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-version-under-a-specific-subject" class="md-nav__link">
+    Get schema version under a specific subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletes-a-specific-version-of-the-schema-registered-under-a-subject" class="md-nav__link">
+    Deletes a specific version of the schema registered under a subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-compatibility" class="md-nav__link">
+    Test Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-compatibility" class="md-nav__link">
+    Get Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-compatibility" class="md-nav__link">
+    Update Compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asyncschemaregistryclient" class="md-nav__link">
+    AsyncSchemaRegistryClient
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-schema_1" class="md-nav__link">
+    Get Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-by-id_1" class="md-nav__link">
+    Get schema by id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-a-schema_1" class="md-nav__link">
+    Register a Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects_1" class="md-nav__link">
+    Get Subjects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects-versions_1" class="md-nav__link">
+    Get Subjects Versions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-schema_1" class="md-nav__link">
+    Delete Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-if-a-schema-has-already-been-registered-under-the-specified-subject_1" class="md-nav__link">
+    Check if a schema has already been registered under the specified subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-version-under-a-specific-subject_1" class="md-nav__link">
+    Get schema version under a specific subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletes-a-specific-version-of-the-schema-registered-under-a-subject_1" class="md-nav__link">
+    Deletes a specific version of the schema registered under a subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-compatibility_1" class="md-nav__link">
+    Test Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-compatibility_1" class="md-nav__link">
+    Get Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-compatibility_1" class="md-nav__link">
+    Update Compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializer/" class="md-nav__link">
+        Message Serializer
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faust/" class="md-nav__link">
+        Faust integration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        Schemas
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemaregistry_server/" class="md-nav__link">
+        Schema Registry Server
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schemaregistryclient" class="md-nav__link">
+    SchemaRegistryClient
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth" class="md-nav__link">
+    Auth
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-schema" class="md-nav__link">
+    Get Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-by-id" class="md-nav__link">
+    Get schema by id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-a-schema" class="md-nav__link">
+    Register a Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects" class="md-nav__link">
+    Get Subjects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects-versions" class="md-nav__link">
+    Get Subjects Versions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-schema" class="md-nav__link">
+    Delete Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-if-a-schema-has-already-been-registered-under-the-specified-subject" class="md-nav__link">
+    Check if a schema has already been registered under the specified subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-version-under-a-specific-subject" class="md-nav__link">
+    Get schema version under a specific subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletes-a-specific-version-of-the-schema-registered-under-a-subject" class="md-nav__link">
+    Deletes a specific version of the schema registered under a subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-compatibility" class="md-nav__link">
+    Test Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-compatibility" class="md-nav__link">
+    Get Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-compatibility" class="md-nav__link">
+    Update Compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asyncschemaregistryclient" class="md-nav__link">
+    AsyncSchemaRegistryClient
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-schema_1" class="md-nav__link">
+    Get Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-by-id_1" class="md-nav__link">
+    Get schema by id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-a-schema_1" class="md-nav__link">
+    Register a Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects_1" class="md-nav__link">
+    Get Subjects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subjects-versions_1" class="md-nav__link">
+    Get Subjects Versions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-schema_1" class="md-nav__link">
+    Delete Schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-if-a-schema-has-already-been-registered-under-the-specified-subject_1" class="md-nav__link">
+    Check if a schema has already been registered under the specified subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-schema-version-under-a-specific-subject_1" class="md-nav__link">
+    Get schema version under a specific subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletes-a-specific-version-of-the-schema-registered-under-a-subject_1" class="md-nav__link">
+    Deletes a specific version of the schema registered under a subject
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-compatibility_1" class="md-nav__link">
+    Test Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-compatibility_1" class="md-nav__link">
+    Get Compatibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-compatibility_1" class="md-nav__link">
+    Update Compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="client">Client</h1>
+<p>The <code>Schema Registry Client</code> consumes the API exposed by the <code>schema-registry</code> to operate resources that are <code>avro</code> and <code>json</code> schemas.</p>
+<p>You probably won't use this but is good to know that exists. The <code>MessageSerializer</code> is whom interact with the <code>SchemaRegistryClient</code></p>
+<h2 id="schemaregistryclient">SchemaRegistryClient</h2>
+<div class="autodoc">
+<div class="autodoc-signature"><em>class </em><code>schema_registry.client.<strong>SchemaRegistryClient</strong></code><span class="autodoc-punctuation">(</span><em class="autodoc-param">url</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">ca_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">cert_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">key_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">key_password=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">extra_headers=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">timeout=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">pool_limits=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">auth=None</em><span class="autodoc-punctuation">)</span></div>
+<div class="autodoc-docstring"><p>A client that talks to a Schema Registry over HTTP</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>url</strong> - <em>(Union[str, Dict]</em>: Url to schema registry or dictionary containing client configuration.</li>
+<li><strong>ca_location</strong> - <em>Optional[str]</em>: File or directory path to CA certificate(s) for
+    verifying the Schema Registry key.</li>
+<li><strong>cert_location</strong> - <em>Optional[str]</em>: Path to public key used for authentication.</li>
+<li><strong>key_location</strong> - <em>Optional[str]</em>: Path to private key used for authentication.</li>
+<li><strong>key_password</strong> - <em>Optional[str]</em>: Key password.</li>
+<li><strong>extra_headers</strong> - <em>Optional[Dict[str, str]]</em>: Extra headers to add on every requests.</li>
+<li><strong>timeout</strong> - <em>Optional[httpx._client.TimeoutTypes]</em>  The timeout configuration to use when sending requests.</li>
+<li><strong>pool_limits</strong> - <em>Optional[httpx.Limits])</em> The connection pool configuration to use when
+    determining the maximum number of concurrently open HTTP connections.</li>
+<li><strong>auth</strong> - <em>(optional)</em> (schema_registry.client.Auth) Auth credentials.</li>
+</ul></div>
+</div>
+<h2 id="auth">Auth</h2>
+<p>Credentials can be supplied in <code>two</code> different ways: using the <code>url</code> or the <code>schema_registry.client.Auth</code>.</p>
+<div class="highlight"><span class="filename">Credentials using Auth</span><pre><span></span><code><span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">Auth</span>
+
+<span class="n">SchemaRegistryClient</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://user_url:secret_url@127.0.0.1:65534&quot;</span><span class="p">,</span>
+    <span class="n">auth</span><span class="o">=</span><span class="n">Auth</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;secret-user&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;secret&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">Credentials using the url</span><pre><span></span><code><span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span>
+
+<span class="n">username</span><span class="o">=</span><span class="s2">&quot;secret-username&quot;</span>
+<span class="n">password</span><span class="o">=</span><span class="s2">&quot;secret&quot;</span>
+
+<span class="n">SchemaRegistryClient</span><span class="p">({</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;https://</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s2">@127.0.0.1:65534&quot;</span><span class="p">})</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This auth methods are the same for <code>AsyncSchemaRegistryClient</code></p>
+</div>
+<h2 id="methods">Methods</h2>
+<h3 id="get-schema">Get Schema</h3>
+<p>Get Schema for a given version. If version is <code>None</code>, try to resolve the latest schema</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        version (int, optional): version id. If is None, the latest schema is returned</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        utils.SchemaVersion (nametupled): (subject, schema_id, schema, version)</span>
+
+<span class="sd">        None: If server returns a not success response:</span>
+<span class="sd">            404: Schema not found</span>
+<span class="sd">            422: Unprocessable entity</span>
+<span class="sd">            ~ (200 - 299): Not success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-schema-by-id">Get schema by <code>id</code></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        schema_id (int): Schema Id</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="register-a-schema">Register a Schema</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: schema_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-subjects">Get Subjects</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /subjects/(string: subject)</span>
+<span class="sd">    Get list of all registered subjects in your Schema Registry.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list [str]: list of registered subjects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-subjects-versions">Get Subjects Versions</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema_subject_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">SubjectVersion</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /schemas/ids/{int: id}/versions</span>
+<span class="sd">    Get the subject-version pairs identified by the input ID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schema_id (int): Schema Id</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.</span>
+<span class="sd">                Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="delete-schema">Delete Schema</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_subject</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list (int): versions of the schema deleted under this subject</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="check-if-a-schema-has-already-been-registered-under-the-specified-subject">Check if a schema has already been registered under the specified subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:</span>
+<span class="sd">            subject (string) -- Name of the subject that this schema is registered under</span>
+<span class="sd">            id (int) -- Globally unique identifier of the schema</span>
+<span class="sd">            version (int) -- Version of the returned schema</span>
+<span class="sd">            schema (dict) -- The Avro or JSON schema</span>
+
+<span class="sd">        None: If schema not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-schema-version-under-a-specific-subject">Get schema version under a specific subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET subjects/{subject}/versions</span>
+<span class="sd">    Get a list of versions registered under the specified subject.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list (str): version of the schema registered under this subject</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="deletes-a-specific-version-of-the-schema-registered-under-a-subject">Deletes a specific version of the schema registered under a subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DELETE /subjects/(string: subject)/versions/(versionId: version)</span>
+
+<span class="sd">    Deletes a specific version of the schema registered under this subject.</span>
+<span class="sd">    This only deletes the version and the schema ID remains intact making</span>
+<span class="sd">    it still possible to decode data using the schema ID.</span>
+<span class="sd">    This API is recommended to be used only in development environments or</span>
+<span class="sd">    under extreme circumstances where-in, its required to delete a previously</span>
+<span class="sd">    registered schema for compatibility purposes or re-register previously registered schema.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        version (str): Version of the schema to be deleted.</span>
+<span class="sd">            Valid values for versionId are between [1,2^31-1] or the string &quot;latest&quot;.</span>
+<span class="sd">            &quot;latest&quot; deletes the last registered schema under the specified subject.</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: version of the schema deleted</span>
+<span class="sd">        None: If the subject or version does not exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="test-compatibility">Test Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">],</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    By default the latest version is checked against.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if schema given compatible, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-compatibility">Get Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the current compatibility level for a subject.  Result will be one of:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,</span>
+<span class="sd">            FULL, FULL_TRANSITIVE, NONE</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ClientError: if the request was unsuccessful or an invalid</span>
+<span class="sd">        compatibility level was returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="update-compatibility">Update Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the compatibility level for a subject.</span>
+<span class="sd">    If subject is None, the compatibility level is global.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        level (str): one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,</span>
+<span class="sd">            FULL, FULL_TRANSITIVE, NONE</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if compatibility was updated</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ClientError: if the request was unsuccessful or an invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h2 id="asyncschemaregistryclient">AsyncSchemaRegistryClient</h2>
+<div class="autodoc">
+<div class="autodoc-signature"><em>class </em><code>schema_registry.client.<strong>AsyncSchemaRegistryClient</strong></code><span class="autodoc-punctuation">(</span><em class="autodoc-param">url</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">ca_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">cert_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">key_location=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">key_password=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">extra_headers=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">timeout=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">pool_limits=None</em><span class="autodoc-punctuation">, </span><em class="autodoc-param">auth=None</em><span class="autodoc-punctuation">)</span></div>
+<div class="autodoc-docstring"><p>A client that talks to a Schema Registry over HTTP</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><strong>url</strong> - <em>(Union[str, Dict]</em>: Url to schema registry or dictionary containing client configuration.</li>
+<li><strong>ca_location</strong> - <em>Optional[str]</em>: File or directory path to CA certificate(s)
+    for verifying the Schema Registry key.</li>
+<li><strong>cert_location</strong> - <em>Optional[str]</em>: Path to public key used for authentication.</li>
+<li><strong>key_location</strong> - <em>Optional[str]</em>: Path to private key used for authentication.</li>
+<li><strong>key_password</strong> - <em>Optional[str]</em>: Key password</li>
+<li><strong>extra_headers</strong> - <em>Optional[Dict[str, str]]</em>: Extra headers to add on every requests.</li>
+<li><strong>timeout</strong> - <em>Optional[httpx._client.TimeoutTypes]</em>  The timeout configuration to use when sending requests.</li>
+<li><strong>pool_limits</strong> - <em>Optional[httpx.Limits])</em> The connection pool configuration to use when
+    determining the maximum number of concurrently open HTTP connections.</li>
+<li><strong>auth</strong> - <em>(optional)</em> (schema_registry.client.Auth) Auth credentials.</li>
+</ul></div>
+</div>
+<h2 id="methods_1">Methods</h2>
+<h3 id="get-schema_1">Get Schema</h3>
+<p>Get Schema for a given version. If version is <code>None</code>, try to resolve the latest schema</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        version (int, optional): version id. If is None, the latest schema is returned</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        utils.SchemaVersion (nametupled): (subject, schema_id, schema, version)</span>
+
+<span class="sd">        None: If server returns a not success response:</span>
+<span class="sd">            404: Schema not found</span>
+<span class="sd">            422: Unprocessable entity</span>
+<span class="sd">            ~ (200 - 299): Not success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-schema-by-id_1">Get schema by <code>id</code></h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        schema_id (int): Schema Id</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        typing.Union[client.schema.AvroSchema, client.schema.JsonSchema]: Avro or JSON Record schema</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="register-a-schema_1">Register a Schema</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">]</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: schema_id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-subjects_1">Get Subjects</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_subjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /subjects/(string: subject)</span>
+<span class="sd">    Get list of all registered subjects in your Schema Registry.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list [str]: list of registered subjects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-subjects-versions_1">Get Subjects Versions</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema_subject_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">SubjectVersion</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET /schemas/ids/{int: id}/versions</span>
+<span class="sd">    Get the subject-version pairs identified by the input ID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schema_id (int): Schema Id</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests.</span>
+<span class="sd">                Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        typing.List[SubjectVersion]: List of Subject/Version pairs where Schema Id is registered</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="delete-schema_1">Delete Schema</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_subject</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list (int): versions of the schema deleted under this subject</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="check-if-a-schema-has-already-been-registered-under-the-specified-subject_1">Check if a schema has already been registered under the specified subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">],</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:</span>
+<span class="sd">            subject (string) -- Name of the subject that this schema is registered under</span>
+<span class="sd">            id (int) -- Globally unique identifier of the schema</span>
+<span class="sd">            version (int) -- Version of the returned schema</span>
+<span class="sd">            schema (dict) -- The Avro or JSON schema</span>
+
+<span class="sd">        None: If schema not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-schema-version-under-a-specific-subject_1">Get schema version under a specific subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GET subjects/{subject}/versions</span>
+<span class="sd">    Get a list of versions registered under the specified subject.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list (str): version of the schema registered under this subject</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="deletes-a-specific-version-of-the-schema-registered-under-a-subject_1">Deletes a specific version of the schema registered under a subject</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DELETE /subjects/(string: subject)/versions/(versionId: version)</span>
+
+<span class="sd">    Deletes a specific version of the schema registered under this subject.</span>
+<span class="sd">    This only deletes the version and the schema ID remains intact making</span>
+<span class="sd">    it still possible to decode data using the schema ID.</span>
+<span class="sd">    This API is recommended to be used only in development environments or</span>
+<span class="sd">    under extreme circumstances where-in, its required to delete a previously</span>
+<span class="sd">    registered schema for compatibility purposes or re-register previously registered schema.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        version (str): Version of the schema to be deleted.</span>
+<span class="sd">            Valid values for versionId are between [1,2^31-1] or the string &quot;latest&quot;.</span>
+<span class="sd">            &quot;latest&quot; deletes the last registered schema under the specified subject.</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: version of the schema deleted</span>
+<span class="sd">        None: If the subject or version does not exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="test-compatibility_1">Test Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">],</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;AVRO&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    By default the latest version is checked against.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        schema typing.Union[client.schema.AvroSchema, client.schema.JsonSchema, str]: Avro or JSON schema to be registered</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+<span class="sd">        schema_type typing.Union[&quot;AVRO&quot;, &quot;JSON&quot;]: The type of schema to parse if `schema` is a string. Default &quot;AVRO&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if schema given compatible, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="get-compatibility_1">Get Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the current compatibility level for a subject.  Result will be one of:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subject (str): subject name</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,</span>
+<span class="sd">            FULL, FULL_TRANSITIVE, NONE</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ClientError: if the request was unsuccessful or an invalid</span>
+<span class="sd">        compatibility level was returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h3 id="update-compatibility_1">Update Compatibility</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update the compatibility level for a subject.</span>
+<span class="sd">    If subject is None, the compatibility level is global.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        level (str): one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,</span>
+<span class="sd">            FULL, FULL_TRANSITIVE, NONE</span>
+<span class="sd">        headers (dict): Extra headers to add on the requests</span>
+<span class="sd">        timeout (httpx._client.TimeoutTypes): The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if compatibility was updated</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ClientError: if the request was unsuccessful or an invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51198bba.min.js"></script>
+      
+    
+  </body>
+</html>
