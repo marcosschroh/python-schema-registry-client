@@ -1,6 +1,6 @@
 # Python Rest Client Schema Registry
 
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmarcosschroh%2Fpython-schema-registry-client%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/marcosschroh/python-schema-registry-client/goto?ref=master)
+[![Python package](https://github.com/marcosschroh/python-schema-registry-client/actions/workflows/python-package.yml/badge.svg)](https://github.com/marcosschroh/python-schema-registry-client/actions/workflows/python-package.yml)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/python-schema-registry-client.svg)](https://github.com/marcosschroh/python-schema-registry-client/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/python-schema-registry-client/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/python-schema-registry-client)
 [![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
