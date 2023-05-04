@@ -228,18 +228,30 @@ Also, could be a use case that we would like to have an Application only to admi
 
 ## Development
 
-The tests are run against the `Schema Server` using `docker compose`, so you will need
+[Poetry](https://python-poetry.org/docs/) is needed to install the dependencies and develope locally
+
+1. Install dependencies: `poetry install --all-extras`
+2. Code linting: `./scripts/format`
+3. Run tests: `./scripts/test`
+
+For commit messages we use [commitizen](https://commitizen-tools.github.io/commitizen/) in order to standardize a way of committing rules
+
+*Note*: The tests are run against the `Schema Server` using `docker compose`, so you will need
 `Docker` and `Docker Compose` installed.
 
-```bash
-./scripts/test
-```
-
-Run code linting:
+You can run tests with arbitrary python version by:
 
 ```bash
-./scripts/lint
+./scripts/test --python-version 3.x
 ```
+
+All additional args will be passed to pytest, for example:
+
+```bash
+./scripts/test ./tests/client/ --maxfail=1 
+```
+
+### Tests usind the python shell
 
 To perform tests using the python shell you can run the project using `docker-compose`.
 

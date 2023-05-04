@@ -1,14 +1,9 @@
 #!/bin/bash -e
 
-export PREFIX=""
-if [ -d '.venv' ] ; then
-    export PREFIX=".venv/bin/"
-fi
-
 set -x
 
-${PREFIX}pytest --cov=schema_registry ${1} --cov-fail-under=87 && \
-    ${PREFIX}codecov && ${PREFIX}codecov --token=$CODECOV_TOKEN && \
-    ${PREFIX}flake8 schema_registry/ tests/ && \
-    ${PREFIX}black --check --diff schema_registry tests && \
-    ${PREFIX}mypy schema_registry
+poetry run pytest --cov=schema_registry ${1} --cov-fail-under=87
+poetry run codecov --token=$CODECOV_TOKEN
+poetry run ruff schema_registry/ tests/
+poetry run black --check --diff schema_registry tests
+poetry run mypy schema_registry

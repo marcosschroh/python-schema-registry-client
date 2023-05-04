@@ -37,10 +37,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        python -m venv .venv
-        . .venv/bin/activate
-        pip3 install -e ".[tests,docs,faust]"
-        mkdocs gh-deploy --force
+        python -m pip install -U pip poetry
+        poetry install --only docs
+        poetry run mkdocs build
+        poetry run mkdocs gh-deploy --force
     
   publish:
     runs-on: ubuntu-latest
@@ -52,7 +52,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        python -m venv .venv
-        . .venv/bin/activate
-        pip install twine wheel
         ./scripts/publish

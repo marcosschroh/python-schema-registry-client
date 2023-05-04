@@ -7,6 +7,7 @@ from collections import namedtuple
 
 import pydantic
 import pytest
+import pytest_asyncio
 from dataclasses_avroschema import AvroModel
 from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
@@ -315,7 +316,7 @@ class RequestLoggingAsyncSchemaRegistryClient(AsyncSchemaRegistryClient, Request
         return await super().request(url, method, body, headers=headers, timeout=timeout)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def async_client():
     url = os.getenv("SCHEMA_REGISTRY_URL")
     client = RequestLoggingAsyncSchemaRegistryClient(url)

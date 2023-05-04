@@ -25,7 +25,6 @@ class Serializer(Codec):
         Codec.__init__(self)
 
     def _loads(self, event: bytes) -> typing.Optional[typing.Dict]:
-
         return self.message_serializer.decode_message(event)
 
     def _dumps(self, payload: typing.Dict[str, typing.Any]) -> bytes:
@@ -76,7 +75,6 @@ def avro_serializer_factory(
     schema: AvroSchema,
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
-
     if isinstance(schema, str):
         schema = AvroSchema(schema)
 
@@ -91,7 +89,6 @@ def json_serializer_factory(
     schema: JsonSchema,
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
-
     if isinstance(schema, str):
         schema = JsonSchema(schema)
 

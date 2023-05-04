@@ -17,12 +17,6 @@ services:
     ports:
       - "127.0.0.1:8084:80"
       - "127.0.0.1:8000:8000"
-    volumes: 
-      - ./schema_registry:/schema_registry/schema_registry
-      - ./tests:/schema_registry/tests
-      - ./scripts:/schema_registry/scripts
-      - ./.git:/schema_registry/.git
-      - ./setup.py:/schema_registry/setup.py
 
   zookeeper:
     image: "confluentinc/cp-zookeeper"
