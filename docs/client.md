@@ -13,7 +13,6 @@ You probably won't use this but is good to know that exists. The `MessageSeriali
 
 Credentials can be supplied in `two` different ways: using the `url` or the `schema_registry.client.Auth`.
 
-
 ```python title="Credentials using Auth"
 from schema_registry.client import SchemaRegistryClient, Auth
 
