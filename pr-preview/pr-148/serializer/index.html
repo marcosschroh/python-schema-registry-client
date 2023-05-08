@@ -649,7 +649,8 @@ implement the parser on the consumer side.</p>
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">238</span>
+<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AvroMessageSerializer to serialize and deserialize messages</span>
 
@@ -711,6 +712,7 @@ implement the parser on the consumer side.</p>
 <span class="sd">        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message</span>
 <span class="sd">        return_record_name bool: If the record name should be returned</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_serializer_schema_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">AVRO_SCHEMA_TYPE</span>
@@ -852,8 +854,7 @@ implement the parser on the consumer side.</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
-<span class="normal">242</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
@@ -932,7 +933,8 @@ implement the parser on the consumer side.</p>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
-<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">321</span>
+<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    JsonMessageSerializer to serialize and deserialize messages</span>
 
@@ -1095,8 +1097,7 @@ examples above should work if you replace them with their async variations</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">455</span>
-<span class="normal">456</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
 <span class="normal">459</span>
@@ -1115,7 +1116,8 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">472</span>
 <span class="normal">473</span>
 <span class="normal">474</span>
-<span class="normal">475</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</span>
 
@@ -1214,8 +1216,7 @@ examples above should work if you replace them with their async variations</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">478</span>
-<span class="normal">479</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span>
@@ -1241,7 +1242,8 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">502</span>
 <span class="normal">503</span>
 <span class="normal">504</span>
-<span class="normal">505</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">505</span>
+<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</span>
 
