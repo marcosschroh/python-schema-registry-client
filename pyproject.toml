@@ -9,7 +9,7 @@ packages = [{include = "schema_registry"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-fastavro = "^1.7.3"
+fastavro = "^1.7.4"
 jsonschema = "^4.17.3"
 httpx = "^0.24.0"
 aiofiles = "^23.1.0"
