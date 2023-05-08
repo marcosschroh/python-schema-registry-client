@@ -33,7 +33,7 @@ types-jsonschema = "^4.17.0.7"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
 mkdocs-material = "^9"
-mkautodoc = "^0.2.0"  # later replace this with mkdocstrings
+mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 
 [tool.poetry.group.ci-publish.dependencies]
 commitizen = "^3"

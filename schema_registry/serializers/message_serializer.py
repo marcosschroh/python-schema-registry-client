@@ -37,11 +37,10 @@ class MessageSerializer(ABC):
     """
     A helper class that can serialize and deserialize messages asynchronously
 
-    **Parameters:**
-
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     def __init__(
@@ -74,12 +73,14 @@ class MessageSerializer(ABC):
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
-        Args:
-            subject (str): Subject name
-            schema (avro.schema.RecordSchema): Avro Schema
-            record (dict): An object to serialize
+
+        Attributes:
+            subject str: Subject name
+            schema avro.schema.RecordSchema: Avro Schema
+            record typing.Dict: An object to serialize
+
         Returns:
-            bytes: Encoded record with schema ID as bytes
+            Encoded record with schema ID as bytes
         """
         # Try to register the schema
         schema_id = self.schemaregistry_client.register(subject, schema, schema_type=self._serializer_schema_type)
@@ -94,11 +95,13 @@ class MessageSerializer(ABC):
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
-        Args:
-            schema_id (int): integer ID
-            record (dict): An object to serialize
+
+        Attributes:
+            schema_id int: integer ID
+            record typing.Dict: An object to serialize
+
         Returns:
-            func: decoder function
+            Decoder function
         """
         # use slow avro
         if schema_id not in self.id_to_writers:
@@ -125,8 +128,9 @@ class MessageSerializer(ABC):
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
-        Args:
-            message (bytes or None): message key or value to be decoded
+        Attributes:
+            message bytes: message key or value to be decoded
+
         Returns:
             dict: Decoded message contents.
         """
@@ -163,11 +167,63 @@ class AvroMessageSerializer(MessageSerializer):
     """
     AvroMessageSerializer to serialize and deserialize messages
 
-    **Parameters:**
+    !!! Example
+        ```python
+        from schema_registry.client import SchemaRegistryClient, schema
+        from schema_registry.serializers import AvroMessageSerializer
 
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+
+        client = SchemaRegistryClient("http://127.0.0.1:8081")
+        avro_message_serializer = AvroMessageSerializer(client)
+
+        avro_user_schema = schema.AvroSchema({
+            "type": "record",
+            "namespace": "com.example",
+            "name": "AvroUsers",
+            "fields": [
+                {"name": "first_name", "type": "string"},
+                {"name": "last_name", "type": "string"},
+                {"name": "age", "type": "int"},
+
+            ],
+        })
+
+        # We want to encode the user_record with avro_user_schema
+        user_record = {
+            "first_name": "my_first_name",
+            "last_name": "my_last_name",
+            "age": 20,
+        }
+
+        # Encode the record
+        message_encoded = avro_message_serializer.encode_record_with_schema(
+            "user", avro_user_schema, user_record)
+
+        # this is because the message encoded reserved 5 bytes for the schema_id
+        assert len(message_encoded) > 5
+        assert isinstance(message_encoded, bytes)
+
+        # Decode the message
+        message_decoded = avro_message_serializer.decode_message(message_encoded)
+        assert message_decoded == user_record
+
+        # Now if we send a bad record
+        bad_record = {
+            "first_name": "my_first_name",
+            "last_name": "my_last_name",
+            "age": "my_age"
+        }
+
+        avro_message_serializer.encode_record_with_schema(
+            "user", avro_user_schema, bad_record)
+
+        # >>> TypeError: an integer is required on field age
+        ```
+
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     @property
@@ -187,11 +243,63 @@ class JsonMessageSerializer(MessageSerializer):
     """
     JsonMessageSerializer to serialize and deserialize messages
 
-    **Parameters:**
+    !!! Example
 
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+        ```python
+        from schema_registry.client import SchemaRegistryClient, schema
+        from schema_registry.serializers import JsonMessageSerializer
+
+
+        client = SchemaRegistryClient("http://127.0.0.1:8081")
+        json_message_serializer = JsonMessageSerializer(client)
+
+        json_schema = schema.JsonSchema({
+        "definitions" : {
+            "record:python.test.basic.basic" : {
+            "description" : "basic schema for tests",
+            "type" : "object",
+            "required" : [ "number", "name" ],
+            "properties" : {
+                "number" : {
+                "oneOf" : [ {
+                    "type" : "integer"
+                }, {
+                    "type" : "null"
+                } ]
+                },
+                "name" : {
+                "oneOf" : [ {
+                    "type" : "string"
+                } ]
+                }
+            }
+            }
+        },
+        "$ref" : "#/definitions/record:python.test.basic.basic"
+        })
+
+        # Encode the record
+        basic_record = {
+            "number": 10,
+            "name": "a_name",
+        }
+
+        message_encoded = json_message_serializer.encode_record_with_schema(
+            "basic", json_schema, basic_record)
+
+        # this is because the message encoded reserved 5 bytes for the schema_id
+        assert len(message_encoded) > 5
+        assert isinstance(message_encoded, bytes)
+
+        # Decode the message
+        message_decoded = json_message_serializer.decode_message(message_encoded)
+        assert message_decoded == basic_record
+        ```
+
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     @property
@@ -218,11 +326,10 @@ class AsyncMessageSerializer(ABC):
     """
     AsyncMessageSerializer to serialize and deserialize messages asynchronously
 
-    **Parameters:**
-
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     def __init__(
@@ -255,12 +362,14 @@ class AsyncMessageSerializer(ABC):
         Given a parsed avro schema, encode a record for the given subject.
         The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
-        Args:
-            subject (str): Subject name
-            schema (avro.schema.RecordSchema): Avro Schema
-            record (dict): An object to serialize
+
+        Attributes:
+            subject str: Subject name
+            schema avro.schema.RecordSchema: Avro Schema
+            record dict: An object to serialize
+
         Returns:
-            bytes: Encoded record with schema ID as bytes
+            Encoded record with schema ID
         """
         # Try to register the schema
         schema_id = await self.schemaregistry_client.register(subject, schema, schema_type=self._serializer_schema_type)
@@ -275,11 +384,13 @@ class AsyncMessageSerializer(ABC):
         """
         Encode a record with a given schema id.  The record must
         be a python dictionary.
-        Args:
-            schema_id (int): integer ID
-            record (dict): An object to serialize
+
+        Attributes:
+            schema_id int: integer ID
+            record typing.Dict: An object to serialize
+
         Returns:
-            func: decoder function
+            Decoder function
         """
         # use slow avro
         if schema_id not in self.id_to_writers:
@@ -306,10 +417,12 @@ class AsyncMessageSerializer(ABC):
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
-        Args:
-            message (bytes or None): message key or value to be decoded
+
+        Attributes:
+            message bytes: message key or value to be decoded
+
         Returns:
-            dict: Decoded message contents.
+            Decoded message
         """
 
         if message is None:
@@ -344,11 +457,10 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
     """
     AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously
 
-    **Parameters:**
-
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     @property
@@ -368,11 +480,10 @@ class AsyncJsonMessageSerializer(AsyncMessageSerializer):
     """
     AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously
 
-    **Parameters:**
-
-    * **schemaregistry_client** - schema_registry.client.AsyncSchemaRegistryClient: Http Client
-    * **reader_schema** - schema_registry.schema.AvroSchema: Specify a schema to decode the message
-    * **return_record_name** - bool: If the record name should be returned
+    Attributes:
+        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
+        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
+        return_record_name bool: If the record name should be returned
     """
 
     @property
