@@ -28,7 +28,7 @@ repo_url: https://github.com/marcosschroh/python-schema-registry-client
 nav:
   - Introduction: 'index.md'
   - SchemaRegistryClient Api: 'client.md'
-  - Message Serializer: 'serializer.md'
+  - Serializers: 'serializer.md'
   - Faust integration: 'faust.md'
   - Schemas: 'schemas.md'
   - Exceptions: 'exceptions.md'
@@ -50,4 +50,7 @@ markdown_extensions:
   - md_in_html
   - admonition
   - codehilite
-  - mkautodoc
+
+plugins:
+  - autorefs
+  - mkdocstrings
