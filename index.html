@@ -15,7 +15,7 @@
         <link rel="next" href="client/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.8">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.85bb2934.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.a6bdf11c.min.css">
       
       
 
@@ -716,11 +716,11 @@ and use it in the API for <code>register schemas</code>, <code>check versions</c
 <p>For commit messages we use <a href="https://commitizen-tools.github.io/commitizen/">commitizen</a> in order to standardize a way of committing rules</p>
 <p><em>Note</em>: The tests are run against the <code>Schema Server</code> using <code>docker compose</code>, so you will need
 <code>Docker</code> and <code>Docker Compose</code> installed.</p>
-<p>You can run tests with arbitrary python version by:</p>
-<div class="highlight"><pre><span></span><code>./scripts/test<span class="w"> </span>--python-version<span class="w"> </span><span class="m">3</span>.x
+<p>In a terminal run <code>docker-compose up</code>. Then in a different terminal run the tests:</p>
+<div class="highlight"><pre><span></span><code>./scripts/test
 </code></pre></div>
 <p>All additional args will be passed to pytest, for example:</p>
-<div class="highlight"><pre><span></span><code>./scripts/test<span class="w"> </span>./tests/client/<span class="w"> </span>--maxfail<span class="o">=</span><span class="m">1</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code>./scripts/test<span class="w"> </span>./tests/client/
 </code></pre></div>
 <h3 id="tests-usind-the-python-shell">Tests usind the python shell</h3>
 <p>To perform tests using the python shell you can run the project using <code>docker-compose</code>.</p>
@@ -793,7 +793,7 @@ and use it in the API for <code>register schemas</code>, <code>check versions</c
     <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="assets/javascripts/bundle.c2be25ad.min.js"></script>
       
     
   </body>
