@@ -2,36 +2,16 @@
 
 set -o errexit
 
-PYTHON_VERSION="3.10"
+export SCHEMA_REGISTRY_URL=http://localhost:8081
+export KAFKA_BOOSTRAP_SERVER_NAME=127.0.0.1
+export KAFKA_BOOSTRAP_SERVER_PORT=9092
+export SCHEMA_REGISTRY_SERVER=127.0.0.1
+export SCHEMA_REGISTRY_SERVER_PORT=8081
 
-ARGS=""
-if [[ $# -eq 2 ]]; then
-  case "$1" in
-    --python-version)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        PYTHON_VERSION=$2
-        shift 2
-      else
-        echo "Error: Argument for $1 is missing" >&2
-        exit 1
-      fi
-      ;;
-    *) # preserve other arguments
-      ARGS="$ARGS $1"
-      shift
-      ;;
-  esac
-fi
+./scripts/wait_for_services
 
-# set positional arguments in their proper place
-eval set -- "$ARGS"
-
-echo "Run tests using python" $PYTHON_VERSION
-docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION
-
-# run tests against schema registry server
-docker-compose run --rm \
-    -e CODECOV_TOKEN=${CODECOV_TOKEN} \
-    schema-registry-client ./scripts/run-tests ${1-"./tests"} \
-
-docker-compose down
+poetry run pytest --cov=schema_registry ${1} --cov-fail-under=87
+poetry run codecov --token=$CODECOV_TOKEN
+poetry run ruff schema_registry/ tests/
+poetry run black --check --diff schema_registry tests
+poetry run mypy schema_registry

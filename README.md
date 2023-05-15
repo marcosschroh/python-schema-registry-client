@@ -329,26 +329,25 @@ For commit messages we use [commitizen](https://commitizen-tools.github.io/commi
 *Note*: The tests are run against the `Schema Server` using `docker compose`, so you will need
 `Docker` and `Docker Compose` installed.
 
-You can run tests with arbitrary python version by:
+In a terminal run `docker-compose up`. Then in a different terminal run the tests:
 
 ```bash
-./scripts/test --python-version 3.x
+./scripts/test
 ```
 
 All additional args will be passed to pytest, for example:
 
 ```bash
-./scripts/test ./tests/client/ --maxfail=1 
+./scripts/test ./tests/client/
 ```
 
 ### Tests usind the python shell
 
 To perform tests using the python shell you can run the project using `docker-compose`.
 
-1. Build: `docker-compose build --build-arg PYTHON_VERSION=$PYTHON_VERSION`
-2. Execute `docker-compose up`. Then, the `schema registry server` will run on `http://127.0.0.1:8081`, then you can interact against it using the `SchemaRegistryClient`:
-3. Use the python interpreter (get a python shell typing `python` in your command line)
-4. Play with the `schema server`
+1. Execute `docker-compose up`. Then, the `schema registry server` will run on `http://127.0.0.1:8081`, then you can interact against it using the `SchemaRegistryClient`:
+1. Use the python interpreter (get a python shell typing `python` in your command line)
+1. Play with the `schema server`
 
 ```python
 from schema_registry.client import SchemaRegistryClient, schema

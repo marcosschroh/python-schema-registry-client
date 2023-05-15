@@ -27,4 +27,8 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         PYTHON_VERSION: ${{ matrix.python-version }}
-      run: ./scripts/test --python-version ${{ matrix.python-version }}
+      run: |
+        docker-compose up -d
+        python -m pip install -U pip poetry
+        poetry install --all-extras
+        ./scripts/test

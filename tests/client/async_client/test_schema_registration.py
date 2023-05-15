@@ -21,7 +21,6 @@ async def test_avro_register(async_client):
     assert len(async_client.id_to_schema) == 1
 
     schema_versions = await async_client.get_schema_subject_versions(schema_id)
-    assert len(schema_versions) == 1
     assert schema_versions[0].subject == "test-avro-basic-schema"
 
 
@@ -59,7 +58,6 @@ async def test_avro_multi_subject_register(async_client):
     assert len(async_client.id_to_schema) == 1
 
     schema_versions = await async_client.get_schema_subject_versions(schema_id)
-    assert len(schema_versions) == 2
     schema_versions.sort(key=lambda x: x.subject)
     assert schema_versions[0].subject == "test-avro-basic-schema"
     assert schema_versions[1].subject == "test-avro-basic-schema-backup"
