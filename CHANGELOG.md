@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-## 3.0.0 (2023-05-15)
-
-### Fix
-
-- dependabot added. Documentation improved with mkdocstrings (#148)
-
 ## [2.4.3] - 2023-04-19
 
 - include properly `py.typed` marker file
