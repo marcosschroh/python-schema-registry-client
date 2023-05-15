@@ -100,7 +100,7 @@ convention = "google"
 
 [tool.commitizen]
 version = "2.4.3"
-tag_format = "$version"
+tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",
 ]
