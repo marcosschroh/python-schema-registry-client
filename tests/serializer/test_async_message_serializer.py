@@ -50,8 +50,8 @@ async def test_avro_encode_logical_types(async_client, async_avro_message_serial
     schema_id = await async_client.register(subject, logical_types_schema)
 
     record = data_gen.create_logical_item()
-    message = await async_avro_message_serializer.encode_record_with_schema_id(schema_id, record)
 
+    message = await async_avro_message_serializer.encode_record_with_schema_id(schema_id, record)
     decoded = await async_avro_message_serializer.decode_message(message)
 
     decoded_datetime = decoded.get("metadata").get("timestamp")
@@ -60,7 +60,7 @@ async def test_avro_encode_logical_types(async_client, async_avro_message_serial
     decoded_total = decoded.get("metadata").get("total")
     total = record.get("metadata").get("total")
 
-    assert timestamp == decoded_datetime.replace(tzinfo=None)
+    assert timestamp == decoded_datetime
     assert total == decoded_total
 
 

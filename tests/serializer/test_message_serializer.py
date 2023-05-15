@@ -58,7 +58,7 @@ def test_avro_encode_logical_types(client, avro_message_serializer):
     decoded_total = decoded.get("metadata").get("total")
     total = record.get("metadata").get("total")
 
-    assert timestamp == decoded_datetime.replace(tzinfo=None)
+    assert timestamp == decoded_datetime
     assert total == decoded_total
 
 
