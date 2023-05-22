@@ -11,7 +11,7 @@ packages = [{include = "schema_registry"}]
 python = "^3.7"
 fastavro = "^1.7.3"
 jsonschema = "^4.17.3"
-httpx = "^0.24.0"
+httpx = "^0.24.1"
 aiofiles = "^23.1.0"
 faust-streaming = {version = "^0.10.11", optional = true}
 
