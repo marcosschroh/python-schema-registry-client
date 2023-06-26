@@ -5,7 +5,7 @@ from base64 import b64encode
 import httpx
 import pytest
 
-from schema_registry.client import AsyncSchemaRegistryClient, Auth, utils
+from schema_registry.client import AsyncSchemaRegistryClient, utils
 
 
 @pytest.mark.asyncio
@@ -127,13 +127,31 @@ async def test_auth():
     password = "secret"
     client = AsyncSchemaRegistryClient(
         url="https://user_url:secret_url@127.0.0.1:65534",
-        auth=Auth(username=username, password=password),
+        auth=httpx.BasicAuth(username=username, password=password),
     )
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
     response = await client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
+
+
+@pytest.mark.asyncio
+async def test_custom_auth():
+    class CustomAuth(httpx.Auth):
+        def __init__(self, token):
+            self.token = token
+
+        def auth_flow(self, request):
+            # Send the request, with a custom `Authorization` header.
+            request.headers["Authorization"] = f"Bearer {self.token}"
+            yield request
+
+    token = "token"
+    client = AsyncSchemaRegistryClient(url="https://@127.0.0.1:65534", auth=CustomAuth(token))
+
+    response = await client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Bearer {token}"
 
 
 def test_basic_auth_invalid():
