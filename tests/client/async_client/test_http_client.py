@@ -143,7 +143,7 @@ async def test_custom_auth():
             self.token = token
 
         def auth_flow(self, request):
-            # Send the request, with a custom `X-Authentication` header.
+            # Send the request, with a custom `Authorization` header.
             request.headers["Authorization"] = f"Bearer {self.token}"
             yield request
 
