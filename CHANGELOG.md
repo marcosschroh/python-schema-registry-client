@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.0 (2023-06-26)
+
+### Feat
+
+- Add support for generic httpx.Auth  (#174)
+
 ## v2.4.4 (2023-06-26)
 
 ### Fix
