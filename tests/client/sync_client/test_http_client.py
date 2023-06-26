@@ -167,14 +167,21 @@ def test_auth():
     assert response.request.headers.get("Authorization") == f"Basic {token}"
 
 
-def test_oauth():
-    def get_token():
-        return "token"
+def test_custom_auth():
+    class CustomAuth(httpx.Auth):
+        def __init__(self, token):
+            self.token = token
 
-    SchemaRegistryClient(
-        url="https://127.0.0.1:65534",
-        # oauth=OAuth2(token=partial(get_token)),
-    )
+        def auth_flow(self, request):
+            # Send the request, with a custom `X-Authentication` header.
+            request.headers["Authorization"] = f"Bearer {self.token}"
+            yield request
+
+    token = "token"
+    client = SchemaRegistryClient(url="https://127.0.0.1:65534", auth=CustomAuth(token))
+
+    response = client.request("https://example.com")
+    assert response.request.headers.get("Authorization") == f"Bearer {token}"
 
 
 def test_basic_auth_invalid():
