@@ -17,7 +17,7 @@
         <link rel="next" href="../serializer/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.12">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -849,65 +849,101 @@
           <td>
                 <code>str | typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Url to schema registry or dictionary containing client configuration.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Url to schema registry or dictionary containing client configuration.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>ca_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>File or directory path to CA certificate(s)
-for verifying the Schema Registry key.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>File or directory path to CA certificate(s)
+for verifying the Schema Registry key.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>cert_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Path to public key used for authentication.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to public key used for authentication.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>key_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Path to private key used for authentication.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to private key used for authentication.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>key_password</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Key password</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Key password</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>extra_headers</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Extra headers to add on every requests.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on every requests.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx.Timeout">Timeout</span> | None</code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>pool_limits</code></td>
           <td>
                 <code>httpx.<span title="httpx.Limits">Limits</span> | None</code>
           </td>
-          <td><p>The connection pool configuration to use when
-determining the maximum number of concurrently open HTTP connections.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The connection pool configuration to use when
+determining the maximum number of concurrently open HTTP connections.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>auth</code></td>
           <td>
                 <code><span title="schema_registry.client.auth_utils">auth_utils</span>.<span title="schema_registry.client.auth_utils.Auth">Auth</span> | None</code>
           </td>
-          <td><p>Auth credentials.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Auth credentials.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2067,35 +2103,55 @@ its version under this subject and the subject name.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.BaseSchema">BaseSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.BaseSchema">BaseSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2113,7 +2169,11 @@ its version under this subject and the subject name.</p>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[<span title="schema_registry.client.utils">utils</span>.<span title="schema_registry.client.utils.SchemaVersion">SchemaVersion</span>]</code>
           </td>
-          <td><p>SchemaVersion If schema exist</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>SchemaVersion If schema exist</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2267,22 +2327,34 @@ recycled or in development environments.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2300,7 +2372,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List version of the schema deleted under this subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List version of the schema deleted under this subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2407,31 +2483,47 @@ registered schema for compatibility purposes or re-register previously registere
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>version</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>Version of the schema to be deleted.
+          <td>
+            <div class="doc-md-description">
+              <p>Version of the schema to be deleted.
 Valid values for versionId are between [1,2^31-1] or the string "latest".
-"latest" deletes the last registered schema under the specified subject.</p></td>
+"latest" deletes the last registered schema under the specified subject.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2449,7 +2541,11 @@ Valid values for versionId are between [1,2^31-1] or the string "latest".
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[int]</code>
           </td>
-          <td><p>Version of the schema deleted. If the subject or version does not exist.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Version of the schema deleted. If the subject or version does not exist.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2567,22 +2663,34 @@ Retrieve a parsed avro schema by id or None if not found</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>Schema Id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Schema Id</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2600,7 +2708,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.schema.JsonSchema">JsonSchema</span>]]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2709,22 +2821,34 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2742,8 +2866,12 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>One of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
-FULL, FULL_TRANSITIVE, NONE</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>One of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+FULL, FULL_TRANSITIVE, NONE</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2761,8 +2889,12 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code><span title="schema_registry.client.errors.ClientError">ClientError</span></code>
           </td>
-          <td><p>if the request was unsuccessful or an invalid
-compatibility level was returned</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>if the request was unsuccessful or an invalid
+compatibility level was returned</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2888,29 +3020,45 @@ Get a specific version of the schema registered under this subject</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>version</code></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>version id. If is None, the latest schema is returned</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>version id. If is None, the latest schema is returned</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -2928,7 +3076,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[<span title="schema_registry.client.utils">utils</span>.<span title="schema_registry.client.utils.SchemaVersion">SchemaVersion</span>]</code>
           </td>
-          <td><p>The SchemaVersion utils.SchemaVersion if response was succeded</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The SchemaVersion utils.SchemaVersion if response was succeded</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3058,22 +3210,34 @@ Get the subject-version pairs identified by the input ID.</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>Schema Id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Schema Id</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3091,7 +3255,11 @@ Get the subject-version pairs identified by the input ID.</p>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[typing.<span title="typing.List">List</span>[<span title="schema_registry.client.schema.SubjectVersion">SubjectVersion</span>]]</code>
           </td>
-          <td><p>List of Subject/Version pairs where Schema Id is registered</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of Subject/Version pairs where Schema Id is registered</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3195,22 +3363,34 @@ Get list of all registered subjects in your Schema Registry.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3228,7 +3408,11 @@ Get list of all registered subjects in your Schema Registry.</p>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List of registered subjects.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of registered subjects.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3320,22 +3504,34 @@ Get a list of versions registered under the specified subject.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3353,7 +3549,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List  version of the schema registered under this subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List  version of the schema registered under this subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3457,38 +3657,58 @@ Multiple instances of the same schema will result in cache misses.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.BaseSchema">BaseSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.BaseSchema">BaseSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON
-schema to be registered</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON
+schema to be registered</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>Dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>Union[<span title="httpx._types.TimeoutTypes">TimeoutTypes</span>, <span title="httpx._client.UseClientDefault">UseClientDefault</span>]</code>
           </td>
-          <td><p>The timeout configuration
-to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration
+to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to
-parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to
+parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3506,7 +3726,11 @@ parse if <code>schema</code> is a string. Default "AVRO"</p></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>schema_id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>schema_id</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3695,35 +3919,55 @@ By default the latest version is checked against.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.JsonSchema">JsonSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.JsonSchema">JsonSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3741,7 +3985,11 @@ By default the latest version is checked against.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Wether the schema is compatible with the latest version for a subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Wether the schema is compatible with the latest version for a subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3876,30 +4124,46 @@ If subject is None, the compatibility level is global.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
-FULL, FULL_TRANSITIVE, NONE</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+FULL, FULL_TRANSITIVE, NONE</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>subject</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>Option subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Option subject</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3917,7 +4181,11 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether the compatibility was updated</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether the compatibility was updated</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -3935,7 +4203,11 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code><span title="schema_registry.client.errors.ClientError">ClientError</span></code>
           </td>
-          <td><p>if the request was unsuccessful or an invalid</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>if the request was unsuccessful or an invalid</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -4068,65 +4340,101 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code>str | typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Url to schema registry or dictionary containing client configuration.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Url to schema registry or dictionary containing client configuration.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>ca_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>File or directory path to CA certificate(s)
-for verifying the Schema Registry key.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>File or directory path to CA certificate(s)
+for verifying the Schema Registry key.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>cert_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Path to public key used for authentication.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to public key used for authentication.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>key_location</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Path to private key used for authentication.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path to private key used for authentication.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>key_password</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Key password</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Key password</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>extra_headers</code></td>
           <td>
                 <code>str | None</code>
           </td>
-          <td><p>Extra headers to add on every requests.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on every requests.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx.Timeout">Timeout</span> | None</code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>pool_limits</code></td>
           <td>
                 <code>httpx.<span title="httpx.Limits">Limits</span> | None</code>
           </td>
-          <td><p>The connection pool configuration to use when
-determining the maximum number of concurrently open HTTP connections.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The connection pool configuration to use when
+determining the maximum number of concurrently open HTTP connections.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>auth</code></td>
           <td>
                 <code><span title="schema_registry.client.auth_utils">auth_utils</span>.<span title="schema_registry.client.auth_utils.Auth">Auth</span> | None</code>
           </td>
-          <td><p>Auth credentials.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Auth credentials.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5304,35 +5612,55 @@ its version under this subject and the subject name.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.BaseSchema">BaseSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.BaseSchema">BaseSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5350,7 +5678,11 @@ its version under this subject and the subject name.</p>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[<span title="schema_registry.client.utils">utils</span>.<span title="schema_registry.client.utils.SchemaVersion">SchemaVersion</span>]</code>
           </td>
-          <td><p>SchemaVersion If schema exist</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>SchemaVersion If schema exist</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5510,22 +5842,34 @@ recycled or in development environments.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5543,7 +5887,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List version of the schema deleted under this subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List version of the schema deleted under this subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5658,31 +6006,47 @@ registered schema for compatibility purposes or re-register previously registere
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>version</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>Version of the schema to be deleted.
+          <td>
+            <div class="doc-md-description">
+              <p>Version of the schema to be deleted.
 Valid values for versionId are between [1,2^31-1] or the string "latest".
-"latest" deletes the last registered schema under the specified subject.</p></td>
+"latest" deletes the last registered schema under the specified subject.</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5700,7 +6064,11 @@ Valid values for versionId are between [1,2^31-1] or the string "latest".
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[int]</code>
           </td>
-          <td><p>Version of the schema deleted. If the subject or version does not exist.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Version of the schema deleted. If the subject or version does not exist.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5826,22 +6194,34 @@ Retrieve a parsed avro schema by id or None if not found</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>Schema Id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Schema Id</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5859,7 +6239,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.schema.JsonSchema">JsonSchema</span>]]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -5976,22 +6360,34 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6009,8 +6405,12 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>One of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
-FULL, FULL_TRANSITIVE, NONE</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>One of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+FULL, FULL_TRANSITIVE, NONE</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6028,8 +6428,12 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code><span title="schema_registry.client.errors.ClientError">ClientError</span></code>
           </td>
-          <td><p>if the request was unsuccessful or an invalid
-compatibility level was returned</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>if the request was unsuccessful or an invalid
+compatibility level was returned</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6164,7 +6568,11 @@ Get a specific version of the schema registered under this subject</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -6174,7 +6582,11 @@ Get a specific version of the schema registered under this subject</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>version id. If is None, the latest schema is returned</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>version id. If is None, the latest schema is returned</p>
+            </div>
+          </td>
           <td>
                 <code>&#39;latest&#39;</code>
           </td>
@@ -6184,7 +6596,11 @@ Get a specific version of the schema registered under this subject</p>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -6194,8 +6610,12 @@ Get a specific version of the schema registered under this subject</p>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
           <td>
                 <code>USE_CLIENT_DEFAULT</code>
           </td>
@@ -6216,16 +6636,24 @@ Default USE_CLIENT_DEFAULT</p></td>
 <td><code>SchemaVersion</code></td>          <td>
                 <code>nametupled</code>
           </td>
-          <td><p>(subject, schema_id, schema, version)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>(subject, schema_id, schema, version)</p>
+            </div>
+          </td>
         </tr>
         <tr>
 <td><code>None</code></td>          <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[<span title="schema_registry.client.utils">utils</span>.<span title="schema_registry.client.utils.SchemaVersion">SchemaVersion</span>]</code>
           </td>
-          <td><p>If server returns a not success response:
+          <td>
+            <div class="doc-md-description">
+              <p>If server returns a not success response:
 404: Schema not found
 422: Unprocessable entity
-~ (200 - 299): Not success</p></td>
+~ (200 - 299): Not success</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6375,22 +6803,34 @@ Get the subject-version pairs identified by the input ID.</p>
           <td>
                 <code>int</code>
           </td>
-          <td><p>Schema Id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Schema Id</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6408,7 +6848,11 @@ Get the subject-version pairs identified by the input ID.</p>
           <td>
                 <code>typing.<span title="typing.Optional">Optional</span>[typing.<span title="typing.List">List</span>[<span title="schema_registry.client.schema.SubjectVersion">SubjectVersion</span>]]</code>
           </td>
-          <td><p>List of Subject/Version pairs where Schema Id is registered</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of Subject/Version pairs where Schema Id is registered</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6522,22 +6966,34 @@ Get list of all registered subjects in your Schema Registry.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6555,7 +7011,11 @@ Get list of all registered subjects in your Schema Registry.</p>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List of registered subjects.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of registered subjects.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6655,22 +7115,34 @@ Get a list of versions registered under the specified subject.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6688,7 +7160,11 @@ Default USE_CLIENT_DEFAULT</p></td>
           <td>
                 <code>list</code>
           </td>
-          <td><p>List  version of the schema registered under this subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>List  version of the schema registered under this subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6802,38 +7278,58 @@ Multiple instances of the same schema will result in cache misses.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.BaseSchema">BaseSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.BaseSchema">BaseSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON
-schema to be registered</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON
+schema to be registered</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>Dict</code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>Union[<span title="httpx._types.TimeoutTypes">TimeoutTypes</span>, <span title="httpx._client.UseClientDefault">UseClientDefault</span>]</code>
           </td>
-          <td><p>The timeout configuration
-to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration
+to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to
-parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to
+parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -6851,7 +7347,11 @@ parse if <code>schema</code> is a string. Default "AVRO"</p></td>
           <td>
                 <code>int</code>
           </td>
-          <td><p>schema_id</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>schema_id</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7048,35 +7548,55 @@ By default the latest version is checked against.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>subject name</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>subject name</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema</code></td>
           <td>
-                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="client.schema.JsonSchema">JsonSchema</span>, str]</code>
+                <code>typing.<span title="typing.Union">Union</span>[<span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.AvroSchema">AvroSchema</span>, <span title="schema_registry.client.client">client</span>.<span title="schema_registry.client.client.schema">schema</span>.<span title="schema_registry.client.client.schema.JsonSchema">JsonSchema</span>, str]</code>
           </td>
-          <td><p>Avro or JSON schema</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Avro or JSON schema</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>schema_type</code></td>
           <td>
                 <code>typing.<span title="typing.Union">Union</span>[AVRO, JSON]</code>
           </td>
-          <td><p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of schema to parse if <code>schema</code> is a string. Default "AVRO"</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7094,7 +7614,11 @@ By default the latest version is checked against.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Wether the schema is compatible with the latest version for a subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Wether the schema is compatible with the latest version for a subject</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7235,30 +7759,46 @@ If subject is None, the compatibility level is global.</p>
           <td>
                 <code>str</code>
           </td>
-          <td><p>one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
-FULL, FULL_TRANSITIVE, NONE</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>one of BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE,
+FULL, FULL_TRANSITIVE, NONE</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>subject</code></td>
           <td>
                 <code>str</code>
           </td>
-          <td><p>Option subject</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Option subject</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>headers</code></td>
           <td>
                 <code>typing.<span title="typing.Dict">Dict</span></code>
           </td>
-          <td><p>Extra headers to add on the requests</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Extra headers to add on the requests</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>timeout</code></td>
           <td>
                 <code>httpx.<span title="httpx._client">_client</span>.<span title="httpx._client.TimeoutTypes">TimeoutTypes</span></code>
           </td>
-          <td><p>The timeout configuration to use when sending requests.
-    Default USE_CLIENT_DEFAULT</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>The timeout configuration to use when sending requests.
+    Default USE_CLIENT_DEFAULT</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7276,7 +7816,11 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Whether the compatibility was updated</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether the compatibility was updated</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7294,7 +7838,11 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
           <td>
                 <code><span title="schema_registry.client.errors.ClientError">ClientError</span></code>
           </td>
-          <td><p>if the request was unsuccessful or an invalid</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>if the request was unsuccessful or an invalid</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -7454,7 +8002,7 @@ FULL, FULL_TRANSITIVE, NONE</p></td>
     <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c2be25ad.min.js"></script>
+      <script src="../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
     
   </body>
