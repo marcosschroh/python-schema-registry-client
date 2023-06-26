@@ -5,7 +5,7 @@ from base64 import b64encode
 import httpx
 import pytest
 
-from schema_registry.client import AsyncSchemaRegistryClient, Auth, utils
+from schema_registry.client import AsyncSchemaRegistryClient, utils
 
 
 @pytest.mark.asyncio
@@ -127,7 +127,7 @@ async def test_auth():
     password = "secret"
     client = AsyncSchemaRegistryClient(
         url="https://user_url:secret_url@127.0.0.1:65534",
-        auth=Auth(username=username, password=password),
+        auth=httpx.BasicAuth(username=username, password=password),
     )
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))

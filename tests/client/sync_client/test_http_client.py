@@ -5,7 +5,7 @@ import httpx
 import pytest
 from httpx import USE_CLIENT_DEFAULT
 
-from schema_registry.client import Auth, SchemaRegistryClient, schema, utils
+from schema_registry.client import SchemaRegistryClient, schema, utils
 from tests import data_gen
 
 
@@ -158,13 +158,23 @@ def test_auth():
     password = "secret"
     client = SchemaRegistryClient(
         url="https://user_url:secret_url@127.0.0.1:65534",
-        auth=Auth(username=username, password=password),
+        auth=httpx.BasicAuth(username=username, password=password),
     )
 
     userpass = b":".join((httpx._utils.to_bytes(username), httpx._utils.to_bytes(password)))
     token = b64encode(userpass).decode()
     response = client.request("https://example.com")
     assert response.request.headers.get("Authorization") == f"Basic {token}"
+
+
+def test_oauth():
+    def get_token():
+        return "token"
+
+    SchemaRegistryClient(
+        url="https://127.0.0.1:65534",
+        # oauth=OAuth2(token=partial(get_token)),
+    )
 
 
 def test_basic_auth_invalid():

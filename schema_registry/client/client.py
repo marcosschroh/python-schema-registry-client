@@ -6,11 +6,11 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import httpx
-from httpx import USE_CLIENT_DEFAULT
+from httpx import USE_CLIENT_DEFAULT, Auth, BasicAuth
 from httpx._client import UseClientDefault
 from httpx._types import TimeoutTypes
 
-from . import auth_utils, status, utils
+from . import status, utils
 from .errors import ClientError
 from .paths import paths
 from .schema import AvroSchema, BaseSchema, JsonSchema, SchemaFactory, SubjectVersion
@@ -51,7 +51,7 @@ class BaseClient:
         timeout httpx.Timeout | None: The timeout configuration to use when sending requests.
         pool_limits httpx.Limits | None: The connection pool configuration to use when
             determining the maximum number of concurrently open HTTP connections.
-        auth auth_utils.Auth | None: Auth credentials.
+        auth httpx.Auth | None: Auth credentials.
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class BaseClient:
         extra_headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Optional[httpx.Timeout] = None,
         pool_limits: typing.Optional[httpx.Limits] = None,
-        auth: typing.Optional[auth_utils.Auth] = None,
+        auth: typing.Optional[Auth] = None,
     ) -> None:
         if isinstance(url, str):
             conf = {
@@ -104,13 +104,10 @@ class BaseClient:
         schema_type = result.get("schemaType", utils.AVRO_SCHEMA_TYPE)
         return SchemaFactory.create_schema(schema, schema_type)
 
-    def _configure_auth(self) -> typing.Tuple[str, str]:
+    def _configure_auth(self) -> Auth:
         # Check first if the credentials are sent in Auth
         if self.auth is not None:
-            return (
-                self.auth.username,
-                self.auth.password,
-            )
+            return self.auth
 
         # This part should be deprecated with a new mayor version. Url should be only a string
         url = self.conf["url"]
@@ -125,14 +122,12 @@ class BaseClient:
             )
 
         if auth_provider == "USER_INFO":
-            logger.warning(
-                "Deprecation warning: This will be deprecated in future versions. Use auth_utils.Auth instead"
-            )
-            auth = tuple(self.conf.pop("basic.auth.user.info", "").split(":"))  # type: ignore
+            logger.warning("Deprecation warning: This will be deprecated in future versions. Use httpx.Auth instead")
+            auth = BasicAuth(*self.conf.pop("basic.auth.user.info", "").split(":"))  # type: ignore
         else:
             # Credentials might be in the url.
             parsed_url = urlparse(url)
-            auth = (parsed_url.username or "", parsed_url.password or "")
+            auth = BasicAuth(parsed_url.username or "", parsed_url.password or "")
 
         # remove ignore after mypy fix https://github.com/python/mypy/issues/4805
         return auth  # type: ignore
@@ -269,7 +264,7 @@ class SchemaRegistryClient(BaseClient):
         timeout httpx.Timeout | None: The timeout configuration to use when sending requests.
         pool_limits httpx.Limits | None: The connection pool configuration to use when
             determining the maximum number of concurrently open HTTP connections.
-        auth auth_utils.Auth | None: Auth credentials.
+        auth httpx.Auth | None: Auth credentials.
     """
 
     def request(
@@ -803,7 +798,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         timeout httpx.Timeout | None: The timeout configuration to use when sending requests.
         pool_limits httpx.Limits | None: The connection pool configuration to use when
             determining the maximum number of concurrently open HTTP connections.
-        auth auth_utils.Auth | None: Auth credentials.
+        auth httpx.Auth | None: Auth credentials.
     """
 
     async def request(
