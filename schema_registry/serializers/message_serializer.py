@@ -442,7 +442,6 @@ class AsyncMessageSerializer(ABC):
 
             try:
                 writer_schema = await self.schemaregistry_client.get_by_id(schema_id)
-                print(writer_schema, "holis...")
             except ClientError as e:
                 raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}")
 

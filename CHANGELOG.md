@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.1 (2023-12-02)
+
+### Fix
+
+- remove print statement from serializer (#214)
+
 ## v2.5.0 (2023-06-26)
 
 ### Feat
