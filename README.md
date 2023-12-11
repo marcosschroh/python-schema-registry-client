@@ -9,7 +9,7 @@ Python Rest Client to interact against [schema-registry](https://docs.confluent.
 
 ## Requirements
 
-python 3.7+
+python 3.8+
 
 ## Installation
 

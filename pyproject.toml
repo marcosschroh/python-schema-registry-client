@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 fastavro = "^1.7.3"
 jsonschema = "^4.17.3"
 httpx = "^0.24.0"
