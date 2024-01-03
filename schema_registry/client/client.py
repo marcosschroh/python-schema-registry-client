@@ -524,7 +524,7 @@ class SchemaRegistryClient(BaseClient):
         version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)
 
-        return utils.SchemaVersion(subject, schema_id, schema, version)
+        return utils.SchemaVersion(subject=subject, schema_id=schema_id, schema=schema, version=version)
 
     def get_versions(
         self,
@@ -632,7 +632,7 @@ class SchemaRegistryClient(BaseClient):
         schema_id = schemas_to_id.get(schema)
 
         if all((version, schema_id)):
-            return utils.SchemaVersion(subject, schema_id, version, schema)
+            return utils.SchemaVersion(subject=subject, schema_id=schema_id, version=version, schema=schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
@@ -647,7 +647,9 @@ class SchemaRegistryClient(BaseClient):
             version = result.get("version")
             self._cache_schema(schema, schema_id, subject, version)
 
-            return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
+            return utils.SchemaVersion(
+                subject=subject, schema_id=schema_id, version=version, schema=result.get("schema")
+            )
 
         raise ClientError("Unable to get version of a schema", http_code=code, server_traceback=result)
 
@@ -1043,7 +1045,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         version = result["version"]
         self._cache_schema(schema, schema_id, subject, version)
 
-        return utils.SchemaVersion(subject, schema_id, schema, version)
+        return utils.SchemaVersion(subject=subject, schema_id=schema_id, schema=schema, version=version)
 
     async def get_schema_subject_versions(
         self,
@@ -1190,7 +1192,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         schema_id = schemas_to_id.get(schema)
 
         if all((version, schema_id)):
-            return utils.SchemaVersion(subject, schema_id, version, schema)
+            return utils.SchemaVersion(subject=subject, schema_id=schema_id, version=version, schema=schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
         body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
@@ -1206,7 +1208,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             version = result.get("version")
             self._cache_schema(schema, schema_id, subject, version)
 
-            return utils.SchemaVersion(subject, schema_id, version, result.get("schema"))
+            return utils.SchemaVersion(
+                subject=subject, schema_id=schema_id, version=version, schema=result.get("schema")
+            )
 
         raise ClientError("Unable to get version of a schema", http_code=code, server_traceback=result)
 
