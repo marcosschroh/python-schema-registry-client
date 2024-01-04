@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.2 (2023-12-11)
+
+### Fix
+
+- pin python version in publish workflow (#218)
+
 ## v2.5.1 (2023-12-02)
 
 ### Fix

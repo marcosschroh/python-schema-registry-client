@@ -24,6 +24,8 @@ def test_avro_check_version(client, avro_country_schema):
 
     assert subject == result.subject
     assert schema_id == result.schema_id
+    assert isinstance(result.version, int)
+    assert isinstance(result.schema, str)
 
 
 def test_avro_check_version_dataclasses_avroschema(client, dataclass_avro_schema):
