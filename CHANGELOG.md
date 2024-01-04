@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.3 (2024-01-04)
+
+### Fix
+
+- order of arguments in SchemaVersion constructor (#227)
+
 ## v2.5.2 (2023-12-11)
 
 ### Fix
