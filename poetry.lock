@@ -15,7 +15,7 @@ files = [
 name = "aiohttp"
 version = "3.9.0"
 description = "Async http client/server framework (asyncio)"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "aiohttp-3.9.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6896b8416be9ada4d22cd359d7cb98955576ce863eadad5596b7cdfbf3e17c6c"},
@@ -177,7 +177,7 @@ zstd = ["zstandard"]
 name = "aiosignal"
 version = "1.3.1"
 description = "aiosignal: a list of registered asynchronous callbacks"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "aiosignal-1.3.1-py3-none-any.whl", hash = "sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17"},
@@ -226,7 +226,7 @@ test = ["coverage", "mypy", "pexpect", "ruff", "wheel"]
 name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
@@ -591,25 +591,26 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dataclasses-avroschema"
-version = "0.43.9"
+version = "0.54.2"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "dataclasses_avroschema-0.43.9-py3-none-any.whl", hash = "sha256:2df714d48ae61d8e664832ae1a3665bfbe31164bee15ea28d2abc5cf4ba2d916"},
-    {file = "dataclasses_avroschema-0.43.9.tar.gz", hash = "sha256:76cb986cccadb057f37dd7ae6daa66bba5a0e1b6f8f7c906c084d73a4f889991"},
+    {file = "dataclasses_avroschema-0.54.2-py3-none-any.whl", hash = "sha256:7d80d150defc860e7a67c232b3a0f684dfc871b59b02a7e15b131d3782647e7b"},
+    {file = "dataclasses_avroschema-0.54.2.tar.gz", hash = "sha256:36aa777f258adc2cc00a850132339290e4cc53b3cacf454843503b6efb8c375a"},
 ]
 
 [package.dependencies]
 casefy = ">=0.1.7,<0.2.0"
 dacite = ">=1.8.0,<2.0.0"
-faker = ">=18.3.1,<19.0.0"
 fastavro = ">=1.7.3,<2.0.0"
 inflector = ">=3.1.0,<4.0.0"
+typing-extensions = {version = ">=4.2.0,<5.0.0", markers = "python_version < \"3.9\""}
 
 [package.extras]
+faker = ["faker (>=18.3.1,<21.0.0)"]
 faust = ["faust-streaming (>=0.10.11,<0.11.0)"]
-pydantic = ["pydantic (>=1.10.7,<2.0.0)"]
+pydantic = ["pydantic[email] (>=2.4.2,<3.0.0)"]
 
 [[package]]
 name = "decli"
@@ -761,7 +762,7 @@ yaml = ["pyyaml (>=5.1)"]
 name = "frozenlist"
 version = "1.3.3"
 description = "A list-like structure which implements collections.abc.MutableSequence"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "frozenlist-1.3.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:ff8bf625fe85e119553b5383ba0fb6aa3d0ec2ae980295aaefa552374926b3f4"},
@@ -1303,7 +1304,7 @@ uvloop = ["uvloop (>=0.8.1)"]
 name = "multidict"
 version = "6.0.4"
 description = "multidict implementation"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "multidict-6.0.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b1a97283e0c85772d613878028fec909f003993e1007eafa715b24b377cb9b8"},
@@ -2155,7 +2156,7 @@ files = [
 name = "yarl"
 version = "1.9.2"
 description = "Yet another URL library"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "yarl-1.9.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8c2ad583743d16ddbdf6bb14b5cd76bf43b0d0006e918809d5d4ddf7bde8dd82"},
@@ -2259,4 +2260,4 @@ faust = ["faust-streaming"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "00107cf94c6ec3b157e69c8dba77e93cea300835f4ad566a5064bcd4abe0b741"
+content-hash = "fb3919415ef204418ac193960ce29aca73656f4647d8be2328d64c053335d700"
