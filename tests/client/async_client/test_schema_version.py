@@ -30,6 +30,8 @@ async def test_avro_check_version(async_client, avro_country_schema):
 
     assert subject == result.subject
     assert schema_id == result.schema_id
+    assert isinstance(result.version, int)
+    assert isinstance(result.schema, str)
 
 
 @pytest.mark.asyncio
