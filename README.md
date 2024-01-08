@@ -3,7 +3,7 @@
 [![Python package](https://github.com/marcosschroh/python-schema-registry-client/actions/workflows/python-package.yml/badge.svg)](https://github.com/marcosschroh/python-schema-registry-client/actions/workflows/python-package.yml)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/python-schema-registry-client.svg)](https://github.com/marcosschroh/python-schema-registry-client/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/python-schema-registry-client/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/python-schema-registry-client)
-[![Python Version](https://img.shields.io/badge/python-3.7+-blue.svg)](https://img.shields.io/badge/python-3.7+-blue.svg)
+[![Python Version](https://img.shields.io/badge/python-3.7+-blue.svg)](https://img.shields.io/badge/python-3.8+-blue.svg)
 
 Python Rest Client to interact against [schema-registry](https://docs.confluent.io/current/schema-registry/index.html) confluent server to manage [Avro](https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html) and [JSON](https://json-schema.org/) schemas resources.
 
