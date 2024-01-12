@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.4 (2024-01-12)
+
+### Fix
+
+- allow for minor version upgrades of httpx (#231)
+
 ## v2.5.3 (2024-01-04)
 
 ### Fix
