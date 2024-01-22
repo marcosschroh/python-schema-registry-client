@@ -2153,14 +2153,17 @@ files = [
 
 [[package]]
 name = "types-jsonschema"
-version = "4.17.0.8"
+version = "4.21.0.20240118"
 description = "Typing stubs for jsonschema"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "types-jsonschema-4.17.0.8.tar.gz", hash = "sha256:96a56990910f405e62de58862c0bbb3ac29ee6dba6d3d99aa0ba7f874cc547de"},
-    {file = "types_jsonschema-4.17.0.8-py3-none-any.whl", hash = "sha256:f5958eb7b53217dfb5125f0412aeaef226a8a9013eac95816c95b5b523f6796b"},
+    {file = "types-jsonschema-4.21.0.20240118.tar.gz", hash = "sha256:31aae1b5adc0176c1155c2d4f58348b22d92ae64315e9cc83bd6902168839232"},
+    {file = "types_jsonschema-4.21.0.20240118-py3-none-any.whl", hash = "sha256:77a4ac36b0be4f24274d5b9bf0b66208ee771c05f80e34c4641de7d63e8a872d"},
 ]
+
+[package.dependencies]
+referencing = "*"
 
 [[package]]
 name = "typing-extensions"
