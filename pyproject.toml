@@ -23,7 +23,7 @@ classifiers = [
 python = "^3.8"
 fastavro = "^1.7.3"
 jsonschema = "^4.17.3"
-httpx = "^0.24"
+httpx = "^0.26"
 aiofiles = "^23.1.0"
 faust-streaming = {version = "^0.10.11", optional = true}
 
