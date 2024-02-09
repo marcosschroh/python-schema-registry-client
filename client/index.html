@@ -17,7 +17,7 @@
         <link rel="next" href="../serializer/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.1.17">
     
     
       
@@ -1503,7 +1503,9 @@ determining the maximum number of concurrently open HTTP connections.</p>
 <span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
-<span class="normal">783</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SchemaRegistryClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SchemaRegistryClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A client that talks to a Schema Registry over HTTP</span>
 
@@ -1799,7 +1801,7 @@ determining the maximum number of concurrently open HTTP connections.</p>
         <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_versions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1907,7 +1909,7 @@ determining the maximum number of concurrently open HTTP connections.</p>
         <span class="n">schema_id</span> <span class="o">=</span> <span class="n">schemas_to_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">version</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_manager</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;check_version&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
         <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">raw_schema</span><span class="p">),</span> <span class="s2">&quot;schemaType&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema_type</span><span class="p">}</span>
@@ -1922,7 +1924,9 @@ determining the maximum number of concurrently open HTTP connections.</p>
             <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="k">raise</span> <span class="n">ClientError</span><span class="p">(</span><span class="s2">&quot;Unable to get version of a schema&quot;</span><span class="p">,</span> <span class="n">http_code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">server_traceback</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
 
@@ -2234,7 +2238,9 @@ its version under this subject and the subject name.</p>
 <span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
-<span class="normal">652</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -2271,7 +2277,7 @@ its version under this subject and the subject name.</p>
     <span class="n">schema_id</span> <span class="o">=</span> <span class="n">schemas_to_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">version</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
     <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_manager</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;check_version&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
     <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">raw_schema</span><span class="p">),</span> <span class="s2">&quot;schemaType&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema_type</span><span class="p">}</span>
@@ -2286,7 +2292,9 @@ its version under this subject and the subject name.</p>
         <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">raise</span> <span class="n">ClientError</span><span class="p">(</span><span class="s2">&quot;Unable to get version of a schema&quot;</span><span class="p">,</span> <span class="n">http_code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">server_traceback</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2901,9 +2909,7 @@ compatibility level was returned</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
 <span class="normal">745</span>
 <span class="normal">746</span>
 <span class="normal">747</span>
@@ -2942,7 +2948,9 @@ compatibility level was returned</p>
 <span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
-<span class="normal">783</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3173,7 +3181,7 @@ Default USE_CLIENT_DEFAULT</p>
     <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -3996,9 +4004,7 @@ By default the latest version is checked against.</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
 <span class="normal">659</span>
@@ -4041,7 +4047,9 @@ By default the latest version is checked against.</p>
 <span class="normal">696</span>
 <span class="normal">697</span>
 <span class="normal">698</span>
-<span class="normal">699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">JsonSchema</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -4214,9 +4222,7 @@ FULL, FULL_TRANSITIVE, NONE</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">701</span>
-<span class="normal">702</span>
-<span class="normal">703</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">703</span>
 <span class="normal">704</span>
 <span class="normal">705</span>
 <span class="normal">706</span>
@@ -4253,7 +4259,9 @@ FULL, FULL_TRANSITIVE, NONE</p>
 <span class="normal">737</span>
 <span class="normal">738</span>
 <span class="normal">739</span>
-<span class="normal">740</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4442,9 +4450,7 @@ determining the maximum number of concurrently open HTTP connections.</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 786</span>
-<span class="normal"> 787</span>
-<span class="normal"> 788</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 788</span>
 <span class="normal"> 789</span>
 <span class="normal"> 790</span>
 <span class="normal"> 791</span>
@@ -5001,7 +5007,11 @@ determining the maximum number of concurrently open HTTP connections.</p>
 <span class="normal">1342</span>
 <span class="normal">1343</span>
 <span class="normal">1344</span>
-<span class="normal">1345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncSchemaRegistryClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
+<span class="normal">1345</span>
+<span class="normal">1346</span>
+<span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncSchemaRegistryClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A client that talks to a Schema Registry over HTTP</span>
 
@@ -5261,7 +5271,7 @@ determining the maximum number of concurrently open HTTP connections.</p>
         <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema_subject_versions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5408,7 +5418,7 @@ determining the maximum number of concurrently open HTTP connections.</p>
         <span class="n">schema_id</span> <span class="o">=</span> <span class="n">schemas_to_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">version</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_manager</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;check_version&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
         <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">raw_schema</span><span class="p">),</span> <span class="s2">&quot;schemaType&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema_type</span><span class="p">}</span>
@@ -5424,7 +5434,9 @@ determining the maximum number of concurrently open HTTP connections.</p>
             <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="k">raise</span> <span class="n">ClientError</span><span class="p">(</span><span class="s2">&quot;Unable to get version of a schema&quot;</span><span class="p">,</span> <span class="n">http_code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">server_traceback</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
 
@@ -5689,9 +5701,7 @@ its version under this subject and the subject name.</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1156</span>
-<span class="normal">1157</span>
-<span class="normal">1158</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1158</span>
 <span class="normal">1159</span>
 <span class="normal">1160</span>
 <span class="normal">1161</span>
@@ -5744,7 +5754,11 @@ its version under this subject and the subject name.</p>
 <span class="normal">1208</span>
 <span class="normal">1209</span>
 <span class="normal">1210</span>
-<span class="normal">1211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span>
+<span class="normal">1211</span>
+<span class="normal">1212</span>
+<span class="normal">1213</span>
+<span class="normal">1214</span>
+<span class="normal">1215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -5781,7 +5795,7 @@ its version under this subject and the subject name.</p>
     <span class="n">schema_id</span> <span class="o">=</span> <span class="n">schemas_to_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">all</span><span class="p">((</span><span class="n">version</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
     <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_manager</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;check_version&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
     <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">raw_schema</span><span class="p">),</span> <span class="s2">&quot;schemaType&quot;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema_type</span><span class="p">}</span>
@@ -5797,7 +5811,9 @@ its version under this subject and the subject name.</p>
         <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">raise</span> <span class="n">ClientError</span><span class="p">(</span><span class="s2">&quot;Unable to get version of a schema&quot;</span><span class="p">,</span> <span class="n">http_code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">server_traceback</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5898,9 +5914,7 @@ Default USE_CLIENT_DEFAULT</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">925</span>
-<span class="normal">926</span>
-<span class="normal">927</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">927</span>
 <span class="normal">928</span>
 <span class="normal">929</span>
 <span class="normal">930</span>
@@ -5929,7 +5943,9 @@ Default USE_CLIENT_DEFAULT</p>
 <span class="normal">953</span>
 <span class="normal">954</span>
 <span class="normal">955</span>
-<span class="normal">956</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_subject</span><span class="p">(</span>
+<span class="normal">956</span>
+<span class="normal">957</span>
+<span class="normal">958</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_subject</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6075,9 +6091,7 @@ Valid values for versionId are between [1,2^31-1] or the string "latest".
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1115</span>
-<span class="normal">1116</span>
-<span class="normal">1117</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1117</span>
 <span class="normal">1118</span>
 <span class="normal">1119</span>
 <span class="normal">1120</span>
@@ -6114,7 +6128,9 @@ Valid values for versionId are between [1,2^31-1] or the string "latest".
 <span class="normal">1151</span>
 <span class="normal">1152</span>
 <span class="normal">1153</span>
-<span class="normal">1154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_version</span><span class="p">(</span>
+<span class="normal">1154</span>
+<span class="normal">1155</span>
+<span class="normal">1156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_version</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
@@ -6250,9 +6266,7 @@ Default USE_CLIENT_DEFAULT</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">958</span>
-<span class="normal">959</span>
-<span class="normal">960</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">960</span>
 <span class="normal">961</span>
 <span class="normal">962</span>
 <span class="normal">963</span>
@@ -6285,7 +6299,9 @@ Default USE_CLIENT_DEFAULT</p>
 <span class="normal">990</span>
 <span class="normal">991</span>
 <span class="normal">992</span>
-<span class="normal">993</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span>
+<span class="normal">993</span>
+<span class="normal">994</span>
+<span class="normal">995</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6440,11 +6456,7 @@ compatibility level was returned</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1302</span>
-<span class="normal">1303</span>
-<span class="normal">1304</span>
-<span class="normal">1305</span>
-<span class="normal">1306</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1306</span>
 <span class="normal">1307</span>
 <span class="normal">1308</span>
 <span class="normal">1309</span>
@@ -6483,7 +6495,11 @@ compatibility level was returned</p>
 <span class="normal">1342</span>
 <span class="normal">1343</span>
 <span class="normal">1344</span>
-<span class="normal">1345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span>
+<span class="normal">1345</span>
+<span class="normal">1346</span>
+<span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6660,9 +6676,7 @@ Default USE_CLIENT_DEFAULT</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 995</span>
-<span class="normal"> 996</span>
-<span class="normal"> 997</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 997</span>
 <span class="normal"> 998</span>
 <span class="normal"> 999</span>
 <span class="normal">1000</span>
@@ -6711,7 +6725,9 @@ Default USE_CLIENT_DEFAULT</p>
 <span class="normal">1043</span>
 <span class="normal">1044</span>
 <span class="normal">1045</span>
-<span class="normal">1046</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span>
+<span class="normal">1046</span>
+<span class="normal">1047</span>
+<span class="normal">1048</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
@@ -6762,7 +6778,7 @@ Default USE_CLIENT_DEFAULT</p>
     <span class="n">version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_cache_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">SchemaVersion</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="n">schema_id</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -6859,9 +6875,7 @@ Get the subject-version pairs identified by the input ID.</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1048</span>
-<span class="normal">1049</span>
-<span class="normal">1050</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1050</span>
 <span class="normal">1051</span>
 <span class="normal">1052</span>
 <span class="normal">1053</span>
@@ -6892,7 +6906,9 @@ Get the subject-version pairs identified by the input ID.</p>
 <span class="normal">1078</span>
 <span class="normal">1079</span>
 <span class="normal">1080</span>
-<span class="normal">1081</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema_subject_versions</span><span class="p">(</span>
+<span class="normal">1081</span>
+<span class="normal">1082</span>
+<span class="normal">1083</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_schema_subject_versions</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">schema_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7022,9 +7038,7 @@ Get list of all registered subjects in your Schema Registry.</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">897</span>
-<span class="normal">898</span>
-<span class="normal">899</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">899</span>
 <span class="normal">900</span>
 <span class="normal">901</span>
 <span class="normal">902</span>
@@ -7048,7 +7062,9 @@ Get list of all registered subjects in your Schema Registry.</p>
 <span class="normal">920</span>
 <span class="normal">921</span>
 <span class="normal">922</span>
-<span class="normal">923</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_subjects</span><span class="p">(</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_subjects</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TimeoutTypes</span><span class="p">,</span> <span class="n">UseClientDefault</span><span class="p">]</span> <span class="o">=</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span>
@@ -7171,9 +7187,7 @@ Default USE_CLIENT_DEFAULT</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1083</span>
-<span class="normal">1084</span>
-<span class="normal">1085</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1085</span>
 <span class="normal">1086</span>
 <span class="normal">1087</span>
 <span class="normal">1088</span>
@@ -7201,7 +7215,9 @@ Default USE_CLIENT_DEFAULT</p>
 <span class="normal">1110</span>
 <span class="normal">1111</span>
 <span class="normal">1112</span>
-<span class="normal">1113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_versions</span><span class="p">(</span>
+<span class="normal">1113</span>
+<span class="normal">1114</span>
+<span class="normal">1115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_versions</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">headers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7358,9 +7374,7 @@ parse if <code>schema</code> is a string. Default "AVRO"</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">821</span>
-<span class="normal">822</span>
-<span class="normal">823</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">823</span>
 <span class="normal">824</span>
 <span class="normal">825</span>
 <span class="normal">826</span>
@@ -7432,7 +7446,9 @@ parse if <code>schema</code> is a string. Default "AVRO"</p>
 <span class="normal">892</span>
 <span class="normal">893</span>
 <span class="normal">894</span>
-<span class="normal">895</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">register</span><span class="p">(</span>
+<span class="normal">895</span>
+<span class="normal">896</span>
+<span class="normal">897</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">register</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -7625,11 +7641,7 @@ By default the latest version is checked against.</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1213</span>
-<span class="normal">1214</span>
-<span class="normal">1215</span>
-<span class="normal">1216</span>
-<span class="normal">1217</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1217</span>
 <span class="normal">1218</span>
 <span class="normal">1219</span>
 <span class="normal">1220</span>
@@ -7671,7 +7683,11 @@ By default the latest version is checked against.</p>
 <span class="normal">1256</span>
 <span class="normal">1257</span>
 <span class="normal">1258</span>
-<span class="normal">1259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span>
+<span class="normal">1259</span>
+<span class="normal">1260</span>
+<span class="normal">1261</span>
+<span class="normal">1262</span>
+<span class="normal">1263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">test_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">AvroSchema</span><span class="p">,</span> <span class="n">JsonSchema</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -7849,11 +7865,7 @@ FULL, FULL_TRANSITIVE, NONE</p>
 
       <details class="quote">
         <summary>Source code in <code>schema_registry/client/client.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1261</span>
-<span class="normal">1262</span>
-<span class="normal">1263</span>
-<span class="normal">1264</span>
-<span class="normal">1265</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1265</span>
 <span class="normal">1266</span>
 <span class="normal">1267</span>
 <span class="normal">1268</span>
@@ -7888,7 +7900,11 @@ FULL, FULL_TRANSITIVE, NONE</p>
 <span class="normal">1297</span>
 <span class="normal">1298</span>
 <span class="normal">1299</span>
-<span class="normal">1300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span>
+<span class="normal">1300</span>
+<span class="normal">1301</span>
+<span class="normal">1302</span>
+<span class="normal">1303</span>
+<span class="normal">1304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_compatibility</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">subject</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
