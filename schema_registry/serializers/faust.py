@@ -35,9 +35,7 @@ class Serializer(Codec):
         """
         payload = self.clean_payload(payload)
 
-        return self.message_serializer.encode_record_with_schema(
-            self.schema_subject, self.schema, payload
-        )  # type: ignore
+        return self.message_serializer.encode_record_with_schema(self.schema_subject, self.schema, payload)  # type: ignore
 
     @staticmethod
     def _clean_item(item: typing.Any) -> typing.Any:

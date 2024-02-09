@@ -6,7 +6,6 @@ authors = ["Marcos Schroh <schrohm@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "schema_registry"}]
-
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
@@ -29,8 +28,7 @@ faust-streaming = {version = "^0.10.11", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"
-ruff = "^0"
-black = "^23"
+ruff = ">=0.2,<0.3"
 pytest = "^7"
 pytest-cov = "^4"
 pytest-mock = "^3.10.0"
@@ -57,21 +55,12 @@ faust = ["faust-streaming"]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 120
-target_version = ['py38']
-
 [tool.mypy]
 allow_empty_bodies = true
 
 [tool.ruff]
+target-version = "py38"
 line-length = 120
-select = [
-    # Pyflakes
-    "F",
-    # isort
-    "I001"
-]
 exclude = [
     ".bzr",
     ".direnv",
@@ -94,7 +83,15 @@ exclude = [
     ".venv",
 ]
 
-[tool.ruff.pydocstyle]
+[tool.lint.ruff]
+select = [
+    # Pyflakes
+    "F",
+    # isort
+    "I001"
+]
+
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.commitizen]
