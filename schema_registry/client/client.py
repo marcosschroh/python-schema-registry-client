@@ -158,22 +158,22 @@ class BaseClient:
         certificate = self._configure_client_tls(self.conf)
         auth = self._configure_auth()
 
-        client_kwargs = {
+        client_kwargs: typing.Dict = {
             "cert": certificate,
-            "verify": verify,  # type: ignore
+            "verify": verify,
             "auth": auth,
         }
 
         # If these values haven't been explicitly defined let httpx sort out
         # the default values.
         if self.extra_headers is not None:
-            client_kwargs["headers"] = self.extra_headers  # type:ignore
+            client_kwargs["headers"] = self.extra_headers
 
         if self.timeout is not None:
-            client_kwargs["timeout"] = self.timeout  # type:ignore
+            client_kwargs["timeout"] = self.timeout
 
         if self.pool_limits is not None:
-            client_kwargs["limits"] = self.pool_limits  # type:ignore
+            client_kwargs["limits"] = self.pool_limits
         return client_kwargs
 
     def prepare_headers(

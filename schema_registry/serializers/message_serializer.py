@@ -8,6 +8,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from fastavro import schemaless_reader, schemaless_writer
+from fastavro.types import Schema
 from jsonschema import validate
 
 from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, schema, utils
@@ -231,12 +232,12 @@ class AvroMessageSerializer(MessageSerializer):
         return utils.AVRO_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
-        return lambda record, fp: schemaless_writer(fp, schema.schema, record)  # type: ignore
+        return lambda record, fp: schemaless_writer(fp, schema.schema, record)
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         return lambda payload: schemaless_reader(
-            payload, writer_schema.schema, self.reader_schema, self.return_record_name
-        )  # type: ignore
+            payload, writer_schema.schema, typing.cast(Schema, self.reader_schema), self.return_record_name
+        )
 
 
 class JsonMessageSerializer(MessageSerializer):
@@ -314,9 +315,9 @@ class JsonMessageSerializer(MessageSerializer):
         return json_encoder_func
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
-        def json_decoder_func(payload: typing.Union[str, bytes]) -> typing.Any:
-            obj = json.load(payload)  # type: ignore
-            validate(obj, writer_schema.schema)  # type: ignore
+        def json_decoder_func(payload: typing.IO) -> typing.Any:
+            obj = json.load(payload)
+            validate(obj, writer_schema.schema)
             return obj
 
         return json_decoder_func
@@ -469,12 +470,12 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
         return utils.AVRO_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
-        return lambda record, fp: schemaless_writer(fp, schema.schema, record)  # type: ignore
+        return lambda record, fp: schemaless_writer(fp, schema.schema, record)
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         return lambda payload: schemaless_reader(
-            payload, writer_schema.schema, self.reader_schema, self.return_record_name
-        )  # type: ignore
+            payload, writer_schema.schema, typing.cast(Schema, self.reader_schema), self.return_record_name
+        )
 
 
 class AsyncJsonMessageSerializer(AsyncMessageSerializer):
@@ -499,9 +500,9 @@ class AsyncJsonMessageSerializer(AsyncMessageSerializer):
         return json_encoder_func
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
-        def json_decoder_func(payload: typing.Union[str, bytes]) -> typing.Any:
-            obj = json.load(payload)  # type: ignore
-            validate(obj, writer_schema.schema)  # type: ignore
+        def json_decoder_func(payload: typing.IO) -> typing.Any:
+            obj = json.load(payload)
+            validate(obj, writer_schema.schema)
             return obj
 
         return json_decoder_func
