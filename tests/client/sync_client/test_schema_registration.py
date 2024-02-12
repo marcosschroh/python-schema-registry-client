@@ -58,7 +58,7 @@ def test_avro_multi_subject_register(client: RequestLoggingSchemaRegistryClient)
     # The schema version we get here has a tendency to vary with the
     # number of times the schema has been soft-deleted, so only verifying
     # it's an int and > 0
-    assert type(schema_versions[1].version) == int
+    assert isinstance(schema_versions[1].version, int)
     assert schema_versions[1].version > 0
 
 
