@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-schema-registry-client"
-version = "2.5.5"
+version = "2.5.6"
 description = "Python Rest Client to interact against Schema Registry confluent server"
 authors = ["Marcos Schroh <schrohm@gmail.com>"]
 license = "MIT"
@@ -95,7 +95,7 @@ select = [
 convention = "google"
 
 [tool.commitizen]
-version = "2.5.5"
+version = "2.5.6"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",

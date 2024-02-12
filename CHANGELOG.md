@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.5.6 (2024-02-12)
+
+### Fix
+
+- bump fastavro to 1.9.3 and correct typing (#250)
+
 ## v2.5.5 (2024-02-09)
 
 ### Fix
