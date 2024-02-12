@@ -656,8 +656,7 @@ implement the parser on the consumer side.</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -729,7 +728,8 @@ implement the parser on the consumer side.</p>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">239</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AvroMessageSerializer to serialize and deserialize messages</span>
 
@@ -797,12 +797,12 @@ implement the parser on the consumer side.</p>
         <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">AVRO_SCHEMA_TYPE</span>
 
     <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">payload</span><span class="p">:</span> <span class="n">schemaless_reader</span><span class="p">(</span>
-            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
-        <span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
+        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -945,8 +945,7 @@ implement the parser on the consumer side.</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
-<span class="normal">243</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
@@ -1025,7 +1024,8 @@ implement the parser on the consumer side.</p>
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">322</span>
+<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    JsonMessageSerializer to serialize and deserialize messages</span>
 
@@ -1100,9 +1100,9 @@ implement the parser on the consumer side.</p>
         <span class="k">return</span> <span class="n">json_encoder_func</span>
 
     <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">obj</span>
 
         <span class="k">return</span> <span class="n">json_decoder_func</span>
@@ -1200,8 +1200,7 @@ examples above should work if you replace them with their async variations</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">457</span>
-<span class="normal">458</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span>
 <span class="normal">461</span>
@@ -1220,7 +1219,8 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
-<span class="normal">477</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">477</span>
+<span class="normal">478</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</span>
 
@@ -1235,12 +1235,12 @@ examples above should work if you replace them with their async variations</p>
         <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">AVRO_SCHEMA_TYPE</span>
 
     <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">payload</span><span class="p">:</span> <span class="n">schemaless_reader</span><span class="p">(</span>
-            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
-        <span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
+        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1331,8 +1331,7 @@ examples above should work if you replace them with their async variations</p>
 
         <details class="quote">
           <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">480</span>
-<span class="normal">481</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">481</span>
 <span class="normal">482</span>
 <span class="normal">483</span>
 <span class="normal">484</span>
@@ -1358,7 +1357,8 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">504</span>
 <span class="normal">505</span>
 <span class="normal">506</span>
-<span class="normal">507</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">507</span>
+<span class="normal">508</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</span>
 
@@ -1380,9 +1380,9 @@ examples above should work if you replace them with their async variations</p>
         <span class="k">return</span> <span class="n">json_encoder_func</span>
 
     <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">obj</span>
 
         <span class="k">return</span> <span class="n">json_decoder_func</span>
