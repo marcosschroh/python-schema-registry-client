@@ -16,8 +16,8 @@ class BaseSchema(ABC):
     def __init__(self, schema: typing.Union[str, typing.Dict]) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
-        self.raw_schema = schema
-        self.schema = self.parse_schema(typing.cast(typing.Dict, schema))
+        self.raw_schema = typing.cast(typing.Dict, schema)
+        self.schema = self.parse_schema(self.raw_schema)
         self.generate_hash()
 
     @abstractmethod
@@ -61,8 +61,8 @@ class BaseSchema(ABC):
 
 class AvroSchema(BaseSchema):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        self._expanded_schema: typing.Optional[str] = None
-        self._flat_schema: typing.Optional[str] = None
+        self._expanded_schema: typing.Optional[typing.Dict] = None
+        self._flat_schema: typing.Optional[typing.Dict] = None
 
         super().__init__(*args, **kwargs)
 
@@ -75,32 +75,37 @@ class AvroSchema(BaseSchema):
         return AVRO_SCHEMA_TYPE
 
     @property
-    def expanded_schema(self) -> str:
+    def expanded_schema(self) -> typing.Dict:
         """
         Returns a schema where all named types are expanded to their real schema
 
         Returns:
-            expanced_schema (str): Schema parsed expanded
+            expanded_schema (typing.Dict): Schema parsed expanded
         """
         if self._expanded_schema is None:
-            self._expanded_schema = fastavro.schema.expand_schema(self.raw_schema)
+            # NOTE: Dict expected when we pass a dict
+            self._expanded_schema = typing.cast(typing.Dict, fastavro.schema.expand_schema(self.raw_schema))
         return self._expanded_schema
 
     @property
-    def flat_schema(self) -> str:
+    def flat_schema(self) -> typing.Dict:
         """
         Parse the schema removing the fastavro write_hint flag __fastavro_parsed
 
         Returns:
-            flat_schema (str): Schema parsed without the write hint
+            flat_schema (typing.Dict): Schema parsed without the write hint
         """
         if self._flat_schema is None:
-            self._flat_schema = fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True)
+            # NOTE: Dict expected when we pass a dict
+            self._flat_schema = typing.cast(
+                typing.Dict, fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True)
+            )
 
         return self._flat_schema
 
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
-        return fastavro.parse_schema(schema, _force=True)
+        # NOTE: Dict expected when we pass a dict
+        return typing.cast(typing.Dict, fastavro.parse_schema(schema, _force=True))
 
     @staticmethod
     def load(fp: str) -> AvroSchema:
