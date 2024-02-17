@@ -2,7 +2,7 @@ import typing
 
 import faust
 import pydantic
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.faust import AvroRecord
 
 from schema_registry.client import schema
 from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer
@@ -103,7 +103,7 @@ def test_avro_nested_schema_with_register_codec(client):
 
 
 def test_avro_dumps_load_message_dataclasses_avro_schema(client):
-    class AdvanceUserModel(faust.Record, AvroModel):
+    class AdvanceUserModel(AvroRecord):
         first_name: str
         last_name: str
         age: int
@@ -127,13 +127,13 @@ def test_avro_dumps_load_message_dataclasses_avro_schema(client):
 
 
 def test_avro_dumps_load_message_union_avro_schema(client):
-    class FirstMemberRecord(faust.Record, AvroModel):
+    class FirstMemberRecord(AvroRecord):
         name: str = ""
 
-    class SecondMemberRecord(faust.Record, AvroModel):
+    class SecondMemberRecord(AvroRecord):
         name: str = ""
 
-    class UnionFieldAvroModel(faust.Record, AvroModel):
+    class UnionFieldAvroModel(AvroRecord):
         a_name: typing.Union[FirstMemberRecord, SecondMemberRecord, None]
 
     avro_name = "test-union-field-avroschema"
@@ -221,10 +221,10 @@ def test_json_nested_schema_with_register_codec(client):
     faust.serializers.codecs.register("customer_json_serializer", customer_serializer)
     faust.serializers.codecs.register("order_json_serializer", order_serializer)
 
-    class Order(faust.Record, serializer="order_json_serializer"):
+    class Order(AvroRecord, serializer="order_json_serializer"):
         uid: int
 
-    class Customer(faust.Record, serializer="customer_json_serializer"):
+    class Customer(AvroRecord, serializer="customer_json_serializer"):
         name: str
         uid: int
         order: Order
@@ -244,13 +244,13 @@ def test_json_nested_schema_with_register_codec(client):
 
 
 def test_json_dumps_load_message_dataclasses_json_schema(client):
-    class AdvanceUserModel(faust.Record, pydantic.BaseModel):
+    class AdvanceUserModel(AvroRecord, pydantic.BaseModel):
         first_name: str
         last_name: str
         age: int
 
     faust_serializer = serializer.FaustJsonSerializer(
-        client, "test-dataclasses-jsonschema", AdvanceUserModel.schema_json()
+        client, "test-dataclasses-jsonschema", AdvanceUserModel.model_json_schema()
     )
 
     record = {
@@ -280,7 +280,7 @@ def test_json_dumps_load_message_union_json_schema(client):
         a_name: typing.Union[FirstMemberRecord, SecondMemberRecord, None]
 
     json_name = "test-union-field-jsonschema"
-    json_schema = UnionFieldJsonModel.schema_json()
+    json_schema = UnionFieldJsonModel.model_json_schema()
 
     faust_serializer = serializer.FaustJsonSerializer(client, json_name, json_schema, return_record_name=True)
 

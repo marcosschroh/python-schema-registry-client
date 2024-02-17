@@ -129,10 +129,10 @@ The only thing that you need to do is add the `AvroModel` class and use its meth
 ```python title="user.models.py"
 import faust
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.faust import AvroRecord
 
 
-class UserModel(faust.Record, AvroModel, serializer='avro_users'):
+class UserModel(AvroRecord, serializer='avro_users'):
     first_name: str
     last_name: str
 
@@ -177,7 +177,7 @@ from users.models import UserModel
 # create an instance of the `SchemaRegistryClient`
 client = SchemaRegistryClient(url=settings.SCHEMA_REGISTRY_URL)
 
-json_user_serializer = FaustJsonSerializer(client, "users", UserModel.schema_json())  # usign the method schema_json to get the json schema representation
+json_user_serializer = FaustJsonSerializer(client, "users", UserModel.model_json_schema())  # using the method model_json_schema to get the json schema representation
 
 # function used to register the codec
 def json_user_codec():

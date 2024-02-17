@@ -202,16 +202,16 @@ class UserAdvance(BaseModel):
 subject = "subject"
 
 # register the schema
-schema_id = client.register(subject, UserAdvance.schema_json(), schema_type="JSON")
+schema_id = client.register(subject, UserAdvance.model_json_schema(), schema_type="JSON")
 
 print(schema_id)
 # >>> 12
 
-result = client.check_version(subject, UserAdvance.schema_json(), schema_type="JSON")
+result = client.check_version(subject, UserAdvance.model_json_schema(), schema_type="JSON")
 print(result)
 # >>> SchemaVersion(subject='pydantic-jsonschema-subject', schema_id=12, schema=1, version=<schema_registry.client.schema.JsonSchema object at 0x7f40354550a0>)
 
-compatible = client.test_compatibility(subject, UserAdvance.schema_json(), schema_type="JSON")
+compatible = client.test_compatibility(subject, UserAdvance.model_json_schema(), schema_type="JSON")
 print(compatible)
 # >>> True
 ```
