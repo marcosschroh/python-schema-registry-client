@@ -93,9 +93,6 @@ select = [
 convention = "google"
 
 [tool.commitizen]
-version = "2.5.6"
+version_provider = "poetry"
 tag_format = "v$version"
-version_files = [
-    "pyproject.toml:version",
-]
 update_changelog_on_bump = true
