@@ -1,0 +1,1474 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="avro, kafka, client, faust, schema">
+      
+      
+      
+      
+        <link rel="prev" href="../client/">
+      
+      
+        <link rel="next" href="../faust/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+    
+    
+      
+        <title>Serializers - Python Schema Registry Client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.f2e4d321.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#serializers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Python Schema Registry Client" class="md-header__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Python Schema Registry Client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Serializers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Python Schema Registry Client" class="md-nav__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Python Schema Registry Client
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SchemaRegistryClient Api
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Serializers
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Serializers
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AvroMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AvroMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.JsonMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      JsonMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async implementations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AsyncAvroMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AsyncAvroMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AsyncJsonMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AsyncJsonMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faust/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Faust integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemaregistry_server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Registry Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AvroMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AvroMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.JsonMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      JsonMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async implementations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AsyncAvroMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AsyncAvroMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema_registry.serializers.AsyncJsonMessageSerializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      AsyncJsonMessageSerializer
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="serializers">Serializers</h1>
+<p>To serialize and deserialize messages you can use <code>AvroMessageSerializer</code> and <code>JsonMessageSerializer</code>. They interact with the <code>SchemaRegistryClient</code> to get <code>avro Schemas</code>  and <code>json schemas</code> in order to process messages.</p>
+<p><em>If you want to run the following examples run <code>docker-compose up</code> and the <code>schema registry server</code> will run on <code>http://127.0.0.1:8081</code></em></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code>AvroMessageSerializer</code> uses the same <code>protocol</code> as confluent, meaning that the event will contain the schema id in the payload.
+If you produce an event with the <code>AvroMessageSerializer</code> you have to consume it with the <code>AvroMessageSerializer</code> as well, otherwise you have to
+implement the parser on the consumer side.</p>
+</div>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="schema_registry.serializers.AvroMessageSerializer" class="doc doc-heading">
+          <code>schema_registry.serializers.AvroMessageSerializer</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
+
+  
+      <p>AvroMessageSerializer to serialize and deserialize messages</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">schema_registry.serializers</span> <span class="kn">import</span> <span class="n">AvroMessageSerializer</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:8081&quot;</span><span class="p">)</span>
+<span class="n">avro_message_serializer</span> <span class="o">=</span> <span class="n">AvroMessageSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+<span class="n">avro_user_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">({</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;com.example&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AvroUsers&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
+
+    <span class="p">],</span>
+<span class="p">})</span>
+
+<span class="c1"># We want to encode the user_record with avro_user_schema</span>
+<span class="n">user_record</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;my_first_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;my_last_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Encode the record</span>
+<span class="n">message_encoded</span> <span class="o">=</span> <span class="n">avro_message_serializer</span><span class="o">.</span><span class="n">encode_record_with_schema</span><span class="p">(</span>
+    <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">avro_user_schema</span><span class="p">,</span> <span class="n">user_record</span><span class="p">)</span>
+
+<span class="c1"># this is because the message encoded reserved 5 bytes for the schema_id</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+
+<span class="c1"># Decode the message</span>
+<span class="n">message_decoded</span> <span class="o">=</span> <span class="n">avro_message_serializer</span><span class="o">.</span><span class="n">decode_message</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">message_decoded</span> <span class="o">==</span> <span class="n">user_record</span>
+
+<span class="c1"># Now if we send a bad record</span>
+<span class="n">bad_record</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;my_first_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;my_last_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;my_age&quot;</span>
+<span class="p">}</span>
+
+<span class="n">avro_message_serializer</span><span class="o">.</span><span class="n">encode_record_with_schema</span><span class="p">(</span>
+    <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">avro_user_schema</span><span class="p">,</span> <span class="n">bad_record</span><span class="p">)</span>
+
+<span class="c1"># &gt;&gt;&gt; TypeError: an integer is required on field age</span>
+</code></pre></div>
+</div>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Http Client</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.reader_schema">reader_schema</span></code></td>
+          <td>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Specify a schema to decode the message</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.return_record_name">return_record_name</span></code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the record name should be returned</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AvroMessageSerializer to serialize and deserialize messages</span>
+
+<span class="sd">    !!! Example</span>
+<span class="sd">        ```python</span>
+<span class="sd">        from schema_registry.client import SchemaRegistryClient, schema</span>
+<span class="sd">        from schema_registry.serializers import AvroMessageSerializer</span>
+
+
+<span class="sd">        client = SchemaRegistryClient(&quot;http://127.0.0.1:8081&quot;)</span>
+<span class="sd">        avro_message_serializer = AvroMessageSerializer(client)</span>
+
+<span class="sd">        avro_user_schema = schema.AvroSchema({</span>
+<span class="sd">            &quot;type&quot;: &quot;record&quot;,</span>
+<span class="sd">            &quot;namespace&quot;: &quot;com.example&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;AvroUsers&quot;,</span>
+<span class="sd">            &quot;fields&quot;: [</span>
+<span class="sd">                {&quot;name&quot;: &quot;first_name&quot;, &quot;type&quot;: &quot;string&quot;},</span>
+<span class="sd">                {&quot;name&quot;: &quot;last_name&quot;, &quot;type&quot;: &quot;string&quot;},</span>
+<span class="sd">                {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;int&quot;},</span>
+
+<span class="sd">            ],</span>
+<span class="sd">        })</span>
+
+<span class="sd">        # We want to encode the user_record with avro_user_schema</span>
+<span class="sd">        user_record = {</span>
+<span class="sd">            &quot;first_name&quot;: &quot;my_first_name&quot;,</span>
+<span class="sd">            &quot;last_name&quot;: &quot;my_last_name&quot;,</span>
+<span class="sd">            &quot;age&quot;: 20,</span>
+<span class="sd">        }</span>
+
+<span class="sd">        # Encode the record</span>
+<span class="sd">        message_encoded = avro_message_serializer.encode_record_with_schema(</span>
+<span class="sd">            &quot;user&quot;, avro_user_schema, user_record)</span>
+
+<span class="sd">        # this is because the message encoded reserved 5 bytes for the schema_id</span>
+<span class="sd">        assert len(message_encoded) &gt; 5</span>
+<span class="sd">        assert isinstance(message_encoded, bytes)</span>
+
+<span class="sd">        # Decode the message</span>
+<span class="sd">        message_decoded = avro_message_serializer.decode_message(message_encoded)</span>
+<span class="sd">        assert message_decoded == user_record</span>
+
+<span class="sd">        # Now if we send a bad record</span>
+<span class="sd">        bad_record = {</span>
+<span class="sd">            &quot;first_name&quot;: &quot;my_first_name&quot;,</span>
+<span class="sd">            &quot;last_name&quot;: &quot;my_last_name&quot;,</span>
+<span class="sd">            &quot;age&quot;: &quot;my_age&quot;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        avro_message_serializer.encode_record_with_schema(</span>
+<span class="sd">            &quot;user&quot;, avro_user_schema, bad_record)</span>
+
+<span class="sd">        # &gt;&gt;&gt; TypeError: an integer is required on field age</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client</span>
+<span class="sd">        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message</span>
+<span class="sd">        return_record_name bool: If the record name should be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_serializer_schema_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">AVRO_SCHEMA_TYPE</span>
+
+    <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">payload</span><span class="p">:</span> <span class="n">schemaless_reader</span><span class="p">(</span>
+            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="schema_registry.serializers.JsonMessageSerializer" class="doc doc-heading">
+          <code>schema_registry.serializers.JsonMessageSerializer</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
+
+  
+      <p>JsonMessageSerializer to serialize and deserialize messages</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">schema_registry.serializers</span> <span class="kn">import</span> <span class="n">JsonMessageSerializer</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:8081&quot;</span><span class="p">)</span>
+<span class="n">json_message_serializer</span> <span class="o">=</span> <span class="n">JsonMessageSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+<span class="n">json_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">JsonSchema</span><span class="p">({</span>
+<span class="s2">&quot;definitions&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;record:python.test.basic.basic&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;description&quot;</span> <span class="p">:</span> <span class="s2">&quot;basic schema for tests&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;required&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span> <span class="p">],</span>
+    <span class="s2">&quot;properties&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;number&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;oneOf&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;null&quot;</span>
+        <span class="p">}</span> <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;name&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;oneOf&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+        <span class="p">}</span> <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">},</span>
+<span class="s2">&quot;$ref&quot;</span> <span class="p">:</span> <span class="s2">&quot;#/definitions/record:python.test.basic.basic&quot;</span>
+<span class="p">})</span>
+
+<span class="c1"># Encode the record</span>
+<span class="n">basic_record</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;a_name&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">message_encoded</span> <span class="o">=</span> <span class="n">json_message_serializer</span><span class="o">.</span><span class="n">encode_record_with_schema</span><span class="p">(</span>
+    <span class="s2">&quot;basic&quot;</span><span class="p">,</span> <span class="n">json_schema</span><span class="p">,</span> <span class="n">basic_record</span><span class="p">)</span>
+
+<span class="c1"># this is because the message encoded reserved 5 bytes for the schema_id</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+
+<span class="c1"># Decode the message</span>
+<span class="n">message_decoded</span> <span class="o">=</span> <span class="n">json_message_serializer</span><span class="o">.</span><span class="n">decode_message</span><span class="p">(</span><span class="n">message_encoded</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">message_decoded</span> <span class="o">==</span> <span class="n">basic_record</span>
+</code></pre></div>
+</div>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Http Client</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.reader_schema">reader_schema</span></code></td>
+          <td>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Specify a schema to decode the message</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.return_record_name">return_record_name</span></code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the record name should be returned</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JsonMessageSerializer to serialize and deserialize messages</span>
+
+<span class="sd">    !!! Example</span>
+
+<span class="sd">        ```python</span>
+<span class="sd">        from schema_registry.client import SchemaRegistryClient, schema</span>
+<span class="sd">        from schema_registry.serializers import JsonMessageSerializer</span>
+
+
+<span class="sd">        client = SchemaRegistryClient(&quot;http://127.0.0.1:8081&quot;)</span>
+<span class="sd">        json_message_serializer = JsonMessageSerializer(client)</span>
+
+<span class="sd">        json_schema = schema.JsonSchema({</span>
+<span class="sd">        &quot;definitions&quot; : {</span>
+<span class="sd">            &quot;record:python.test.basic.basic&quot; : {</span>
+<span class="sd">            &quot;description&quot; : &quot;basic schema for tests&quot;,</span>
+<span class="sd">            &quot;type&quot; : &quot;object&quot;,</span>
+<span class="sd">            &quot;required&quot; : [ &quot;number&quot;, &quot;name&quot; ],</span>
+<span class="sd">            &quot;properties&quot; : {</span>
+<span class="sd">                &quot;number&quot; : {</span>
+<span class="sd">                &quot;oneOf&quot; : [ {</span>
+<span class="sd">                    &quot;type&quot; : &quot;integer&quot;</span>
+<span class="sd">                }, {</span>
+<span class="sd">                    &quot;type&quot; : &quot;null&quot;</span>
+<span class="sd">                } ]</span>
+<span class="sd">                },</span>
+<span class="sd">                &quot;name&quot; : {</span>
+<span class="sd">                &quot;oneOf&quot; : [ {</span>
+<span class="sd">                    &quot;type&quot; : &quot;string&quot;</span>
+<span class="sd">                } ]</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
+<span class="sd">            }</span>
+<span class="sd">        },</span>
+<span class="sd">        &quot;$ref&quot; : &quot;#/definitions/record:python.test.basic.basic&quot;</span>
+<span class="sd">        })</span>
+
+<span class="sd">        # Encode the record</span>
+<span class="sd">        basic_record = {</span>
+<span class="sd">            &quot;number&quot;: 10,</span>
+<span class="sd">            &quot;name&quot;: &quot;a_name&quot;,</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message_encoded = json_message_serializer.encode_record_with_schema(</span>
+<span class="sd">            &quot;basic&quot;, json_schema, basic_record)</span>
+
+<span class="sd">        # this is because the message encoded reserved 5 bytes for the schema_id</span>
+<span class="sd">        assert len(message_encoded) &gt; 5</span>
+<span class="sd">        assert isinstance(message_encoded, bytes)</span>
+
+<span class="sd">        # Decode the message</span>
+<span class="sd">        message_decoded = json_message_serializer.decode_message(message_encoded)</span>
+<span class="sd">        assert message_decoded == basic_record</span>
+<span class="sd">        ```</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client</span>
+<span class="sd">        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message</span>
+<span class="sd">        return_record_name bool: If the record name should be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_serializer_schema_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">JSON_SCHEMA_TYPE</span>
+
+    <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">json_encoder_func</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">json_encoder_func</span>
+
+    <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">obj</span>
+
+        <span class="k">return</span> <span class="n">json_decoder_func</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+
+</div><h2 id="async-implementations">Async implementations</h2>
+<p><code>JsonMessageSerializer</code>, <code>AvroMessageSerializer</code> and <code>SchemaRegistryClient</code> have their asynchronous
+counterparts <code>AsyncJsonMessageSerializer</code>, <code>AsyncAvroMessageSerializer</code> and <code>AsyncSchemaRegistryClient</code> and all
+examples above should work if you replace them with their async variations</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="schema_registry.serializers.AsyncAvroMessageSerializer" class="doc doc-heading">
+          <code>schema_registry.serializers.AsyncAvroMessageSerializer</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
+
+  
+      <p>AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Http Client</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.reader_schema">reader_schema</span></code></td>
+          <td>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Specify a schema to decode the message</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.return_record_name">return_record_name</span></code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the record name should be returned</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client</span>
+<span class="sd">        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message</span>
+<span class="sd">        return_record_name bool: If the record name should be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_serializer_schema_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">AVRO_SCHEMA_TYPE</span>
+
+    <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">record</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">schemaless_writer</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">payload</span><span class="p">:</span> <span class="n">schemaless_reader</span><span class="p">(</span>
+            <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="schema_registry.serializers.AsyncJsonMessageSerializer" class="doc doc-heading">
+          <code>schema_registry.serializers.AsyncJsonMessageSerializer</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
+
+  
+      <p>AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Http Client</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.reader_schema">reader_schema</span></code></td>
+          <td>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Specify a schema to decode the message</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.return_record_name">return_record_name</span></code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If the record name should be returned</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client</span>
+<span class="sd">        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message</span>
+<span class="sd">        return_record_name bool: If the record name should be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_serializer_schema_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">JSON_SCHEMA_TYPE</span>
+
+    <span class="k">def</span> <span class="nf">_get_encoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseSchema</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">json_encoder_func</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">json_encoder_func</span>
+
+    <span class="k">def</span> <span class="nf">_get_decoder_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">ContextStringIO</span><span class="p">,</span> <span class="n">writer_schema</span><span class="p">:</span> <span class="n">BaseSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">json_decoder_func</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="n">validate</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">obj</span>
+
+        <span class="k">return</span> <span class="n">json_decoder_func</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      
+    
+  </body>
+</html>
