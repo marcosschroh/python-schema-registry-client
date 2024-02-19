@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
     
     
       
@@ -767,16 +767,16 @@ and use it in the API for <code>register schemas</code>, <code>check versions</c
 <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;subject&quot;</span>
 
 <span class="c1"># register the schema</span>
-<span class="n">schema_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">schema_json</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
+<span class="n">schema_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">schema_id</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; 12</span>
 
-<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">check_version</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">schema_json</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">check_version</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; SchemaVersion(subject=&#39;pydantic-jsonschema-subject&#39;, schema_id=12, schema=1, version=&lt;schema_registry.client.schema.JsonSchema object at 0x7f40354550a0&gt;)</span>
 
-<span class="n">compatible</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">schema_json</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
+<span class="n">compatible</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test_compatibility</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">schema_type</span><span class="o">=</span><span class="s2">&quot;JSON&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">compatible</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; True</span>
 </code></pre></div>

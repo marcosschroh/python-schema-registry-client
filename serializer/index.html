@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
     
     
       
@@ -541,15 +541,15 @@ implement the parser on the consumer side.</p>
 
 
 <h2 id="schema_registry.serializers.AvroMessageSerializer" class="doc doc-heading">
-        <code>schema_registry.serializers.AvroMessageSerializer</code>
+          <code>schema_registry.serializers.AvroMessageSerializer</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
 
   
       <p>AvroMessageSerializer to serialize and deserialize messages</p>
@@ -607,6 +607,8 @@ implement the parser on the consumer side.</p>
 </code></pre></div>
 </div>
 
+
+
   <p><strong>Attributes:</strong></p>
   <table>
     <thead>
@@ -618,9 +620,9 @@ implement the parser on the consumer side.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>schemaregistry_client</code></td>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.client">client</span>.<a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -629,9 +631,9 @@ implement the parser on the consumer side.</p>
           </td>
         </tr>
         <tr>
-          <td><code>reader_schema</code></td>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.reader_schema">reader_schema</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.schema">schema</span>.<span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -640,7 +642,7 @@ implement the parser on the consumer side.</p>
           </td>
         </tr>
         <tr>
-          <td><code>return_record_name</code></td>
+          <td><code><span title="schema_registry.serializers.AvroMessageSerializer.return_record_name">return_record_name</span></code></td>
           <td>
                 <code>bool</code>
           </td>
@@ -653,12 +655,9 @@ implement the parser on the consumer side.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -729,7 +728,9 @@ implement the parser on the consumer side.</p>
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AvroMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AvroMessageSerializer to serialize and deserialize messages</span>
 
@@ -804,7 +805,7 @@ implement the parser on the consumer side.</p>
             <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -824,6 +825,7 @@ implement the parser on the consumer side.</p>
 
   </div>
 
+
 </div>
 
 <div class="doc doc-object doc-class">
@@ -831,15 +833,15 @@ implement the parser on the consumer side.</p>
 
 
 <h2 id="schema_registry.serializers.JsonMessageSerializer" class="doc doc-heading">
-        <code>schema_registry.serializers.JsonMessageSerializer</code>
+          <code>schema_registry.serializers.JsonMessageSerializer</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.MessageSerializer">MessageSerializer</span></code></p>
 
   
       <p>JsonMessageSerializer to serialize and deserialize messages</p>
@@ -896,6 +898,8 @@ implement the parser on the consumer side.</p>
 </code></pre></div>
 </div>
 
+
+
   <p><strong>Attributes:</strong></p>
   <table>
     <thead>
@@ -907,9 +911,9 @@ implement the parser on the consumer side.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>schemaregistry_client</code></td>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.client">client</span>.<a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -918,9 +922,9 @@ implement the parser on the consumer side.</p>
           </td>
         </tr>
         <tr>
-          <td><code>reader_schema</code></td>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.reader_schema">reader_schema</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.schema">schema</span>.<span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -929,7 +933,7 @@ implement the parser on the consumer side.</p>
           </td>
         </tr>
         <tr>
-          <td><code>return_record_name</code></td>
+          <td><code><span title="schema_registry.serializers.JsonMessageSerializer.return_record_name">return_record_name</span></code></td>
           <td>
                 <code>bool</code>
           </td>
@@ -942,12 +946,9 @@ implement the parser on the consumer side.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
@@ -1025,7 +1026,9 @@ implement the parser on the consumer side.</p>
 <span class="normal">320</span>
 <span class="normal">321</span>
 <span class="normal">322</span>
-<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">JsonMessageSerializer</span><span class="p">(</span><span class="n">MessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    JsonMessageSerializer to serialize and deserialize messages</span>
 
@@ -1107,7 +1110,7 @@ implement the parser on the consumer side.</p>
 
         <span class="k">return</span> <span class="n">json_decoder_func</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1127,6 +1130,7 @@ implement the parser on the consumer side.</p>
 
   </div>
 
+
 </div><h2 id="async-implementations">Async implementations</h2>
 <p><code>JsonMessageSerializer</code>, <code>AvroMessageSerializer</code> and <code>SchemaRegistryClient</code> have their asynchronous
 counterparts <code>AsyncJsonMessageSerializer</code>, <code>AsyncAvroMessageSerializer</code> and <code>AsyncSchemaRegistryClient</code> and all
@@ -1138,18 +1142,20 @@ examples above should work if you replace them with their async variations</p>
 
 
 <h2 id="schema_registry.serializers.AsyncAvroMessageSerializer" class="doc doc-heading">
-        <code>schema_registry.serializers.AsyncAvroMessageSerializer</code>
+          <code>schema_registry.serializers.AsyncAvroMessageSerializer</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
 
   
       <p>AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</p>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -1162,9 +1168,9 @@ examples above should work if you replace them with their async variations</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>schemaregistry_client</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.client">client</span>.<a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1173,9 +1179,9 @@ examples above should work if you replace them with their async variations</p>
           </td>
         </tr>
         <tr>
-          <td><code>reader_schema</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.reader_schema">reader_schema</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.schema">schema</span>.<span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1184,7 +1190,7 @@ examples above should work if you replace them with their async variations</p>
           </td>
         </tr>
         <tr>
-          <td><code>return_record_name</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncAvroMessageSerializer.return_record_name">return_record_name</span></code></td>
           <td>
                 <code>bool</code>
           </td>
@@ -1197,12 +1203,9 @@ examples above should work if you replace them with their async variations</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">460</span>
 <span class="normal">461</span>
 <span class="normal">462</span>
 <span class="normal">463</span>
@@ -1220,7 +1223,9 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">475</span>
 <span class="normal">476</span>
 <span class="normal">477</span>
-<span class="normal">478</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncAvroMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously</span>
 
@@ -1242,7 +1247,7 @@ examples above should work if you replace them with their async variations</p>
             <span class="n">payload</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">Schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader_schema</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_record_name</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1262,6 +1267,7 @@ examples above should work if you replace them with their async variations</p>
 
   </div>
 
+
 </div>
 
 <div class="doc doc-object doc-class">
@@ -1269,18 +1275,20 @@ examples above should work if you replace them with their async variations</p>
 
 
 <h2 id="schema_registry.serializers.AsyncJsonMessageSerializer" class="doc doc-heading">
-        <code>schema_registry.serializers.AsyncJsonMessageSerializer</code>
+          <code>schema_registry.serializers.AsyncJsonMessageSerializer</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="schema_registry.serializers.message_serializer.AsyncMessageSerializer">AsyncMessageSerializer</span></code></p>
 
   
       <p>AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</p>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -1293,9 +1301,9 @@ examples above should work if you replace them with their async variations</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>schemaregistry_client</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.schemaregistry_client">schemaregistry_client</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.client">client</span>.<a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
+                <code><a class="autorefs autorefs-internal" title="schema_registry.client.AsyncSchemaRegistryClient" href="../client/#schema_registry.client.AsyncSchemaRegistryClient">AsyncSchemaRegistryClient</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1304,9 +1312,9 @@ examples above should work if you replace them with their async variations</p>
           </td>
         </tr>
         <tr>
-          <td><code>reader_schema</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.reader_schema">reader_schema</span></code></td>
           <td>
-                <code>schema_registry.<span title="schema_registry.schema">schema</span>.<span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
+                <code><span title="schema_registry.schema.AvroSchema">AvroSchema</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1315,7 +1323,7 @@ examples above should work if you replace them with their async variations</p>
           </td>
         </tr>
         <tr>
-          <td><code>return_record_name</code></td>
+          <td><code><span title="schema_registry.serializers.AsyncJsonMessageSerializer.return_record_name">return_record_name</span></code></td>
           <td>
                 <code>bool</code>
           </td>
@@ -1328,12 +1336,9 @@ examples above should work if you replace them with their async variations</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
+            <details class="quote">
+              <summary>Source code in <code>schema_registry/serializers/message_serializer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">483</span>
 <span class="normal">484</span>
 <span class="normal">485</span>
 <span class="normal">486</span>
@@ -1358,7 +1363,9 @@ examples above should work if you replace them with their async variations</p>
 <span class="normal">505</span>
 <span class="normal">506</span>
 <span class="normal">507</span>
-<span class="normal">508</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AsyncJsonMessageSerializer</span><span class="p">(</span><span class="n">AsyncMessageSerializer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously</span>
 
@@ -1387,7 +1394,7 @@ examples above should work if you replace them with their async variations</p>
 
         <span class="k">return</span> <span class="n">json_decoder_func</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1406,6 +1413,7 @@ examples above should work if you replace them with their async variations</p>
   </div>
 
   </div>
+
 
 </div>
 

@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
     
     
       
@@ -604,10 +604,10 @@ Avro and JSON can be used to define the data schema for a record's value. This s
 The only thing that you need to do is add the <code>AvroModel</code> class and use its methods:</p>
 <div class="highlight"><span class="filename">user.models.py</span><pre><span></span><code><span class="kn">import</span> <span class="nn">faust</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.faust</span> <span class="kn">import</span> <span class="n">AvroRecord</span>
 
 
-<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">faust</span><span class="o">.</span><span class="n">Record</span><span class="p">,</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="s1">&#39;avro_users&#39;</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">AvroRecord</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="s1">&#39;avro_users&#39;</span><span class="p">):</span>
     <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
 
@@ -649,7 +649,7 @@ The only thing that you need to do is add the <code>BaseModel</code> class and u
 <span class="c1"># create an instance of the `SchemaRegistryClient`</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SCHEMA_REGISTRY_URL</span><span class="p">)</span>
 
-<span class="n">json_user_serializer</span> <span class="o">=</span> <span class="n">FaustJsonSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">UserModel</span><span class="o">.</span><span class="n">schema_json</span><span class="p">())</span>  <span class="c1"># usign the method schema_json to get the json schema representation</span>
+<span class="n">json_user_serializer</span> <span class="o">=</span> <span class="n">FaustJsonSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">UserModel</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">())</span>  <span class="c1"># using the method model_json_schema to get the json schema representation</span>
 
 <span class="c1"># function used to register the codec</span>
 <span class="k">def</span> <span class="nf">json_user_codec</span><span class="p">():</span>
