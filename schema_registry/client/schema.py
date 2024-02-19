@@ -13,7 +13,7 @@ from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 
 
 class BaseSchema(ABC):
-    def __init__(self, schema: typing.Union[str, typing.Dict]) -> None:
+    def __init__(self, schema: typing.Union[str, typing.Dict[str, typing.Any]]) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
         self.raw_schema = typing.cast(typing.Dict, schema)
@@ -152,7 +152,9 @@ class JsonSchema(BaseSchema):
 
 class SchemaFactory:
     @staticmethod
-    def create_schema(schema: str, schema_type: str) -> typing.Union[JsonSchema, AvroSchema]:
+    def create_schema(
+        schema: typing.Union[str, typing.Dict[str, typing.Any]], schema_type: str
+    ) -> typing.Union[JsonSchema, AvroSchema]:
         if schema_type == JSON_SCHEMA_TYPE:
             return JsonSchema(schema)
         elif schema_type == AVRO_SCHEMA_TYPE:

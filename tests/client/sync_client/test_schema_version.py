@@ -81,8 +81,10 @@ def test_json_check_version(client, json_country_schema):
 
 def test_json_check_version_dataclasses_jsonschema(client, dataclass_json_schema):
     subject = "dataclasses-jsonschema-subject"
-    schema_id = client.register(subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE)
-    result = client.check_version(subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE)
+    schema_id = client.register(subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE)
+    result = client.check_version(
+        subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE
+    )
 
     assert subject == result.subject
     assert schema_id == result.schema_id

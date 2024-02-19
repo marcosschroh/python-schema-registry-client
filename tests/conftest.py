@@ -386,14 +386,13 @@ def dataclass_avro_schema_advance():
 @pytest.fixture
 def dataclass_json_schema():
     class UserAdvance(pydantic.BaseModel):
+        model_config = pydantic.ConfigDict(json_schema_extra={"additionalProperties": {"type": "string"}})
+
         name: str
         age: int
         pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-
-        class Config:
-            schema_extra = {"additionalProperties": {"type": "string"}}
 
     return UserAdvance
 
@@ -401,14 +400,13 @@ def dataclass_json_schema():
 @pytest.fixture
 def dataclass_json_schema_advance():
     class UserAdvance(pydantic.BaseModel):
+        model_config = pydantic.ConfigDict(json_schema_extra={"additionalProperties": {"type": "string"}})
+
         name: str
         age: int
         pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
         address: str = None
-
-        class Config:
-            schema_extra = {"additionalProperties": {"type": "string"}}
 
     return UserAdvance

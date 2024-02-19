@@ -15,7 +15,7 @@ class Serializer(Codec):
     def __init__(
         self,
         schema_subject: str,
-        schema: typing.Union[BaseSchema],
+        schema: BaseSchema,
         message_serializer: MessageSerializer,
     ):
         self.schema_subject = schema_subject
@@ -70,10 +70,10 @@ class Serializer(Codec):
 def avro_serializer_factory(
     schema_registry_client: SchemaRegistryClient,
     schema_subject: str,
-    schema: AvroSchema,
+    schema: typing.Union[AvroSchema, str, typing.Dict[str, typing.Any]],
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
-    if isinstance(schema, str):
+    if isinstance(schema, str) or isinstance(schema, dict):
         schema = AvroSchema(schema)
 
     return Serializer(
@@ -84,10 +84,10 @@ def avro_serializer_factory(
 def json_serializer_factory(
     schema_registry_client: SchemaRegistryClient,
     schema_subject: str,
-    schema: JsonSchema,
+    schema: typing.Union[JsonSchema, str, typing.Dict[str, typing.Any]],
     return_record_name: bool = False,
 ) -> "Serializer":  # type: ignore # noqa: F821
-    if isinstance(schema, str):
+    if isinstance(schema, str) or isinstance(schema, dict):
         schema = JsonSchema(schema)
 
     return Serializer(

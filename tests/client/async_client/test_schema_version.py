@@ -96,10 +96,10 @@ async def test_json_check_version(async_client, json_country_schema):
 async def test_json_check_version_dataclasses_avroschema(async_client, dataclass_json_schema):
     subject = "dataclasses-jsonschema-subject"
     schema_id = await async_client.register(
-        subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE
+        subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE
     )
     result = await async_client.check_version(
-        subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE
+        subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE
     )
 
     assert subject == result.subject

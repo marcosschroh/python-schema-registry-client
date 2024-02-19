@@ -86,10 +86,10 @@ def test_json_compatibility_dataclasses_jsonschema(client, dataclass_json_schema
     Test the compatibility of a new User Schema against the User schema version 2.
     """
     subject = "dataclasses-jsonschema-subject"
-    client.register(subject, dataclass_json_schema.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE)
+    client.register(subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE)
 
     compatibility = client.test_compatibility(
-        subject, dataclass_json_schema_advance.schema_json(), schema_type=utils.JSON_SCHEMA_TYPE
+        subject, dataclass_json_schema_advance.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE
     )
 
     assert compatibility

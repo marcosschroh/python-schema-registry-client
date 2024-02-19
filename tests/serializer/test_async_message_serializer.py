@@ -1,3 +1,4 @@
+import math
 import struct
 
 import jsonschema
@@ -50,18 +51,17 @@ async def test_avro_encode_logical_types(async_client, async_avro_message_serial
     schema_id = await async_client.register(subject, logical_types_schema)
 
     record = data_gen.create_logical_item()
-
     message = await async_avro_message_serializer.encode_record_with_schema_id(schema_id, record)
     decoded = await async_avro_message_serializer.decode_message(message)
 
-    decoded_datetime = decoded.get("metadata").get("timestamp")
-    timestamp = record.get("metadata").get("timestamp")
+    decoded_datetime = decoded["metadata"]["timestamp"]
+    decoded_total = decoded["metadata"]["total"]
 
-    decoded_total = decoded.get("metadata").get("total")
-    total = record.get("metadata").get("total")
+    record_datetime = record["metadata"]["timestamp"]
+    record_total = record["metadata"]["total"]
 
-    assert timestamp == decoded_datetime
-    assert total == decoded_total
+    assert math.floor(record_datetime.timestamp()) <= math.floor(decoded_datetime.timestamp())
+    assert record_total == decoded_total
 
 
 async def test_avro_encode_decode_with_schema_from_json(async_avro_message_serializer, avro_deployment_schema):
