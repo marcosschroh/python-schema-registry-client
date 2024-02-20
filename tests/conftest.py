@@ -208,8 +208,7 @@ def avro_country_schema():
 
 @pytest.fixture
 def avro_user_schema_v3():
-    """
-    The user V2 is:
+    """The user V2 is:
     {
         "type": "record",
         "name": "User",

@@ -1,3 +1,4 @@
+"""Defines serializer for serlizing and deserializing messages"""
 import io
 import json
 import logging
@@ -23,9 +24,7 @@ MAGIC_BYTE = 0
 
 
 class ContextStringIO(io.BytesIO):
-    """
-    Wrapper to allow use of StringIO via 'with' constructs.
-    """
+    """Wrapper to allow use of StringIO via 'with' constructs."""
 
     def __enter__(self) -> "ContextStringIO":
         return self
@@ -35,13 +34,12 @@ class ContextStringIO(io.BytesIO):
 
 
 class MessageSerializer(ABC):
-    """
-    A helper class that can serialize and deserialize messages asynchronously
+    """A helper class that can serialize and deserialize messages asynchronously.
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     def __init__(
@@ -58,7 +56,7 @@ class MessageSerializer(ABC):
 
     @property
     @abstractmethod
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         ...
 
     @abstractmethod
@@ -72,15 +70,15 @@ class MessageSerializer(ABC):
     def encode_record_with_schema(
         self, subject: str, schema: BaseSchema, record: typing.Dict[str, typing.Any]
     ) -> bytes:
-        """
-        Given a parsed avro schema, encode a record for the given subject.
+        """Given a parsed avro schema, encode a record for the given subject.
+
         The schema is registered with the subject of 'topic-value'
         The record is expected to be a dictionary.
 
-        Attributes:
-            subject str: Subject name
-            schema avro.schema.RecordSchema: Avro Schema
-            record typing.Dict: An object to serialize
+        Args:
+            subject: Subject name
+            schema: Avro Schema
+            record: An object to serialize
 
         Returns:
             Encoded record with schema ID as bytes
@@ -95,13 +93,11 @@ class MessageSerializer(ABC):
         return self.encode_record_with_schema_id(schema_id, record)
 
     def encode_record_with_schema_id(self, schema_id: int, record: dict) -> bytes:
-        """
-        Encode a record with a given schema id.  The record must
-        be a python dictionary.
+        """Encode a record with a given schema id. The record must be a python dictionary.
 
-        Attributes:
-            schema_id int: integer ID
-            record typing.Dict: An object to serialize
+        Args:
+            schema_id: integer ID
+            record: An object to serialize
 
         Returns:
             Decoder function
@@ -113,9 +109,9 @@ class MessageSerializer(ABC):
                 if not schema:
                     raise SerializerError("Schema does not exist")
                 self.id_to_writers[schema_id] = self._get_encoder_func(schema)
-            except ClientError:
+            except ClientError as err:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                raise SerializerError(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                raise SerializerError(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) from err
 
         writer = self.id_to_writers[schema_id]
         with ContextStringIO() as outf:
@@ -128,16 +124,14 @@ class MessageSerializer(ABC):
             return outf.getvalue()
 
     def decode_message(self, message: typing.Optional[bytes]) -> typing.Optional[dict]:
-        """
-        Decode a message from kafka that has been encoded for use with
-        the schema registry.
-        Attributes:
-            message bytes: message key or value to be decoded
+        """Decode a message from kafka that has been encoded for use with the schema registry.
+
+        Args:
+            message: message key or value to be decoded
 
         Returns:
-            dict: Decoded message contents.
+            Decoded message contents.
         """
-
         if message is None:
             return None
 
@@ -155,7 +149,7 @@ class MessageSerializer(ABC):
             try:
                 writer_schema = self.schemaregistry_client.get_by_id(schema_id)
             except ClientError as e:
-                raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}")
+                raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}") from e
 
             if writer_schema is None:
                 raise SerializerError(f"unable to fetch schema with id {schema_id}")
@@ -167,8 +161,7 @@ class MessageSerializer(ABC):
 
 
 class AvroMessageSerializer(MessageSerializer):
-    """
-    AvroMessageSerializer to serialize and deserialize messages
+    """AvroMessageSerializer to serialize and deserialize messages.
 
     !!! Example
         ```python
@@ -224,13 +217,13 @@ class AvroMessageSerializer(MessageSerializer):
         ```
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     @property
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         return utils.AVRO_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
@@ -243,8 +236,7 @@ class AvroMessageSerializer(MessageSerializer):
 
 
 class JsonMessageSerializer(MessageSerializer):
-    """
-    JsonMessageSerializer to serialize and deserialize messages
+    """JsonMessageSerializer to serialize and deserialize messages.
 
     !!! Example
 
@@ -300,13 +292,13 @@ class JsonMessageSerializer(MessageSerializer):
         ```
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     @property
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         return utils.JSON_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
@@ -326,13 +318,12 @@ class JsonMessageSerializer(MessageSerializer):
 
 
 class AsyncMessageSerializer(ABC):
-    """
-    AsyncMessageSerializer to serialize and deserialize messages asynchronously
+    """AsyncMessageSerializer to serialize and deserialize messages asynchronously.
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     def __init__(
@@ -349,7 +340,7 @@ class AsyncMessageSerializer(ABC):
 
     @property
     @abstractmethod
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         ...
 
     @abstractmethod
@@ -361,15 +352,15 @@ class AsyncMessageSerializer(ABC):
         ...
 
     async def encode_record_with_schema(self, subject: str, schema: typing.Union[BaseSchema], record: dict) -> bytes:
-        """
-        Given a parsed avro schema, encode a record for the given subject.
+        """Given a parsed avro schema, encode a record for the given subject.
+
         The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
 
-        Attributes:
-            subject str: Subject name
-            schema avro.schema.RecordSchema: Avro Schema
-            record dict: An object to serialize
+        Args:
+            subject: Subject name
+            schema: Avro Schema
+            record: An object to serialize
 
         Returns:
             Encoded record with schema ID
@@ -384,13 +375,11 @@ class AsyncMessageSerializer(ABC):
         return await self.encode_record_with_schema_id(schema_id, record)
 
     async def encode_record_with_schema_id(self, schema_id: int, record: dict) -> bytes:
-        """
-        Encode a record with a given schema id.  The record must
-        be a python dictionary.
+        """Encode a record with a given schema id. The record must be a python dictionary.
 
-        Attributes:
-            schema_id int: integer ID
-            record typing.Dict: An object to serialize
+        Args:
+            schema_id: integer ID
+            record: An object to serialize
 
         Returns:
             Decoder function
@@ -403,9 +392,9 @@ class AsyncMessageSerializer(ABC):
                 if not schema:
                     raise SerializerError("Schema does not exist")
                 self.id_to_writers[schema_id] = self._get_encoder_func(schema)
-            except ClientError:
+            except ClientError as err:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                raise SerializerError(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                raise SerializerError(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) from err
 
         writer = self.id_to_writers[schema_id]
         with ContextStringIO() as outf:
@@ -418,17 +407,14 @@ class AsyncMessageSerializer(ABC):
             return outf.getvalue()
 
     async def decode_message(self, message: typing.Optional[bytes]) -> typing.Optional[dict]:
-        """
-        Decode a message from kafka that has been encoded for use with
-        the schema registry.
+        """Decode a message from kafka that has been encoded for use with the schema registry.
 
-        Attributes:
-            message bytes: message key or value to be decoded
+        Args:
+            message: message key or value to be decoded
 
         Returns:
             Decoded message
         """
-
         if message is None:
             return None
 
@@ -446,7 +432,7 @@ class AsyncMessageSerializer(ABC):
             try:
                 writer_schema = await self.schemaregistry_client.get_by_id(schema_id)
             except ClientError as e:
-                raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}")
+                raise SerializerError(f"unable to fetch schema with id {schema_id}: {e}") from e
 
             if writer_schema is None:
                 raise SerializerError(f"unable to fetch schema with id {schema_id}")
@@ -458,17 +444,16 @@ class AsyncMessageSerializer(ABC):
 
 
 class AsyncAvroMessageSerializer(AsyncMessageSerializer):
-    """
-    AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously
+    """AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously.
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     @property
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         return utils.AVRO_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:
@@ -481,17 +466,16 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
 
 
 class AsyncJsonMessageSerializer(AsyncMessageSerializer):
-    """
-    AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously
+    """AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously.
 
     Attributes:
-        schemaregistry_client schema_registry.client.AsyncSchemaRegistryClient: Http Client
-        reader_schema schema_registry.schema.AvroSchema: Specify a schema to decode the message
-        return_record_name bool: If the record name should be returned
+        schemaregistry_client: Http Client
+        reader_schema: Specify a schema to decode the message
+        return_record_name: If the record name should be returned
     """
 
     @property
-    def _serializer_schema_type(self) -> str:
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
         return utils.JSON_SCHEMA_TYPE
 
     def _get_encoder_func(self, schema: typing.Union[BaseSchema]) -> typing.Callable:

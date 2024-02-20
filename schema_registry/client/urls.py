@@ -1,13 +1,17 @@
+"""Module to handle client registry url."""
+
 import typing
 import urllib
 from collections import defaultdict
 
 
 class UrlManager:
-    def __init__(self, base_url: str, paths: list) -> None:
+    """Instantiate url related and Path related to the registry client."""
+
+    def __init__(self, base_url: str, paths: typing.List[typing.Tuple[str, str, str]]) -> None:
         parsed_url = urllib.parse.urlparse(base_url)
 
-        assert parsed_url.scheme in (
+        assert parsed_url.scheme in (  # noqa: S101
             "http",
             "https",
         ), f"The url {base_url} has invalid schema. Use http or https. For example http://{base_url}"
@@ -19,16 +23,15 @@ class UrlManager:
 
         self.base_url = base_url
 
-        self.paths = {path.name: path for path in map(lambda path: Path(path), paths)}
+        self.paths = {path.name: path for path in (Path(path) for path in paths)}
 
     @property
     def url(self) -> str:
+        """Return base url."""
         return self.base_url
 
     def url_for(self, func: str, **kwargs: typing.Any) -> tuple:
-        """
-        Generate a url for a given function
-        """
+        """Generate a url for a given function."""
         path = self.paths[func]
         url = path.generate_url(**kwargs)
 
@@ -36,7 +39,9 @@ class UrlManager:
 
 
 class Path:
-    def __init__(self, path: dict) -> None:
+    """Associate an action related to a path & method."""
+
+    def __init__(self, path: typing.Tuple[str, str, str]) -> None:
         self.func = path[0]
         self.url = path[1]
         self.method = path[2]

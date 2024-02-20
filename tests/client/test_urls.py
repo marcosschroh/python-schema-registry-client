@@ -48,7 +48,7 @@ def test_urls_generation(base_url):
 def test_client_paths(base_url):
     url_manager = urls.UrlManager(base_url, paths)
 
-    for func, path, _ in paths:
+    for func, _path, _ in paths:
         kwargs = {"subject": "my-subject", "version": 1}
         url, method = url_manager.url_for(func, **kwargs)
 

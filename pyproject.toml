@@ -81,12 +81,23 @@ exclude = [
     ".venv",
 ]
 
-[tool.lint.ruff]
+[tool.ruff.lint]
 select = [
-    # Pyflakes
-    "F",
-    # isort
-    "I001"
+    "B",  # flake8-bugbear
+    "C",  # flake8-comprehensions
+    "D100",  # pydocstyle: public module docstring
+    "D101",  # pydocstyle: docstring in public class
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "S",  # bandit
+    "W",  # pycodestyle warnings
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+    "D",
+    "S",
 ]
 
 [tool.ruff.lint.pydocstyle]

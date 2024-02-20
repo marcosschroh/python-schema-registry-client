@@ -126,7 +126,6 @@ def test_avro_encode_record_with_schema(client, avro_message_serializer):
 
 def test_avro_decode_none(avro_message_serializer):
     """ "null/None messages should decode to None"""
-
     assert avro_message_serializer.decode_message(None) is None
 
 
@@ -201,6 +200,5 @@ def test_json_encode_record_with_schema(client, json_message_serializer):
 
 
 def test_json_decode_none(json_message_serializer):
-    """ "null/None messages should decode to None"""
-
+    """null/None messages should decode to None."""
     assert json_message_serializer.decode_message(None) is None
