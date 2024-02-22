@@ -51,9 +51,7 @@ def test_custom_headers():
 
 
 def test_custom_httpx_config():
-    """
-    Test the SchemaRegistryClient creation with custom httpx config
-    """
+    """Test the SchemaRegistryClient creation with custom httpx config."""
     timeout = httpx.Timeout(10.0, connect=60.0)
     pool_limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
 

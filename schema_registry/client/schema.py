@@ -1,3 +1,5 @@
+"""Class to wrap json or avro raw schema with generic methods."""
+
 from __future__ import annotations
 
 import json
@@ -13,6 +15,8 @@ from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 
 
 class BaseSchema(ABC):
+    """Abstract class for schema wrapper"""
+
     def __init__(self, schema: typing.Union[str, typing.Dict[str, typing.Any]]) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
@@ -27,12 +31,12 @@ class BaseSchema(ABC):
     @staticmethod
     @abstractmethod
     def load(fp: str) -> BaseSchema:
-        """Parse a schema from a file path"""
+        """Parse a schema from a file path."""
 
     @staticmethod
     @abstractmethod
     async def async_load(fp: str) -> BaseSchema:
-        """Parse a schema from a file path"""
+        """Parse a schema from a file path."""
 
     @property
     @abstractmethod
@@ -60,6 +64,8 @@ class BaseSchema(ABC):
 
 
 class AvroSchema(BaseSchema):
+    """Integrate BaseSchema for Avro schema."""
+
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         self._expanded_schema: typing.Optional[typing.Dict] = None
         self._flat_schema: typing.Optional[typing.Dict] = None
@@ -76,8 +82,7 @@ class AvroSchema(BaseSchema):
 
     @property
     def expanded_schema(self) -> typing.Dict:
-        """
-        Returns a schema where all named types are expanded to their real schema
+        """Returns a schema where all named types are expanded to their real schema.
 
         Returns:
             expanded_schema (typing.Dict): Schema parsed expanded
@@ -89,8 +94,7 @@ class AvroSchema(BaseSchema):
 
     @property
     def flat_schema(self) -> typing.Dict:
-        """
-        Parse the schema removing the fastavro write_hint flag __fastavro_parsed
+        """Parse the schema removing the fastavro write_hint flag __fastavro_parsed.
 
         Returns:
             flat_schema (typing.Dict): Schema parsed without the write hint
@@ -109,20 +113,22 @@ class AvroSchema(BaseSchema):
 
     @staticmethod
     def load(fp: str) -> AvroSchema:
-        """Parse an avro schema from a file path"""
+        """Parse an avro schema from a file path."""
         with open(fp, mode="r") as f:
             content = f.read()
             return AvroSchema(content)
 
     @staticmethod
     async def async_load(fp: str) -> AvroSchema:
-        """Parse an avro schema from a file path"""
+        """Parse an avro schema from a file path."""
         async with aiofiles.open(fp, mode="r") as f:
             content = await f.read()
             return AvroSchema(content)
 
 
 class JsonSchema(BaseSchema):
+    """Integrate BaseSchema for JSON schema."""
+
     @property
     def name(self) -> typing.Optional[str]:
         return self.schema.get("title", self.schema.get("$id", self.schema.get("$ref")))
@@ -137,20 +143,22 @@ class JsonSchema(BaseSchema):
 
     @staticmethod
     def load(fp: str) -> BaseSchema:
-        """Parse a json schema from a file path"""
+        """Parse a json schema from a file path."""
         with open(fp, mode="r") as f:
             content = f.read()
             return JsonSchema(content)
 
     @staticmethod
     async def async_load(fp: str) -> BaseSchema:
-        """Parse a json schema from a file path"""
+        """Parse a json schema from a file path."""
         async with aiofiles.open(fp, mode="r") as f:
             content = await f.read()
             return JsonSchema(content)
 
 
 class SchemaFactory:
+    """Factory to generate Schema wrapper from the given schema and schema_type."""
+
     @staticmethod
     def create_schema(
         schema: typing.Union[str, typing.Dict[str, typing.Any]], schema_type: str
@@ -165,5 +173,7 @@ class SchemaFactory:
 
 @dataclass
 class SubjectVersion(object):
+    """Represents information extracted from the registry."""
+
     subject: str
     version: int

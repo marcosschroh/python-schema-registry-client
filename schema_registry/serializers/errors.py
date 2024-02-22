@@ -1,5 +1,8 @@
+"""Exception exposed by the serializers module."""
+
+
 class SerializerError(Exception):
-    """Generic error from serializer package"""
+    """Generic error from serializer package."""
 
     def __init__(self, message: str) -> None:
         self.message = message

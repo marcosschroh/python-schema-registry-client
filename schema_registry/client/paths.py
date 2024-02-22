@@ -1,4 +1,4 @@
-# Available urls supported with the client
+"""Available urls supported with the client."""
 
 paths = [
     ("get_subjects", "subjects", "GET"),

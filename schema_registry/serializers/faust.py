@@ -1,3 +1,5 @@
+"""Faust serializers."""
+
 import typing
 from collections.abc import Mapping, Sequence
 
@@ -12,6 +14,8 @@ except ImportError as ex:
 
 
 class Serializer(Codec):
+    """Generic serializer for Faust."""
+
     def __init__(
         self,
         schema_subject: str,
@@ -28,9 +32,9 @@ class Serializer(Codec):
         return self.message_serializer.decode_message(event)
 
     def _dumps(self, payload: typing.Dict[str, typing.Any]) -> bytes:
-        """
-        Given a parsed avro schema, encode a record for the given topic.  The
-        record is expected to be a dictionary.
+        """Given a parsed avro schema, encode a record for the given topic.
+
+        The record is expected to be a dictionary.
         The schema is registered with the subject of 'topic-value'
         """
         payload = self.clean_payload(payload)
@@ -52,15 +56,17 @@ class Serializer(Codec):
 
     @staticmethod
     def clean_payload(payload: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
-        """
-        Try to clean payload retrieve by faust.Record.to_representation.
+        """Try to clean payload retrieve by faust.Record.to_representation.
+
         All values inside payload should be native types and not faust.Record
         On Faust versions <=1.9.0 Record.to_representation always returns a dict with native types
         as a values which are compatible with fastavro.
         On Faust 1.10.0 <= versions Record.to_representation always returns a dic but values
-        can also be faust.Record, so fastavro is incapable of serialize them
+        can also be faust.Record, so fastavro is incapable of serialize them.
+
         Args:
             payload (dict): Payload to clean
+
         Returns:
             dict that represents the clean payload
         """

@@ -130,7 +130,6 @@ async def test_avro_encode_record_with_schema(async_client, async_avro_message_s
 
 async def test_avro_decode_none(async_avro_message_serializer):
     """ "null/None messages should decode to None"""
-
     assert await async_avro_message_serializer.decode_message(None) is None
 
 
@@ -207,6 +206,5 @@ async def test_json_encode_record_with_schema(async_client, async_json_message_s
 
 
 async def test_json_decode_none(async_json_message_serializer):
-    """ "null/None messages should decode to None"""
-
+    """null/None messages should decode to None."""
     assert await async_json_message_serializer.decode_message(None) is None

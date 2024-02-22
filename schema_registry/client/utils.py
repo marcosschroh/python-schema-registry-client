@@ -1,3 +1,6 @@
+"""Regroups global constants."""
+
+import typing
 from collections import namedtuple
 
 SchemaVersion = namedtuple("SchemaVersion", "subject schema_id schema version")
@@ -27,7 +30,7 @@ URL = "url"
 SSL_CA_LOCATION = "ssl.ca.location"
 SSL_CERTIFICATE_LOCATION = "ssl.certificate.location"
 SSL_KEY_LOCATION = "ssl.key.location"
-SSL_KEY_PASSWORD = "ssl.key.password"
+SSL_KEY_PASSWORD = "ssl.key.password"  # noqa: S105
 
-AVRO_SCHEMA_TYPE = "AVRO"
-JSON_SCHEMA_TYPE = "JSON"
+AVRO_SCHEMA_TYPE: typing.Literal["AVRO"] = "AVRO"
+JSON_SCHEMA_TYPE: typing.Literal["JSON"] = "JSON"

@@ -94,10 +94,7 @@ def test_avro_dupe_register(client):
 
 
 def test_avro_multi_register(client):
-    """
-    Register two different schemas under the same subject
-    with backwards compatibility
-    """
+    """Register two different schemas under the same subject with backwards compatibility."""
     version_1 = schema.AvroSchema(data_gen.AVRO_USER_V1)
     version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
     subject = "test-avro-user-schema"
@@ -195,10 +192,7 @@ def test_json_dupe_register(client):
 
 
 def test_json_multi_register(client, json_user_schema_v3):
-    """
-    Register two different schemas under the same subject
-    with backwards compatibility
-    """
+    """Register two different schemas under the same subject with backwards compatibility."""
     version_1 = schema.JsonSchema(data_gen.JSON_USER_V2)
     version_2 = json_user_schema_v3
     subject = "test-json-user-schema"
