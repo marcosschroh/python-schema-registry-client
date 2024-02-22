@@ -39,7 +39,7 @@ def get_response_and_status_code(response: httpx.Response) -> typing.Tuple[typin
 class BaseClient:
     """A client that talks to a Schema Registry over HTTP.
 
-    Attributes:
+    Args:
         url: Url to schema registry or dictionary containing client configuration.
         ca_location: File or directory path to CA certificate(s) for verifying the Schema Registry key.
         cert_location: Path to public key used for authentication.
@@ -260,7 +260,7 @@ class SchemaRegistryClient(BaseClient):
         schema_id = client.register("test-deployment", avro_schema)
         ```
 
-    Attributes:
+    Args:
         url: Url to schema registry or dictionary containing client configuration.
         ca_location: File or directory path to CA certificate(s) for verifying the Schema Registry key.
         cert_location: Path to public key used for authentication.
@@ -770,7 +770,7 @@ class SchemaRegistryClient(BaseClient):
 class AsyncSchemaRegistryClient(BaseClient):
     """A client that talks to a Schema Registry over HTTP.
 
-    Attributes:
+    Args:
         url: Url to schema registry or dictionary containing client configuration.
         ca_location: File or directory path to CA certificate(s) for verifying the Schema Registry key.
         cert_location: Path to public key used for authentication.
@@ -880,7 +880,6 @@ class AsyncSchemaRegistryClient(BaseClient):
         GET /subjects/(string: subject)
 
         Args:
-            subject: subject name
             headers: Extra headers to add on the requests
             timeout: The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
 

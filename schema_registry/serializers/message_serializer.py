@@ -36,7 +36,7 @@ class ContextStringIO(io.BytesIO):
 class MessageSerializer(ABC):
     """A helper class that can serialize and deserialize messages asynchronously.
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
@@ -216,7 +216,7 @@ class AvroMessageSerializer(MessageSerializer):
         # >>> TypeError: an integer is required on field age
         ```
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
@@ -291,7 +291,7 @@ class JsonMessageSerializer(MessageSerializer):
         assert message_decoded == basic_record
         ```
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
@@ -320,7 +320,7 @@ class JsonMessageSerializer(MessageSerializer):
 class AsyncMessageSerializer(ABC):
     """AsyncMessageSerializer to serialize and deserialize messages asynchronously.
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
@@ -446,7 +446,7 @@ class AsyncMessageSerializer(ABC):
 class AsyncAvroMessageSerializer(AsyncMessageSerializer):
     """AsyncAvroMessageSerializer to serialize and deserialize messages asynchronously.
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
@@ -468,7 +468,7 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
 class AsyncJsonMessageSerializer(AsyncMessageSerializer):
     """AsyncJsonMessageSerializer to serialize and deserialize messages asynchronously.
 
-    Attributes:
+    Args:
         schemaregistry_client: Http Client
         reader_schema: Specify a schema to decode the message
         return_record_name: If the record name should be returned
