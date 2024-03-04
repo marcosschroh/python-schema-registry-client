@@ -29,7 +29,7 @@ faust-streaming = {version = "^0.10.11", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"
-ruff = ">=0.2,<0.3"
+ruff = ">=0.2,<0.4"
 pytest = ">=7,<9"
 pytest-cov = "^4"
 pytest-mock = "^3.10.0"
