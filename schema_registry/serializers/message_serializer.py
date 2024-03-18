@@ -1,4 +1,5 @@
 """Defines serializer for serlizing and deserializing messages"""
+
 import io
 import json
 import logging
@@ -12,7 +13,12 @@ from fastavro import schemaless_reader, schemaless_writer
 from fastavro.types import Schema
 from jsonschema import validate
 
-from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, schema, utils
+from schema_registry.client import (
+    AsyncSchemaRegistryClient,
+    SchemaRegistryClient,
+    schema,
+    utils,
+)
 from schema_registry.client.errors import ClientError
 from schema_registry.client.schema import BaseSchema
 
@@ -56,16 +62,13 @@ class MessageSerializer(ABC):
 
     @property
     @abstractmethod
-    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
-        ...
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]: ...
 
     @abstractmethod
-    def _get_encoder_func(self, schema: BaseSchema) -> typing.Callable:
-        ...
+    def _get_encoder_func(self, schema: BaseSchema) -> typing.Callable: ...
 
     @abstractmethod
-    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
-        ...
+    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable: ...
 
     def encode_record_with_schema(
         self, subject: str, schema: BaseSchema, record: typing.Dict[str, typing.Any]
@@ -231,7 +234,10 @@ class AvroMessageSerializer(MessageSerializer):
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         return lambda payload: schemaless_reader(
-            payload, writer_schema.schema, typing.cast(Schema, self.reader_schema), self.return_record_name
+            payload,
+            writer_schema.schema,
+            typing.cast(Schema, self.reader_schema),
+            self.return_record_name,
         )
 
 
@@ -340,16 +346,13 @@ class AsyncMessageSerializer(ABC):
 
     @property
     @abstractmethod
-    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]:
-        ...
+    def _serializer_schema_type(self) -> typing.Literal["AVRO", "JSON"]: ...
 
     @abstractmethod
-    def _get_encoder_func(self, schema: BaseSchema) -> typing.Callable:
-        ...
+    def _get_encoder_func(self, schema: BaseSchema) -> typing.Callable: ...
 
     @abstractmethod
-    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
-        ...
+    def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable: ...
 
     async def encode_record_with_schema(self, subject: str, schema: typing.Union[BaseSchema], record: dict) -> bytes:
         """Given a parsed avro schema, encode a record for the given subject.
@@ -461,7 +464,10 @@ class AsyncAvroMessageSerializer(AsyncMessageSerializer):
 
     def _get_decoder_func(self, payload: ContextStringIO, writer_schema: BaseSchema) -> typing.Callable:
         return lambda payload: schemaless_reader(
-            payload, writer_schema.schema, typing.cast(Schema, self.reader_schema), self.return_record_name
+            payload,
+            writer_schema.schema,
+            typing.cast(Schema, self.reader_schema),
+            self.return_record_name,
         )
 
 

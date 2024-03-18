@@ -218,7 +218,11 @@ def test_json_multi_register(client, json_user_schema_v3):
 
 def test_register_dataclass_json_schema(client, dataclass_json_schema):
     subject = "dataclasses-jsonschema-subject"
-    schema_id = client.register(subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE)
+    schema_id = client.register(
+        subject,
+        dataclass_json_schema.model_json_schema(),
+        schema_type=utils.JSON_SCHEMA_TYPE,
+    )
 
     assert schema_id > 0
     assert len(client.id_to_schema) == 1

@@ -63,7 +63,11 @@ def test_avro_encode_logical_types(client, avro_message_serializer):
 
 
 def test_avro_encode_decode_with_schema_from_json(avro_message_serializer, avro_deployment_schema):
-    deployment_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": 1, "port": 8080}
+    deployment_record = {
+        "image": "registry.gitlab.com/my-project:1.0.0",
+        "replicas": 1,
+        "port": 8080,
+    }
 
     message_encoded = avro_message_serializer.encode_record_with_schema(
         "avro-deployment", avro_deployment_schema, deployment_record
@@ -106,7 +110,11 @@ def test_avro_encode_decode_with_schema_from_json(avro_message_serializer, avro_
 
 
 def test_avro_fail_encode_with_schema(avro_message_serializer, avro_deployment_schema):
-    bad_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": "1", "port": "8080"}
+    bad_record = {
+        "image": "registry.gitlab.com/my-project:1.0.0",
+        "replicas": "1",
+        "port": "8080",
+    }
 
     with pytest.raises(TypeError):
         avro_message_serializer.encode_record_with_schema("avro-deployment", avro_deployment_schema, bad_record)
@@ -165,7 +173,11 @@ def test_json_encode_with_schema_id(client, json_message_serializer):
 
 
 def test_json_encode_decode_with_schema_from_json(json_message_serializer, json_deployment_schema):
-    deployment_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": 1, "port": 8080}
+    deployment_record = {
+        "image": "registry.gitlab.com/my-project:1.0.0",
+        "replicas": 1,
+        "port": 8080,
+    }
 
     message_encoded = json_message_serializer.encode_record_with_schema(
         "json-deployment", json_deployment_schema, deployment_record
@@ -181,7 +193,11 @@ def test_json_encode_decode_with_schema_from_json(json_message_serializer, json_
 
 
 def test_json_fail_encode_with_schema(json_message_serializer, json_deployment_schema):
-    bad_record = {"image": "registry.gitlab.com/my-project:1.0.0", "replicas": "1", "port": "8080"}
+    bad_record = {
+        "image": "registry.gitlab.com/my-project:1.0.0",
+        "replicas": "1",
+        "port": "8080",
+    }
 
     with pytest.raises(jsonschema.exceptions.ValidationError):
         json_message_serializer.encode_record_with_schema("json-deployment", json_deployment_schema, bad_record)

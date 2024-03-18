@@ -173,7 +173,8 @@ print(compatibility)
 # >>> True
 ```
 
-### Usage with pydantic for json schemas
+## Usage with pydantic for json schemas
+
 You can generate the json schema directely from a python class using pydantic and use it in the API for register schemas, check versions and test compatibility:
 
 ```python

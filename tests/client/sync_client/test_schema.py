@@ -44,7 +44,11 @@ def test_expanded_schema(client):
                         "type": "record",
                         "name": "python.test.advanced.basicPerson",
                         "fields": [
-                            {"doc": "friend age", "name": "number", "type": ["long", "null"]},
+                            {
+                                "doc": "friend age",
+                                "name": "number",
+                                "type": ["long", "null"],
+                            },
                             {"doc": "friend name", "name": "name", "type": ["string"]},
                         ],
                     },
@@ -59,7 +63,11 @@ def test_expanded_schema(client):
                         "type": "record",
                         "name": "python.test.advanced.basicPerson",
                         "fields": [
-                            {"doc": "friend age", "name": "number", "type": ["long", "null"]},
+                            {
+                                "doc": "friend age",
+                                "name": "number",
+                                "type": ["long", "null"],
+                            },
                             {"doc": "friend name", "name": "name", "type": ["string"]},
                         ],
                     },

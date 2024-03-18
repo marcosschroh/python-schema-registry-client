@@ -29,7 +29,7 @@ faust-streaming = {version = "^0.10.11", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"
-ruff = ">=0.2,<0.3"
+ruff = ">=0.2,<0.4"
 pytest = ">=7,<9"
 pytest-cov = "^4"
 pytest-mock = "^3.10.0"
@@ -58,7 +58,6 @@ build-backend = "poetry.core.masonry.api"
 allow_empty_bodies = true
 
 [tool.ruff]
-target-version = "py38"
 line-length = 120
 exclude = [
     ".bzr",
@@ -83,6 +82,8 @@ exclude = [
 ]
 
 [tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
 select = [
     "B",  # flake8-bugbear
     "C",  # flake8-comprehensions

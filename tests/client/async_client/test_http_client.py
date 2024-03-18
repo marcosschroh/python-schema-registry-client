@@ -46,7 +46,11 @@ async def test_override_headers(avro_deployment_schema, response_klass, async_mo
     subject = "test"
     override_header = {"custom-serialization": utils.HEADER_AVRO}
 
-    mock = async_mock(httpx.AsyncClient, "request", returned_value=response_klass(200, content={"id": 1}))
+    mock = async_mock(
+        httpx.AsyncClient,
+        "request",
+        returned_value=response_klass(200, content={"id": 1}),
+    )
 
     with mock:
         await async_client.register(subject, avro_deployment_schema, headers=override_header)
@@ -157,5 +161,8 @@ async def test_custom_auth():
 def test_basic_auth_invalid():
     with pytest.raises(ValueError):
         AsyncSchemaRegistryClient(
-            {"url": "https://user_url:secret_url@127.0.0.1:65534", "basic.auth.credentials.source": "VAULT"}
+            {
+                "url": "https://user_url:secret_url@127.0.0.1:65534",
+                "basic.auth.credentials.source": "VAULT",
+            }
         )

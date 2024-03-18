@@ -21,7 +21,9 @@ from .urls import UrlManager
 logger = logging.getLogger(__name__)
 
 
-def get_response_and_status_code(response: httpx.Response) -> typing.Tuple[typing.Any, int]:
+def get_response_and_status_code(
+    response: httpx.Response,
+) -> typing.Tuple[typing.Any, int]:
     """Returns a tuple containing response json and status code.
 
     Args:
@@ -175,7 +177,9 @@ class BaseClient:
         return client_kwargs
 
     def prepare_headers(
-        self, body: typing.Optional[typing.Dict] = None, headers: typing.Optional[typing.Dict] = None
+        self,
+        body: typing.Optional[typing.Dict] = None,
+        headers: typing.Optional[typing.Dict] = None,
     ) -> typing.Dict[str, str]:
         """Combines parameters to form a HTTP Header.
 
@@ -332,7 +336,10 @@ class SchemaRegistryClient(BaseClient):
             return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
 
         (
             result,
@@ -443,7 +450,11 @@ class SchemaRegistryClient(BaseClient):
             self._cache_schema(schema, schema_id)
             return schema
 
-        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Received bad schema (id {schema_id})",
+            http_code=code,
+            server_traceback=result,
+        )
 
     def get_schema_subject_versions(
         self,
@@ -474,7 +485,11 @@ class SchemaRegistryClient(BaseClient):
                 ret.append(SubjectVersion(entry["subject"], entry["version"]))
             return ret
 
-        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Received bad schema (id {schema_id})",
+            http_code=code,
+            server_traceback=result,
+        )
 
     def get_schema(
         self,
@@ -547,7 +562,11 @@ class SchemaRegistryClient(BaseClient):
             logger.info(f"Subject {subject} not found")
             return []
 
-        raise ClientError(f"Unable to get the versions for subject {subject}", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Unable to get the versions for subject {subject}",
+            http_code=code,
+            server_traceback=result,
+        )
 
     def delete_version(
         self,
@@ -622,7 +641,10 @@ class SchemaRegistryClient(BaseClient):
             return utils.SchemaVersion(subject=subject, schema_id=schema_id, version=version, schema=schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
         result, code = get_response_and_status_code(
             self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         )
@@ -635,7 +657,10 @@ class SchemaRegistryClient(BaseClient):
             self._cache_schema(schema, schema_id, subject, version)  # type: ignore
 
             return utils.SchemaVersion(
-                subject=subject, schema_id=schema_id, version=version, schema=result.get("schema")
+                subject=subject,
+                schema_id=schema_id,
+                version=version,
+                schema=result.get("schema"),
             )
 
         raise ClientError("Unable to get version of a schema", http_code=code, server_traceback=result)
@@ -669,7 +694,10 @@ class SchemaRegistryClient(BaseClient):
         if isinstance(schema, str) or isinstance(schema, dict):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
         result, code = get_response_and_status_code(
             self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         )
@@ -757,13 +785,17 @@ class SchemaRegistryClient(BaseClient):
                 else:
                     error_msg_suffix = str(compatibility)
                 raise ClientError(
-                    f"Invalid compatibility level received: {error_msg_suffix}", http_code=code, server_traceback=result
+                    f"Invalid compatibility level received: {error_msg_suffix}",
+                    http_code=code,
+                    server_traceback=result,
                 )
 
             return compatibility
 
         raise ClientError(
-            f"Unable to fetch compatibility level. Error code: {code}", http_code=code, server_traceback=result
+            f"Unable to fetch compatibility level. Error code: {code}",
+            http_code=code,
+            server_traceback=result,
         )
 
 
@@ -846,7 +878,10 @@ class AsyncSchemaRegistryClient(BaseClient):
             return response.schema_id
 
         url, method = self.url_manager.url_for("register", subject=subject)
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
 
         result, code = get_response_and_status_code(
             await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
@@ -963,7 +998,11 @@ class AsyncSchemaRegistryClient(BaseClient):
             self._cache_schema(schema, schema_id)
             return schema
 
-        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Received bad schema (id {schema_id})",
+            http_code=code,
+            server_traceback=result,
+        )
 
     async def get_schema(
         self,
@@ -1049,7 +1088,11 @@ class AsyncSchemaRegistryClient(BaseClient):
                 ret.append(SubjectVersion(entry["subject"], entry["version"]))
             return ret
 
-        raise ClientError(f"Received bad schema (id {schema_id})", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Received bad schema (id {schema_id})",
+            http_code=code,
+            server_traceback=result,
+        )
 
     async def get_versions(
         self,
@@ -1080,7 +1123,11 @@ class AsyncSchemaRegistryClient(BaseClient):
             logger.info(f"Subject {subject} not found")
             return []
 
-        raise ClientError(f"Unable to get the versions for subject {subject}", http_code=code, server_traceback=result)
+        raise ClientError(
+            f"Unable to get the versions for subject {subject}",
+            http_code=code,
+            server_traceback=result,
+        )
 
     async def delete_version(
         self,
@@ -1162,7 +1209,10 @@ class AsyncSchemaRegistryClient(BaseClient):
             return utils.SchemaVersion(subject=subject, schema_id=schema_id, version=version, schema=schema)
 
         url, method = self.url_manager.url_for("check_version", subject=subject)
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
 
         result, code = get_response_and_status_code(
             await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
@@ -1176,7 +1226,10 @@ class AsyncSchemaRegistryClient(BaseClient):
             self._cache_schema(schema, schema_id, subject, version)  # type: ignore
 
             return utils.SchemaVersion(
-                subject=subject, schema_id=schema_id, version=version, schema=result.get("schema")
+                subject=subject,
+                schema_id=schema_id,
+                version=version,
+                schema=result.get("schema"),
             )
 
         raise ClientError("Unable to get version of a schema", http_code=code, server_traceback=result)
@@ -1211,7 +1264,10 @@ class AsyncSchemaRegistryClient(BaseClient):
         if isinstance(schema, str) or isinstance(schema, dict):
             schema = SchemaFactory.create_schema(schema, schema_type)
 
-        body = {"schema": json.dumps(schema.raw_schema), "schemaType": schema.schema_type}
+        body = {
+            "schema": json.dumps(schema.raw_schema),
+            "schemaType": schema.schema_type,
+        }
         result, code = get_response_and_status_code(
             await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
         )
@@ -1302,11 +1358,15 @@ class AsyncSchemaRegistryClient(BaseClient):
                 else:
                     error_msg_suffix = str(compatibility)
                 raise ClientError(
-                    f"Invalid compatibility level received: {error_msg_suffix}", http_code=code, server_traceback=result
+                    f"Invalid compatibility level received: {error_msg_suffix}",
+                    http_code=code,
+                    server_traceback=result,
                 )
 
             return compatibility
 
         raise ClientError(
-            f"Unable to fetch compatibility level. Error code: {code}", http_code=code, server_traceback=result
+            f"Unable to fetch compatibility level. Error code: {code}",
+            http_code=code,
+            server_traceback=result,
         )
