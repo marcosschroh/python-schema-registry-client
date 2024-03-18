@@ -4,7 +4,10 @@ from tests import data_gen
 
 def test_avro_delete_subject(client, avro_user_schema_v3):
     subject = "avro-subject-to-delete"
-    versions = [schema.AvroSchema(data_gen.AVRO_USER_V1), schema.AvroSchema(data_gen.AVRO_USER_V2)]
+    versions = [
+        schema.AvroSchema(data_gen.AVRO_USER_V1),
+        schema.AvroSchema(data_gen.AVRO_USER_V2),
+    ]
 
     for version in versions:
         client.register(subject, version)

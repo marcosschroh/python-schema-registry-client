@@ -235,7 +235,9 @@ async def test_json_multi_register(async_client, json_user_schema_v3):
 async def test_register_dataclass_json_schema(async_client, dataclass_json_schema):
     subject = "dataclasses-jsonschema-subject"
     schema_id = await async_client.register(
-        subject, dataclass_json_schema.model_json_schema(), schema_type=utils.JSON_SCHEMA_TYPE
+        subject,
+        dataclass_json_schema.model_json_schema(),
+        schema_type=utils.JSON_SCHEMA_TYPE,
     )
 
     assert schema_id > 0

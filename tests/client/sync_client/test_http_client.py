@@ -82,7 +82,11 @@ def test_override_headers(client, avro_deployment_schema, mocker, response_klass
     prepare_headers["custom-serialization"] = utils.HEADER_AVRO
 
     request_patch.assert_called_once_with(
-        "POST", mocker.ANY, headers=prepare_headers, json=mocker.ANY, timeout=USE_CLIENT_DEFAULT
+        "POST",
+        mocker.ANY,
+        headers=prepare_headers,
+        json=mocker.ANY,
+        timeout=USE_CLIENT_DEFAULT,
     )
 
 
@@ -185,5 +189,8 @@ def test_custom_auth():
 def test_basic_auth_invalid():
     with pytest.raises(ValueError):
         SchemaRegistryClient(
-            {"url": "https://user_url:secret_url@127.0.0.1:65534", "basic.auth.credentials.source": "VAULT"}
+            {
+                "url": "https://user_url:secret_url@127.0.0.1:65534",
+                "basic.auth.credentials.source": "VAULT",
+            }
         )

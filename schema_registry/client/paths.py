@@ -10,7 +10,11 @@ paths = [
     ("check_version", "subjects/{subject}", "POST"),
     ("get_by_id", "schemas/ids/{schema_id}", "GET"),
     ("get_schema_subject_versions", "schemas/ids/{schema_id}/versions", "GET"),
-    ("test_compatibility", "compatibility/subjects/{subject}/versions/{version}", "POST"),
+    (
+        "test_compatibility",
+        "compatibility/subjects/{subject}/versions/{version}",
+        "POST",
+    ),
     ("update_compatibility", "config/{subject}", "PUT"),
     ("get_compatibility", "config/{subject}", "GET"),
 ]

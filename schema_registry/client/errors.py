@@ -7,7 +7,10 @@ class ClientError(Exception):
     """Error thrown by Schema Registry client."""
 
     def __init__(
-        self, message: str, http_code: typing.Optional[int] = None, server_traceback: typing.Optional[str] = None
+        self,
+        message: str,
+        http_code: typing.Optional[int] = None,
+        server_traceback: typing.Optional[str] = None,
     ) -> None:
         """Base class for all exceptions that occur when interacting with the registry API.
 

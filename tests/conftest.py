@@ -11,7 +11,13 @@ import pytest_asyncio
 from dataclasses_avroschema import AvroModel
 from httpx._client import USE_CLIENT_DEFAULT, TimeoutTypes, UseClientDefault
 
-from schema_registry.client import AsyncSchemaRegistryClient, SchemaRegistryClient, errors, schema, utils
+from schema_registry.client import (
+    AsyncSchemaRegistryClient,
+    SchemaRegistryClient,
+    errors,
+    schema,
+    utils,
+)
 from schema_registry.serializers import (
     AsyncAvroMessageSerializer,
     AsyncJsonMessageSerializer,
@@ -82,11 +88,20 @@ flat_schemas = {
             "record:User": {
                 "type": "object",
                 "required": ["name", "favorite_number", "favorite_color", "country"],
-                "additionalProperties": {"default": "null", "oneOf": [{"type": "null"}, {"type": "string"}]},
+                "additionalProperties": {
+                    "default": "null",
+                    "oneOf": [{"type": "null"}, {"type": "string"}],
+                },
                 "properties": {
                     "name": {"type": "string"},
-                    "favorite_number": {"default": 42, "oneOf": [{"type": "integer"}, {"type": "null"}]},
-                    "favorite_color": {"default": "purple", "oneOf": [{"type": "string"}, {"type": "null"}]},
+                    "favorite_number": {
+                        "default": 42,
+                        "oneOf": [{"type": "integer"}, {"type": "null"}],
+                    },
+                    "favorite_color": {
+                        "default": "purple",
+                        "oneOf": [{"type": "string"}, {"type": "null"}],
+                    },
                     "country": {
                         "default": None,
                         "oneOf": [{"type": "null"}, {"type": "string"}],

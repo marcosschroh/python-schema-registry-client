@@ -102,7 +102,8 @@ class AvroSchema(BaseSchema):
         if self._flat_schema is None:
             # NOTE: Dict expected when we pass a dict
             self._flat_schema = typing.cast(
-                typing.Dict, fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True)
+                typing.Dict,
+                fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True),
             )
 
         return self._flat_schema

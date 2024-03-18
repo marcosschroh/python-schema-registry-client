@@ -5,7 +5,11 @@ from collections.abc import Mapping, Sequence
 
 from schema_registry.client import SchemaRegistryClient
 from schema_registry.client.schema import AvroSchema, BaseSchema, JsonSchema
-from schema_registry.serializers import AvroMessageSerializer, JsonMessageSerializer, MessageSerializer
+from schema_registry.serializers import (
+    AvroMessageSerializer,
+    JsonMessageSerializer,
+    MessageSerializer,
+)
 
 try:
     from faust import Codec, Record
@@ -55,7 +59,9 @@ class Serializer(Codec):
         return item
 
     @staticmethod
-    def clean_payload(payload: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
+    def clean_payload(
+        payload: typing.Dict[str, typing.Any],
+    ) -> typing.Dict[str, typing.Any]:
         """Try to clean payload retrieve by faust.Record.to_representation.
 
         All values inside payload should be native types and not faust.Record
@@ -83,7 +89,9 @@ def avro_serializer_factory(
         schema = AvroSchema(schema)
 
     return Serializer(
-        schema_subject, schema, AvroMessageSerializer(schema_registry_client, return_record_name=return_record_name)
+        schema_subject,
+        schema,
+        AvroMessageSerializer(schema_registry_client, return_record_name=return_record_name),
     )
 
 
@@ -97,7 +105,9 @@ def json_serializer_factory(
         schema = JsonSchema(schema)
 
     return Serializer(
-        schema_subject, schema, JsonMessageSerializer(schema_registry_client, return_record_name=return_record_name)
+        schema_subject,
+        schema,
+        JsonMessageSerializer(schema_registry_client, return_record_name=return_record_name),
     )
 
 
