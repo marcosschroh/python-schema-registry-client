@@ -1,0 +1,713 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="avro, kafka, client, faust, schema">
+      
+      
+      
+      
+        <link rel="prev" href="../serializer/">
+      
+      
+        <link rel="next" href="../schemas/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Faust integration - Python Schema Registry Client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-use-it-with-faust" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Python Schema Registry Client" class="md-header__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Python Schema Registry Client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Faust integration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Python Schema Registry Client" class="md-nav__button md-logo" aria-label="Python Schema Registry Client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Python Schema Registry Client
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/marcosschroh/python-schema-registry-client" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/python-schema-registry-client
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SchemaRegistryClient Api
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serializers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Faust integration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Faust integration
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schemas-custom-codecs-and-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schemas, Custom Codecs and Serializers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas, Custom Codecs and Serializers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-dataclasses-avroschema-for-avro-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage with dataclasses-avroschema for avro schemas
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-pydantic-for-json-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage with pydantic for json schemas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Exceptions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemaregistry_server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Registry Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schemas-custom-codecs-and-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schemas, Custom Codecs and Serializers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas, Custom Codecs and Serializers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-dataclasses-avroschema-for-avro-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage with dataclasses-avroschema for avro schemas
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-pydantic-for-json-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage with pydantic for json schemas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="how-to-use-it-with-faust">How to use it with Faust</h1>
+<p>This section describe how integrate this library with <a href="https://faust.readthedocs.io/en/latest/">Faust</a></p>
+<h2 id="schemas-custom-codecs-and-serializers">Schemas, Custom Codecs and Serializers</h2>
+<p>Because we want to be sure that the message that we encode are valid, we can use <a href="https://docs.oracle.com/database/nosql-12.1.3.1/GettingStartedGuide/avroschemas.html">Avro</a> or <a href="https://json-schema.org/">JSON</a> schemas. Also, <a href="https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321">Introduction to Schemas in Apache Kafka with the Confluent Schema Registry</a> is a good post to start with <code>schemas</code>.
+Avro and JSON can be used to define the data schema for a record's value. This schema describes the fields allowed in the value, along with their data types.</p>
+<p>In order to use <code>avro schemas</code> or <code>json schemas</code> with <code>Faust</code>, we need to define a custom codec and a custom serializer able to talk with the <code>schema-registry</code>, and to do that, we will use the <code>MessageSerializer</code>.</p>
+<p>For serializing <code>avro schemas</code> we should use the <code>FaustSerializer</code>. For serializing <code>json schemas</code> we should use the <code>FaustJsonSerializer</code>.</p>
+<p>For our demonstration, let's imagine that we have the following <code>avro schema</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;com.example&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AvroUsers&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;first_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;last_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let's register the custom <code>codec</code></p>
+<div class="highlight"><span class="filename">Trivial Usage</span><pre><span></span><code><span class="c1"># codecs.codec.py</span>
+<span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">schema_registry.serializers.faust</span> <span class="kn">import</span> <span class="n">FaustSerializer</span>
+
+<span class="c1"># create an instance of the `SchemaRegistryClient`</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SCHEMA_REGISTRY_URL</span><span class="p">)</span>
+
+<span class="c1"># schema that we want to use. For this example we</span>
+<span class="c1"># are using a dict, but this schema could be located in a file called avro_user_schema.avsc</span>
+<span class="n">avro_user_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">AvroSchema</span><span class="p">({</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;com.example&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AvroUsers&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">avro_user_serializer</span> <span class="o">=</span> <span class="n">FaustSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">avro_user_schema</span><span class="p">)</span>
+
+<span class="c1"># function used to register the codec</span>
+<span class="k">def</span> <span class="nf">avro_user_codec</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">avro_user_serializer</span>
+</code></pre></div>
+<p>and add in <code>setup.py</code> the following code in order to tell faust where to find the custom codecs.</p>
+<div class="highlight"><span class="filename">setup.py</span><pre><span></span><code><span class="n">setup</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;console_scripts&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;example = example.app:main&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s1">&#39;faust.codecs&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;avro_users = example.codecs.avro:avro_user_codec&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>or if you are using <code>poetry</code> an a <a href="https://python-poetry.org/docs/pyproject/"><code>pyproject.toml</code></a> you can add in <code>pyproject.toml</code> the following code to tell faust where to find the custom codecs:</p>
+<div class="highlight"><span class="filename">pyproject.toml</span><pre><span></span><code><span class="k">[tool.poetry.scripts]</span>
+<span class="n">example</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example.app:main&quot;</span>
+
+<span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;faust.codecs&quot;</span><span class="k">]</span>
+<span class="n">avro_users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example.codecs.avro:avro_user_codec&quot;</span>
+</code></pre></div>
+<p>Now the final step is to integrate the faust model with the AvroSerializer.</p>
+<div class="highlight"><span class="filename">user.models.py</span><pre><span></span><code><span class="kn">import</span> <span class="nn">faust</span>
+
+
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">faust</span><span class="o">.</span><span class="n">Record</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="s1">&#39;avro_users&#39;</span><span class="p">):</span>
+    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+</code></pre></div>
+<p>Now our application is able to send and receive message using arvo schemas!!!! :-)</p>
+<div class="highlight"><span class="filename">application</span><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">your_project.app</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="kn">from</span> <span class="nn">.codecs.codec</span> <span class="kn">import</span> <span class="n">avro_user_serializer</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">UserModel</span>
+
+<span class="n">users_topic</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">topic</span><span class="p">(</span><span class="s1">&#39;avro_users&#39;</span><span class="p">,</span> <span class="n">partitions</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="n">UserModel</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">agent</span><span class="p">(</span><span class="n">users_topic</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">users</span><span class="p">(</span><span class="n">users</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Event received in topic avro_users&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First Name: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="si">}</span><span class="s2">, last name </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">timer</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">on_leader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">publish_users</span><span class="p">():</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;PUBLISHING ON LEADER FOR USERS APP!&#39;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+    <span class="k">await</span> <span class="n">users</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">value_serializer</span><span class="o">=</span><span class="n">avro_user_serializer</span><span class="p">)</span>
+</code></pre></div>
+<p>The full example is <a href="https://github.com/marcosschroh/faust-docker-compose-example/blob/master/faust-project/example/codecs/avro.py">here</a></p>
+<h3 id="usage-with-dataclasses-avroschema-for-avro-schemas">Usage with dataclasses-avroschema for avro schemas</h3>
+<p>You can also use this funcionality with <a href="https://github.com/marcosschroh/dataclasses-avroschema">dataclasses-avroschema</a> and you won't have to provide the avro schema.
+The only thing that you need to do is add the <code>AvroModel</code> class and use its methods:</p>
+<div class="highlight"><span class="filename">user.models.py</span><pre><span></span><code><span class="kn">import</span> <span class="nn">faust</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.faust</span> <span class="kn">import</span> <span class="n">AvroRecord</span>
+
+
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">AvroRecord</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="s1">&#39;avro_users&#39;</span><span class="p">):</span>
+    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="c1"># codecs.codec.py</span>
+<span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">schema_registry.serializers.faust</span> <span class="kn">import</span> <span class="n">FaustSerializer</span>
+
+<span class="kn">from</span> <span class="nn">users.models</span> <span class="kn">import</span> <span class="n">UserModel</span>
+
+<span class="c1"># create an instance of the `SchemaRegistryClient`</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SCHEMA_REGISTRY_URL</span><span class="p">)</span>
+
+<span class="n">avro_user_serializer</span> <span class="o">=</span> <span class="n">FaustSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">UserModel</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>  <span class="c1"># usign the method avro_schema to get the avro schema representation</span>
+
+<span class="c1"># function used to register the codec</span>
+<span class="k">def</span> <span class="nf">avro_user_codec</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">avro_user_serializer</span>
+</code></pre></div>
+<h3 id="usage-with-pydantic-for-json-schemas">Usage with pydantic for json schemas</h3>
+<p>You can also use this funcionality with <a href="https://github.com/samuelcolvin/pydantic">dataclasses-pydantic</a> and you won't have to provide the json schema.
+The only thing that you need to do is add the <code>BaseModel</code> class and use its methods:</p>
+<div class="highlight"><span class="filename">users.models.py</span><pre><span></span><code><span class="kn">import</span> <span class="nn">faust</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">faust</span><span class="o">.</span><span class="n">Record</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="s1">&#39;json_users&#39;</span><span class="p">):</span>
+    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="c1"># codecs.codec.py</span>
+<span class="kn">from</span> <span class="nn">schema_registry.client</span> <span class="kn">import</span> <span class="n">SchemaRegistryClient</span><span class="p">,</span> <span class="n">schema</span>
+<span class="kn">from</span> <span class="nn">schema_registry.serializers.faust</span> <span class="kn">import</span> <span class="n">FaustJsonSerializer</span>
+
+<span class="kn">from</span> <span class="nn">users.models</span> <span class="kn">import</span> <span class="n">UserModel</span>
+
+<span class="c1"># create an instance of the `SchemaRegistryClient`</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">SchemaRegistryClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SCHEMA_REGISTRY_URL</span><span class="p">)</span>
+
+<span class="n">json_user_serializer</span> <span class="o">=</span> <span class="n">FaustJsonSerializer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">UserModel</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">())</span>  <span class="c1"># using the method model_json_schema to get the json schema representation</span>
+
+<span class="c1"># function used to register the codec</span>
+<span class="k">def</span> <span class="nf">json_user_codec</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">json_user_serializer</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>
