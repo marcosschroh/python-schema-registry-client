@@ -582,27 +582,27 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dataclasses-avroschema"
-version = "0.57.4"
+version = "0.58.2"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "dataclasses_avroschema-0.57.4-py3-none-any.whl", hash = "sha256:53b6bc8e2eab6dced6e3d9da5e6c3e0d90a3d09e1314feec90a05edde3e649dc"},
-    {file = "dataclasses_avroschema-0.57.4.tar.gz", hash = "sha256:7ce69f780ddb033906f2f9de2e8458aa7d575dc1aaf510c68a9b165c2bab1ea7"},
+    {file = "dataclasses_avroschema-0.58.2-py3-none-any.whl", hash = "sha256:dad731e3f0e8cf0775e9cd0d0e9e2a6070e7dd07d5c56a0870d0c7d7a85726ef"},
+    {file = "dataclasses_avroschema-0.58.2.tar.gz", hash = "sha256:a4c952e64572ba815ce923e38072b93a05ce7d82ddca9f5409f81395bad77fe3"},
 ]
 
 [package.dependencies]
 casefy = ">=0.1.7,<0.2.0"
 dacite = ">=1.8.0,<2.0.0"
-faker = {version = ">=18.3.1,<24.0.0", optional = true, markers = "extra == \"faker\""}
+faker = {version = ">=18.3.1,<25.0.0", optional = true, markers = "extra == \"faker\""}
 fastavro = ">=1.7.3,<2.0.0"
 inflector = ">=3.1.1,<4.0.0"
 pydantic = {version = ">=2.4.2,<3.0.0", extras = ["email"], optional = true, markers = "extra == \"pydantic\""}
 typing-extensions = ">=4.2.0,<5.0.0"
 
 [package.extras]
-faker = ["faker (>=18.3.1,<24.0.0)"]
-faust = ["faust-streaming (>=0.10.11,<0.11.0)"]
+faker = ["faker (>=18.3.1,<25.0.0)"]
+faust = ["faust-streaming (>=0.10.11,<0.12.0)"]
 pydantic = ["pydantic[email] (>=2.4.2,<3.0.0)"]
 
 [[package]]
@@ -2282,13 +2282,13 @@ files = [
 
 [[package]]
 name = "types-aiofiles"
-version = "23.2.0.20240311"
+version = "23.2.0.20240403"
 description = "Typing stubs for aiofiles"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-aiofiles-23.2.0.20240311.tar.gz", hash = "sha256:208e6b090de732739ef74ab8f133c954479c8e77e614f276f9e475a0cc986430"},
-    {file = "types_aiofiles-23.2.0.20240311-py3-none-any.whl", hash = "sha256:ed10a8002d88c94220597b77304cf1a1d8cf489c7143fc3ffa2c96488b20fec7"},
+    {file = "types-aiofiles-23.2.0.20240403.tar.gz", hash = "sha256:1ffcf8f5f72b81f71139f754ea2610ab0017f27ba4fd771e187b07840ee49c0f"},
+    {file = "types_aiofiles-23.2.0.20240403-py3-none-any.whl", hash = "sha256:adeeb4b999f19fda2dfe91c07857ff54701b6ee9b227b523a5a7be92125a2c5f"},
 ]
 
 [[package]]
@@ -2524,4 +2524,4 @@ faust = ["faust-streaming"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "9801658d83d3e46ac1c2ac128d38bb884b8808372b1149bc1acf6d382c335434"
+content-hash = "6f672f8af2e0e74b37d5829a087d111ff32aa16b6596758f57c6c50b46d8b0b1"
