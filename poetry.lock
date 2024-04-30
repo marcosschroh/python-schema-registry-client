@@ -582,13 +582,13 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dataclasses-avroschema"
-version = "0.58.2"
+version = "0.59.0"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "dataclasses_avroschema-0.58.2-py3-none-any.whl", hash = "sha256:dad731e3f0e8cf0775e9cd0d0e9e2a6070e7dd07d5c56a0870d0c7d7a85726ef"},
-    {file = "dataclasses_avroschema-0.58.2.tar.gz", hash = "sha256:a4c952e64572ba815ce923e38072b93a05ce7d82ddca9f5409f81395bad77fe3"},
+    {file = "dataclasses_avroschema-0.59.0-py3-none-any.whl", hash = "sha256:88516f748bb47b4d2c0b97ff1a5685a82a6b8cdb064bfc37d719cce12298cebf"},
+    {file = "dataclasses_avroschema-0.59.0.tar.gz", hash = "sha256:cca99c5ed68481827b2bf887f4a6679d843225466774a5228b2ad7bfe79e3ace"},
 ]
 
 [package.dependencies]
@@ -2541,4 +2541,4 @@ faust = ["faust-streaming"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6f672f8af2e0e74b37d5829a087d111ff32aa16b6596758f57c6c50b46d8b0b1"
+content-hash = "8cac48211b57990b417dee3bbe6fe0a3ee49b43223c4470b48f8df9adb719130"
