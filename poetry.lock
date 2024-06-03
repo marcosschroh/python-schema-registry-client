@@ -582,13 +582,13 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dataclasses-avroschema"
-version = "0.59.1"
+version = "0.60.1"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "dataclasses_avroschema-0.59.1-py3-none-any.whl", hash = "sha256:627ad3dbf34acf98cdc3e904e9d453027c83bae55d2c89f9c32ac39769f172fe"},
-    {file = "dataclasses_avroschema-0.59.1.tar.gz", hash = "sha256:3e208d0f02d5651f6c8e1f0fbe2d11d332d9e77181409fc4a7a66736e71b5d44"},
+    {file = "dataclasses_avroschema-0.60.1-py3-none-any.whl", hash = "sha256:0e36ac03fce9d73652997a28acc1a50795c2d8d794931aee3f86c7b4537b2c10"},
+    {file = "dataclasses_avroschema-0.60.1.tar.gz", hash = "sha256:737ffb8ee4be2ad1a37d1975dc94efa94b7515e26ad8e0dd3a79f43727840529"},
 ]
 
 [package.dependencies]
@@ -598,6 +598,7 @@ faker = {version = ">=18.3.1,<26.0.0", optional = true, markers = "extra == \"fa
 fastavro = ">=1.7.3,<2.0.0"
 inflector = ">=3.1.1,<4.0.0"
 pydantic = {version = ">=2.4.2,<3.0.0", extras = ["email"], optional = true, markers = "extra == \"pydantic\""}
+python-dateutil = ">=2.9.0.post0,<3.0.0"
 typing-extensions = ">=4.2.0,<5.0.0"
 
 [package.extras]
@@ -1834,13 +1835,13 @@ dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "python-dateutil"
-version = "2.8.2"
+version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 files = [
-    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
-    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
 ]
 
 [package.dependencies]
@@ -2541,4 +2542,4 @@ faust = ["faust-streaming"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "06df87b94ef162e9b874c73cf558decefc685af83c6d3ce66e861c84703d6bf8"
+content-hash = "2d6826762f09ea850413e3b5facf7c3f6bea7d709b8056e04e8352cd905403e9"
