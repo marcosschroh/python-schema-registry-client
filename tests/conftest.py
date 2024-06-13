@@ -132,7 +132,7 @@ def response_klass():
     return Response
 
 
-RequestArgs = namedtuple("RequestArgs", ["url", "method", "body", "headers", "timeout"])
+RequestArgs = namedtuple("RequestArgs", ["url", "method", "body", "headers", "params", "timeout"])
 
 
 class Color(str, enum.Enum):
@@ -161,11 +161,12 @@ class RequestLoggingSchemaRegistryClient(SchemaRegistryClient, RequestLoggingAss
         url: str,
         method: str = "GET",
         body: dict = None,
+        params: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
-        self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
-        return super().request(url, method, body, headers=headers, timeout=timeout)
+        self.request_calls.append(RequestArgs(url, method, body, headers, params, timeout))
+        return super().request(url, method, body, headers=headers, params=params, timeout=timeout)
 
 
 @pytest.fixture
@@ -323,11 +324,12 @@ class RequestLoggingAsyncSchemaRegistryClient(AsyncSchemaRegistryClient, Request
         url: str,
         method: str = "GET",
         body: dict = None,
+        params: dict = None,
         headers: dict = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> tuple:
-        self.request_calls.append(RequestArgs(url, method, body, headers, timeout))
-        return await super().request(url, method, body, headers=headers, timeout=timeout)
+        self.request_calls.append(RequestArgs(url, method, body, headers, params, timeout))
+        return await super().request(url, method, body, headers=headers, params=params, timeout=timeout)
 
 
 @pytest_asyncio.fixture
