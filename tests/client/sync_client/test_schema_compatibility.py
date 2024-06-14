@@ -78,7 +78,7 @@ def test_avro_compatibility_verbose(client, avro_user_schema_v3):
 
     compatibility = client.test_compatibility(subject, avro_user_schema_v3, verbose=True)
     assert isinstance(compatibility, dict)
-    assert compatibility["is_compatible"] is True 
+    assert compatibility["is_compatible"] is True
     assert isinstance(compatibility["messages"], list)
 
 
