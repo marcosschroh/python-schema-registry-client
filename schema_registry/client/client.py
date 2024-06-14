@@ -231,7 +231,7 @@ class BaseClient:
         url: str,
         method: str = "GET",
         body: typing.Optional[typing.Dict] = None,
-        params: typing.Optional[typing.Dict] = None,        
+        params: typing.Optional[typing.Dict] = None,
         headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> typing.Union[tuple, httpx.Response, typing.Coroutine[typing.Any, typing.Any, typing.Any]]:
@@ -283,7 +283,7 @@ class SchemaRegistryClient(BaseClient):
         url: str,
         method: str = "GET",
         body: typing.Optional[typing.Dict] = None,
-        params: typing.Optional[typing.Dict] = None,        
+        params: typing.Optional[typing.Dict] = None,
         headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> httpx.Response:
@@ -693,7 +693,7 @@ class SchemaRegistryClient(BaseClient):
 
         Returns:
             If verbose if False: return a boolean wether the schema is compatible with the latest version for a subject
-            If verbose is True: return the API reponse with both the compatibility boolean and the possible errors 
+            If verbose is True: return the API reponse with both the compatibility boolean and the possible errors
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
 
@@ -829,7 +829,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         url: str,
         method: str = "GET",
         body: typing.Optional[typing.Dict] = None,
-        params: typing.Optional[typing.Dict] = None,        
+        params: typing.Optional[typing.Dict] = None,
         headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> httpx.Response:
@@ -1249,10 +1249,11 @@ class AsyncSchemaRegistryClient(BaseClient):
         subject: str,
         schema: typing.Union[BaseSchema, str, typing.Dict[str, typing.Any]],
         version: typing.Union[int, str] = "latest",
+        verbose: bool = False,
         headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: typing.Literal["AVRO", "JSON"] = utils.AVRO_SCHEMA_TYPE,
-    ) -> bool:
+    ) -> typing.Union[bool, typing.Dict[str, typing.Any]]::
         """Test the compatibility of a candidate parsed schema for a given subject.
 
         By default the latest version is checked against.
@@ -1262,12 +1263,15 @@ class AsyncSchemaRegistryClient(BaseClient):
         Args:
             subject: subject name
             schema: Avro or JSON schema
+            version: The schema version to test compatibility against
+            verbose: Whether or not to return the errors in case of incompatibility
             headers: Extra headers to add on the requests
             timeout: The timeout configuration to use when sending requests. Default USE_CLIENT_DEFAULT
             schema_type: The type of schema to parse if `schema` is a string. Default "AVRO"
 
         Returns:
-            Wether the schema is compatible with the latest version for a subject
+            If verbose if False: return a boolean wether the schema is compatible with the latest version for a subject
+            If verbose is True: return the API reponse with both the compatibility boolean and the possible errors 
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
 
@@ -1279,7 +1283,7 @@ class AsyncSchemaRegistryClient(BaseClient):
             "schemaType": schema.schema_type,
         }
         result, code = get_response_and_status_code(
-            await self.request(url, method=method, body=body, headers=headers, timeout=timeout)
+            await self.request(url, method=method, body=body, headers=headers, params={"verbose": verbose}, timeout=timeout)
         )
 
         if code == status.HTTP_404_NOT_FOUND:
@@ -1289,7 +1293,10 @@ class AsyncSchemaRegistryClient(BaseClient):
             logger.info(f"Unprocessable entity. Invalid subject or schema: {code}")
             return False
         elif status.is_success(code):
-            return result.get("is_compatible")
+            if verbose:
+                return result
+            else:
+                return result.get("is_compatible")
 
         raise ClientError("Unable to check the compatibility", http_code=code, server_traceback=result)
 
