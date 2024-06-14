@@ -85,6 +85,7 @@ def test_override_headers(client, avro_deployment_schema, mocker, response_klass
         "POST",
         mocker.ANY,
         headers=prepare_headers,
+        params=None,
         json=mocker.ANY,
         timeout=USE_CLIENT_DEFAULT,
     )
