@@ -1253,7 +1253,7 @@ class AsyncSchemaRegistryClient(BaseClient):
         headers: typing.Optional[typing.Dict] = None,
         timeout: typing.Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
         schema_type: typing.Literal["AVRO", "JSON"] = utils.AVRO_SCHEMA_TYPE,
-    ) -> typing.Union[bool, typing.Dict[str, typing.Any]]::
+    ) -> typing.Union[bool, typing.Dict[str, typing.Any]]:
         """Test the compatibility of a candidate parsed schema for a given subject.
 
         By default the latest version is checked against.
