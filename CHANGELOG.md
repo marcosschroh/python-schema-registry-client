@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
+## v2.6.0 (2024-06-19)
+
+### Feat
+
+- add verbose option for test_compatibility (#336)
+
 ## v2.5.6 (2024-02-12)
 
 ### Fix
