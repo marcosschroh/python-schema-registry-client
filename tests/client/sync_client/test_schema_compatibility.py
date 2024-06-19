@@ -12,7 +12,7 @@ def test_avro_compatibility(client, avro_user_schema_v3):
     client.register(subject, version_2)
 
     compatibility = client.test_compatibility(subject, avro_user_schema_v3)
-    assert compatibility
+    assert compatibility is True
 
 
 def test_avro_compatibility_dataclasses_avroschema(client, dataclass_avro_schema, dataclass_avro_schema_advance):
@@ -21,7 +21,7 @@ def test_avro_compatibility_dataclasses_avroschema(client, dataclass_avro_schema
     client.register(subject, dataclass_avro_schema.avro_schema())
 
     compatibility = client.test_compatibility(subject, dataclass_avro_schema_advance.avro_schema())
-    assert compatibility
+    assert compatibility is True
 
 
 def test_avro_update_compatibility_for_subject(client):
@@ -60,6 +60,28 @@ def test_avro_get_global_compatibility(client):
     assert client.get_compatibility() is not None
 
 
+def test_avro_compatibility_non_verbose(client, avro_user_schema_v3):
+    """Test the compatibility with the verbose option set to False"""
+    subject = "test-avro-user-schema"
+    version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
+    client.register(subject, version_2)
+
+    compatibility = client.test_compatibility(subject, avro_user_schema_v3, verbose=False)
+    assert isinstance(compatibility, bool)
+
+
+def test_avro_compatibility_verbose(client, avro_user_schema_v3):
+    """Test the compatibility with the verbose option set to True"""
+    subject = "test-avro-user-schema"
+    version_2 = schema.AvroSchema(data_gen.AVRO_USER_V2)
+    client.register(subject, version_2)
+
+    compatibility = client.test_compatibility(subject, avro_user_schema_v3, verbose=True)
+    assert isinstance(compatibility, dict)
+    assert compatibility["is_compatible"] is True
+    assert isinstance(compatibility["messages"], list)
+
+
 def test_json_compatibility(client, json_user_schema_v3):
     """Test the compatibility of a new User Schema against the User schema version 2."""
     subject = "test-json-user-schema"
@@ -68,7 +90,7 @@ def test_json_compatibility(client, json_user_schema_v3):
 
     compatibility = client.test_compatibility(subject, json_user_schema_v3)
 
-    assert compatibility
+    assert compatibility is True
 
 
 def test_json_compatibility_dataclasses_jsonschema(client, dataclass_json_schema, dataclass_json_schema_advance):
@@ -86,7 +108,7 @@ def test_json_compatibility_dataclasses_jsonschema(client, dataclass_json_schema
         schema_type=utils.JSON_SCHEMA_TYPE,
     )
 
-    assert compatibility
+    assert compatibility  is True
 
 
 def test_json_update_compatibility_for_subject(client):
