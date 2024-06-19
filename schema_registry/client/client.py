@@ -1271,7 +1271,7 @@ class AsyncSchemaRegistryClient(BaseClient):
 
         Returns:
             If verbose if False: return a boolean wether the schema is compatible with the latest version for a subject
-            If verbose is True: return the API reponse with both the compatibility boolean and the possible errors 
+            If verbose is True: return the API reponse with both the compatibility boolean and the possible errors
         """
         url, method = self.url_manager.url_for("test_compatibility", subject=subject, version=version)
 
@@ -1283,7 +1283,9 @@ class AsyncSchemaRegistryClient(BaseClient):
             "schemaType": schema.schema_type,
         }
         result, code = get_response_and_status_code(
-            await self.request(url, method=method, body=body, headers=headers, params={"verbose": verbose}, timeout=timeout)
+            await self.request(
+                url, method=method, body=body, headers=headers, params={"verbose": verbose}, timeout=timeout
+            )
         )
 
         if code == status.HTTP_404_NOT_FOUND:

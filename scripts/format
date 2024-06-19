@@ -3,4 +3,4 @@
 set -x
 
 poetry run ruff format schema_registry tests
-poetry run ruff schema_registry tests --fix
+poetry run ruff check schema_registry tests --fix

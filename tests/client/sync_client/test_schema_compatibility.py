@@ -108,7 +108,7 @@ def test_json_compatibility_dataclasses_jsonschema(client, dataclass_json_schema
         schema_type=utils.JSON_SCHEMA_TYPE,
     )
 
-    assert compatibility  is True
+    assert compatibility is True
 
 
 def test_json_update_compatibility_for_subject(client):

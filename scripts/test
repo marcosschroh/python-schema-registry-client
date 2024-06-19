@@ -11,7 +11,7 @@ export SCHEMA_REGISTRY_SERVER_PORT=8081
 ./scripts/wait_for_services
 
 poetry run pytest --cov=schema_registry ${1} --cov-fail-under=87
-poetry run codecov --token=$CODECOV_TOKEN
 poetry run ruff schema_registry/ tests/
 poetry run ruff format --check --diff schema_registry tests
 poetry run mypy schema_registry
+poetry run codecov --token=$CODECOV_TOKEN
