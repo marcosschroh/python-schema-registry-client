@@ -36,7 +36,7 @@ pytest-mock = "^3.10.0"
 pytest-asyncio = ">=0.21,<0.24"
 dataclasses-avroschema = {version = ">=0.57,<0.61", extras = ["pydantic", "faker"]}
 codecov = "^2.1.13"
-types-aiofiles = "^23.1.0.2"
+types-aiofiles = ">=23.1.0.2,<25.0.0.0"
 types-jsonschema = "^4.17.0.7"
 
 [tool.poetry.group.docs.dependencies]
