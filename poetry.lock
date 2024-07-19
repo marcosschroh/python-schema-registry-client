@@ -582,19 +582,19 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dataclasses-avroschema"
-version = "0.60.2"
+version = "0.61.0"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "dataclasses_avroschema-0.60.2-py3-none-any.whl", hash = "sha256:5552ef2bf76d490ac6d3029371b5224a5af301bb7e20a9a3f0192e419bc47eec"},
-    {file = "dataclasses_avroschema-0.60.2.tar.gz", hash = "sha256:b72b9cf819a1f795c77c10e8a150073ec0d754f88e79b18079473b7a32d15cc6"},
+    {file = "dataclasses_avroschema-0.61.0-py3-none-any.whl", hash = "sha256:202e867fb2bcf4fee1bddfd39dbf4b53b212cb087e131808137f735ddd07095c"},
+    {file = "dataclasses_avroschema-0.61.0.tar.gz", hash = "sha256:ef70cf05454c9f62d093ca1451e2206d15e30f00052840f31a62f5f317ce5f48"},
 ]
 
 [package.dependencies]
 casefy = ">=0.1.7,<0.2.0"
 dacite = ">=1.8.0,<2.0.0"
-faker = {version = ">=18.3.1,<26.0.0", optional = true, markers = "extra == \"faker\""}
+faker = {version = ">=26.0.0,<27.0.0", optional = true, markers = "extra == \"faker\""}
 fastavro = ">=1.7.3,<2.0.0"
 inflector = ">=3.1.1,<4.0.0"
 pydantic = {version = ">=2.4.2,<3.0.0", extras = ["email"], optional = true, markers = "extra == \"pydantic\""}
@@ -602,7 +602,7 @@ python-dateutil = ">=2.9.0.post0,<3.0.0"
 typing-extensions = ">=4.2.0,<5.0.0"
 
 [package.extras]
-faker = ["faker (>=18.3.1,<26.0.0)"]
+faker = ["faker (>=26.0.0,<27.0.0)"]
 faust = ["faust-streaming (>=0.10.11,<0.12.0)"]
 pydantic = ["pydantic[email] (>=2.4.2,<3.0.0)"]
 
@@ -668,18 +668,17 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "23.2.1"
+version = "26.0.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Faker-23.2.1-py3-none-any.whl", hash = "sha256:0520a6b97e07c658b2798d7140971c1d5bc4bcd5013e7937fe075fd054aa320c"},
-    {file = "Faker-23.2.1.tar.gz", hash = "sha256:f07b64d27f67b62c7f0536a72f47813015b3b51cd4664918454011094321e464"},
+    {file = "Faker-26.0.0-py3-none-any.whl", hash = "sha256:886ee28219be96949cd21ecc96c4c742ee1680e77f687b095202c8def1a08f06"},
+    {file = "Faker-26.0.0.tar.gz", hash = "sha256:0f60978314973de02c00474c2ae899785a42b2cf4f41b7987e93c132a2b8a4a9"},
 ]
 
 [package.dependencies]
 python-dateutil = ">=2.4"
-typing-extensions = {version = ">=3.10.0.1", markers = "python_version <= \"3.8\""}
 
 [[package]]
 name = "fastavro"
@@ -2542,4 +2541,4 @@ faust = ["faust-streaming"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ad11d26aecec822ca7f84d3f973dce24da641f3817a6e8d9b17635266afe600c"
+content-hash = "a2d496fc18147e0beb26fb3e8c429068688357e93347c0f29b6841b845d17959"
