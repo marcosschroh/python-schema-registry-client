@@ -2,11 +2,14 @@
 
 import json
 import logging
+import os
+import ssl
 import typing
 from abc import abstractmethod
 from collections import defaultdict
 from urllib.parse import urlparse
 
+import certifi
 import httpx
 from httpx import USE_CLIENT_DEFAULT, Auth, BasicAuth
 from httpx._client import UseClientDefault
@@ -135,16 +138,18 @@ class BaseClient:
     @staticmethod
     def _configure_client_tls(
         conf: dict,
-    ) -> typing.Optional[typing.Union[str, typing.Tuple[str, str], typing.Tuple[str, str, str]]]:
-        certificate = conf.get(utils.SSL_CERTIFICATE_LOCATION)
+    ) -> typing.Optional[typing.Union[typing.Tuple[str, str], typing.Tuple[str, str, str]]]:
+        cert = conf.get(utils.SSL_CERTIFICATE_LOCATION)
+        certificate = cert
 
-        if certificate is not None:
+        if cert is not None:
             key_path = conf.get(utils.SSL_KEY_LOCATION)
             key_password = conf.get(utils.SSL_KEY_PASSWORD)
+            certificate = (cert,)
 
             if key_path is not None:
                 certificate = (
-                    certificate,
+                    cert,
                     key_path,
                 )
 
@@ -154,15 +159,23 @@ class BaseClient:
         return certificate
 
     def _get_client_kwargs(self) -> typing.Dict:
-        verify = self.conf.get(utils.SSL_CA_LOCATION, False)
-        certificate = self._configure_client_tls(self.conf)
         auth = self._configure_auth()
 
         client_kwargs: typing.Dict = {
-            "cert": certificate,
-            "verify": verify,
             "auth": auth,
         }
+
+        certificate = self._configure_client_tls(self.conf)
+
+        if certificate:
+            global_ca_location = self.conf.get(utils.SSL_CA_LOCATION, certifi.where())
+            ctx = ssl.create_default_context(
+                cafile=os.environ.get("SSL_CERT_FILE", global_ca_location),
+                capath=os.environ.get("SSL_CERT_DIR"),
+            )
+
+            ctx.load_cert_chain(*certificate)
+            client_kwargs["verify"] = ctx
 
         # If these values haven't been explicitly defined let httpx sort out
         # the default values.
