@@ -10,9 +10,8 @@ from tests import data_gen
 
 
 def test_invalid_cert():
-    client = SchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
     with pytest.raises(FileNotFoundError):
-        client.request("https://example.com")
+        SchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
 
 
 def test_cert_with_key(certificates):

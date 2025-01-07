@@ -14,7 +14,7 @@ def test_create_avro_faust_serializer(client, avro_country_schema):
     schema_subject = "test-avro-country"
     faust_serializer = serializer.FaustSerializer(client, schema_subject, avro_country_schema)
 
-    assert type(faust_serializer.message_serializer) == AvroMessageSerializer
+    assert isinstance(faust_serializer.message_serializer, AvroMessageSerializer)
     assert faust_serializer.schema_subject == schema_subject
     assert faust_serializer.schema == avro_country_schema
     assert faust_serializer.message_serializer.schemaregistry_client == client
@@ -155,7 +155,7 @@ def test_create_json_faust_serializer(client, json_country_schema):
     schema_subject = "test-json-country"
     faust_serializer = serializer.FaustJsonSerializer(client, schema_subject, json_country_schema)
 
-    assert type(faust_serializer.message_serializer) == JsonMessageSerializer
+    assert isinstance(faust_serializer.message_serializer, JsonMessageSerializer)
     assert faust_serializer.schema_subject == schema_subject
     assert faust_serializer.schema == json_country_schema
     assert faust_serializer.message_serializer.schemaregistry_client == client

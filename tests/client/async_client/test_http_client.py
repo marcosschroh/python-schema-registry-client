@@ -10,9 +10,8 @@ from schema_registry.client import AsyncSchemaRegistryClient, utils
 
 @pytest.mark.asyncio
 async def test_invalid_cert():
-    client = AsyncSchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
     with pytest.raises(FileNotFoundError):
-        await client.request("https://example.com")
+        AsyncSchemaRegistryClient(url="https://127.0.0.1:65534", cert_location="/path/to/cert")
 
 
 def test_cert_with_key(certificates):
