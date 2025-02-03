@@ -17,10 +17,11 @@ from schema_registry.client.utils import AVRO_SCHEMA_TYPE, JSON_SCHEMA_TYPE
 class BaseSchema(ABC):
     """Abstract class for schema wrapper"""
 
-    def __init__(self, schema: typing.Union[str, typing.Dict[str, typing.Any]]) -> None:
+    def __init__(self, schema: typing.Union[str, typing.Dict[str, typing.Any]], ignore_default_error: bool = False) -> None:
         if isinstance(schema, str):
             schema = json.loads(schema)
         self.raw_schema = typing.cast(typing.Dict, schema)
+        self.ignore_default_error = ignore_default_error
         self.schema = self.parse_schema(self.raw_schema)
         self.generate_hash()
 
@@ -66,10 +67,10 @@ class BaseSchema(ABC):
 class AvroSchema(BaseSchema):
     """Integrate BaseSchema for Avro schema."""
 
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+    def __init__(self, *args: typing.Any, ignore_default_error: bool = False, **kwargs: typing.Any) -> None:
         self._expanded_schema: typing.Optional[typing.Dict] = None
         self._flat_schema: typing.Optional[typing.Dict] = None
-
+        self.ignore_default_error: typing.Optional[bool] = ignore_default_error
         super().__init__(*args, **kwargs)
 
     @property
@@ -103,28 +104,28 @@ class AvroSchema(BaseSchema):
             # NOTE: Dict expected when we pass a dict
             self._flat_schema = typing.cast(
                 typing.Dict,
-                fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True),
+                fastavro.parse_schema(self.raw_schema, _write_hint=False, _force=True, _ignore_default_error=self.ignore_default_error),
             )
 
         return self._flat_schema
 
     def parse_schema(self, schema: typing.Dict) -> typing.Dict:
         # NOTE: Dict expected when we pass a dict
-        return typing.cast(typing.Dict, fastavro.parse_schema(schema, _force=True))
+        return typing.cast(typing.Dict, fastavro.parse_schema(schema, _force=True, _ignore_default_error=self.ignore_default_error))
 
     @staticmethod
-    def load(fp: str) -> AvroSchema:
+    def load(fp: str, ignore_default_error=False) -> AvroSchema:
         """Parse an avro schema from a file path."""
         with open(fp, mode="r") as f:
             content = f.read()
-            return AvroSchema(content)
+            return AvroSchema(content, ignore_default_error)
 
     @staticmethod
-    async def async_load(fp: str) -> AvroSchema:
+    async def async_load(fp: str, ignore_default_error=False) -> AvroSchema:
         """Parse an avro schema from a file path."""
         async with aiofiles.open(fp, mode="r") as f:
             content = await f.read()
-            return AvroSchema(content)
+            return AvroSchema(content, ignore_default_error)
 
 
 class JsonSchema(BaseSchema):
