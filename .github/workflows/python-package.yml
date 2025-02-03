@@ -24,7 +24,7 @@ jobs:
         architecture: x64
 
     - name: Run docker-compose
-      uses: hoverkraft-tech/compose-action@v2.0.2
+      uses: hoverkraft-tech/compose-action@v2.1.0
       with:
         compose-file: "docker-compose.yaml"
     
