@@ -33,7 +33,7 @@ ruff = ">=0.8,<0.10"
 pytest = ">=7,<9"
 pytest-cov = ">=4,<6"
 pytest-mock = "^3.10.0"
-pytest-asyncio = ">=0.21,<0.24"
+pytest-asyncio = ">=0.21,<0.25"
 dataclasses-avroschema = {version = ">=0.57,<0.62", extras = ["pydantic", "faker"]}
 codecov = "^2.1.13"
 types-aiofiles = ">=23.1.0.2,<25.0.0.0"
