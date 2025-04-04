@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release package'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   deploy:
