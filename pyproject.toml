@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-schema-registry-client"
-version = "2.6.0"
+version = "2.6.1"
 description = "Python Rest Client to interact against Schema Registry confluent server"
 authors = ["Marcos Schroh <schrohm@gmail.com>"]
 license = "MIT"
