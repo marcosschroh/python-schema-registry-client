@@ -7,7 +7,7 @@ import typing
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-import aiofiles
+import anyio
 import fastavro
 import jsonschema
 
@@ -122,7 +122,7 @@ class AvroSchema(BaseSchema):
     @staticmethod
     async def async_load(fp: str) -> AvroSchema:
         """Parse an avro schema from a file path."""
-        async with aiofiles.open(fp, mode="r") as f:
+        async with await anyio.open_file(fp, mode="r") as f:
             content = await f.read()
             return AvroSchema(content)
 
@@ -152,7 +152,7 @@ class JsonSchema(BaseSchema):
     @staticmethod
     async def async_load(fp: str) -> BaseSchema:
         """Parse a json schema from a file path."""
-        async with aiofiles.open(fp, mode="r") as f:
+        async with await anyio.open_file(fp, mode="r") as f:
             content = await f.read()
             return JsonSchema(content)
 
