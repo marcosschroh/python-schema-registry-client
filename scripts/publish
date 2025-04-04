@@ -1,5 +1,3 @@
 #!/bin/bash -e
 
-./scripts/clean
-
 poetry publish --build -u $TWINE_USERNAME -p $TWINE_PASSWORD
