@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fix
 
-- use anyio instead of aiofiles for async file I/O
 - dependabot added. Documentation improved with mkdocstrings (#148)
 
 ## v2.6.0 (2024-06-19)
