@@ -1,0 +1,24 @@
+{
+    "name": "basic",
+    "type": "record",
+    "doc": "basic schema for tests",
+    "namespace": "python.test.basic",
+    "fields": [
+        {
+            "name": "number",
+            "doc": "age",
+            "type": [
+                "long",
+                "null"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "name",
+            "doc": "a name",
+            "type": [
+                "string"
+            ]
+        }
+    ]
+}

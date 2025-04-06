@@ -23,6 +23,16 @@ async def test_avro_schema_load_parse_error():
     with pytest.raises(fastavro.schema.UnknownType):
         await schema.AvroSchema.async_load(data_gen.get_schema_path("invalid_schema.avsc"))
 
+@pytest.mark.asyncio
+async def test_avro_schema_load_parse_default_error():
+    with pytest.raises(fastavro.schema.SchemaParseException):
+        await schema.AvroSchema.async_load(data_gen.get_schema_path("default_schema.avsc"))
+
+@pytest.mark.asyncio
+async def test_avro_schema_load_parse_default_error_ignored():
+    parsed = await schema.AvroSchema.async_load(data_gen.get_schema_path("default_schema.avsc"), ignore_default_error=True)
+    assert isinstance(parsed, schema.AvroSchema)
+
 
 def test_json_schema_from_string():
     parsed = schema.JsonSchema(data_gen.JSON_BASIC_SCHEMA)
